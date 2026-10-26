@@ -9,7 +9,6 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eddyizm.tempus.databinding.ItemLibraryMusicFolderBinding;
-import com.eddyizm.tempus.glide.CustomGlideRequest;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.subsonic.models.MusicFolder;
 import com.eddyizm.tempus.util.Constants;
@@ -40,11 +39,6 @@ public class MusicFolderAdapter extends RecyclerView.Adapter<MusicFolderAdapter.
         MusicFolder musicFolder = musicFolders.get(position);
 
         holder.item.musicFolderTitleTextView.setText(musicFolder.getName());
-
-        CustomGlideRequest.Builder
-                .from(holder.itemView.getContext(), musicFolder.getName(), CustomGlideRequest.ResourceType.Folder)
-                .build()
-                .into(holder.item.musicFolderCoverImageView);
     }
 
     @Override

@@ -5,6 +5,9 @@ import android.util.DisplayMetrics;
 
 public class TileSizeManager {
 
+    private static final int CAROUSEL_TILE_DP = 136;
+    private static final int CAROUSEL_ARTIST_DP = 104;
+
     private static TileSizeManager instance;
 
     private int tileSizePx;
@@ -35,6 +38,22 @@ public class TileSizeManager {
             calculateTileSize(context);
         return tileSizePx;
     }
+    /**
+     * Carousel tiles on Home, Library and Search. The tile size preference can shrink them below
+     * the design size, never grow them past it.
+     */
+    public int getCarouselTileSizePx(Context context) {
+        return Math.min(getTileSizePx(context), dpToPx(context, CAROUSEL_TILE_DP));
+    }
+
+    public int getCarouselArtistSizePx(Context context) {
+        return Math.min(getTileSizePx(context), dpToPx(context, CAROUSEL_ARTIST_DP));
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        return Math.round(dp * context.getResources().getDisplayMetrics().density);
+    }
+
     public int getTileSpanCount(Context context) {
         if( !tileIsInitialized )
             calculateTileSize(context);

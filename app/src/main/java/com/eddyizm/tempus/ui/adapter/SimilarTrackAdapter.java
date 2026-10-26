@@ -35,7 +35,7 @@ public class SimilarTrackAdapter extends RecyclerView.Adapter<SimilarTrackAdapte
         ItemHomeSimilarTrackBinding view = ItemHomeSimilarTrackBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 
         TileSizeManager.getInstance().calculateTileSize(parent.getContext());
-        sizePx = TileSizeManager.getInstance().getTileSizePx(parent.getContext());
+        sizePx = TileSizeManager.getInstance().getCarouselTileSizePx(parent.getContext());
 
         return new ViewHolder(view);
     }

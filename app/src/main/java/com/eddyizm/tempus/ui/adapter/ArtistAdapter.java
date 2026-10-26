@@ -41,7 +41,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
         ItemLibraryArtistBinding view = ItemLibraryArtistBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 
         TileSizeManager.getInstance().calculateTileSize(parent.getContext());
-        sizePx = TileSizeManager.getInstance().getTileSizePx(parent.getContext());
+        sizePx = TileSizeManager.getInstance().getCarouselArtistSizePx(parent.getContext());
 
         return new ViewHolder(view);
     }

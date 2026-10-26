@@ -5,34 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/internet_radio_station_pre_text_view"
-        style="@style/TitleMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/home_subtitle_new_internet_radio_station"
-        android:textAllCaps="true"
-        android:textColor="?attr/colorPrimary"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
+    <LinearLayout
+        android:id="@+id/internet_radio_station_header"
+        style="@style/Browse.SectionHeader"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/internet_radio_station_title_text_view"
-        style="@style/TitleLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/home_title_internet_radio_station"
-        app:layout_constraintTop_toBottomOf="@id/internet_radio_station_pre_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/internet_radio_station_title_text_view"
+            style="@style/Browse.SectionTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/home_title_internet_radio_station" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/internet_radio_station_pre_text_view"
+            style="@style/Browse.ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/home_action_add_station"
+            app:icon="@drawable/ic_add" />
+    </LinearLayout>
 
     <!-- The RecyclerView is its own bounded (0dp) scroll container so it recycles views.
          Previously it was wrap_content inside a NestedScrollView, which inflated EVERY row at
@@ -47,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/internet_radio_station_title_text_view" />
+        app:layout_constraintTop_toBottomOf="@id/internet_radio_station_header" />
 
     <LinearLayout
         android:id="@+id/empty_radio_station_layout"
@@ -60,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/internet_radio_station_title_text_view">
+        app:layout_constraintTop_toBottomOf="@id/internet_radio_station_header">
 
         <ImageView
             android:id="@+id/empty_description_image_view"

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:scrollbars="none">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/library_anchor_chip_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:singleLine="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/library_anchor_folders"
+            style="@style/Browse.AnchorChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/library_anchor_folders" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/library_anchor_albums"
+            style="@style/Browse.AnchorChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/library_title_album" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/library_anchor_artists"
+            style="@style/Browse.AnchorChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/library_title_artist" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/library_anchor_genres"
+            style="@style/Browse.AnchorChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/library_title_genre" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/library_anchor_playlists"
+            style="@style/Browse.AnchorChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/library_title_playlist" />
+    </com.google.android.material.chip.ChipGroup>
+</HorizontalScrollView>

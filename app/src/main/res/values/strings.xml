@@ -56,6 +56,7 @@
     <string name="album_page_tracks_count_and_duration">%1$d songs  •  %2$d minutes</string>
     <string name="duration_minutes_short">%d min</string>
     <string name="app_name">Tempus</string>
+    <string name="browse_meta_formatter">%1$s · %2$s</string>
     <string name="artist_adapter_radio_station_starting">Searching…</string>
     <string name="artist_bottom_sheet_instant_mix">Instant mix</string>
     <string name="artist_bottom_sheet_shuffle">Shuffle</string>
@@ -138,6 +139,7 @@
         <item quantity="other">Removed %d missing downloads.</item>
     </plurals>
     <string name="download_refresh_button_content_description">Refresh downloaded items</string>
+    <string name="download_go_back_content_description">Back to all groups</string>
     <string name="downloaded_bottom_sheet_add_to_queue">Add to queue</string>
     <string name="downloaded_bottom_sheet_play_next">Play next</string>
     <string name="downloaded_bottom_sheet_remove">Remove</string>
@@ -196,6 +198,8 @@
     <string name="home_subtitle_best_of">Top songs of your favorite artists</string>
     <string name="home_subtitle_made_for_you">Start mix from a song you liked</string>
     <string name="home_subtitle_new_internet_radio_station">Add a new radio</string>
+    <string name="home_action_add_channel">Add channel</string>
+    <string name="home_action_add_station">Add</string>
     <string name="home_subtitle_new_podcast_channel">Add a new podcast channel</string>
     <string name="home_sync_starred_cancel">Cancel</string>
     <string name="home_sync_starred_download">Download</string>
@@ -252,6 +256,10 @@
     <string name="library_title_music_folder">Music folders</string>
     <string name="library_title_playlist">Playlists</string>
     <string name="library_title_playlist_see_all_button">See all</string>
+    <string name="library_anchor_folders">Folders</string>
+    <string name="library_section_count">· %1$d</string>
+    <string name="library_refresh_albums">Refresh albums</string>
+    <string name="library_refresh_artists">Refresh artists</string>
     <string name="library_toast_long_press_to_refresh">Long press to refresh</string>
     <string name="login_empty">No server added</string>
     <string name="login_title">Subsonic servers</string>
@@ -464,6 +472,11 @@
     <string name="search_title_album">Albums</string>
     <string name="search_title_artist">Artists</string>
     <string name="search_title_song">Songs</string>
+    <string name="search_top_result">Top result</string>
+    <string name="search_recent_title">Recent searches</string>
+    <string name="search_result_artist">Artist</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Song · %1$s</string>
     <string name="search_title_empty_response">No results.</string>
     <string name="search_description_empty_response">We checked your server response but it was empty.</string>
     <string name="server_unreachable_dialog_negative_button">Cancel</string>

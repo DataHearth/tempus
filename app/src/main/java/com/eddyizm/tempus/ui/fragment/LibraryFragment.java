@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
 
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,9 +41,12 @@ import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.LibraryViewModel;
 import com.eddyizm.tempus.viewmodel.MainViewModel;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @UnstableApi
@@ -63,6 +66,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     private PlaylistHorizontalAdapter playlistHorizontalAdapter;
 
     private MaterialToolbar materialToolbar;
+
+    private final Map<View, View> anchorChips = new LinkedHashMap<>();
 
     @Nullable
     @Override
@@ -92,6 +97,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
         initArtistView();
         initGenreView();
         initPlaylistView();
+        initSectionCounts();
         initSwipeToRefresh();
         initMusicFolderChangeListener();
     }
@@ -116,6 +122,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        anchorChips.clear();
         bind = null;
     }
 
@@ -129,41 +136,26 @@ public class LibraryFragment extends Fragment implements ClickCallback {
             activity.navController.navigate(R.id.action_libraryFragment_to_playlistCatalogueFragment, bundle);
         });
 
-        // Album
+        bind.albumRefreshButton.setOnClickListener(v -> libraryViewModel.refreshAlbumSample(getViewLifecycleOwner()));
+        bind.artistRefreshButton.setOnClickListener(v -> libraryViewModel.refreshArtistSample(getViewLifecycleOwner()));
+
+        // Long press on a title predates the refresh buttons and still refreshes that section alone.
         bind.albumCatalogueSampleTextViewRefreshable.setOnLongClickListener(view -> {
             libraryViewModel.refreshAlbumSample(getViewLifecycleOwner());
             return true;
         });
-        bind.albumCatalogueSampleTextViewRefreshable.setOnClickListener( v ->
-            Toast.makeText(requireContext(), R.string.library_toast_long_press_to_refresh, Toast.LENGTH_SHORT).show()
-        );
-
-        // Artist
         bind.artistCatalogueSampleTextViewRefreshable.setOnLongClickListener(view -> {
             libraryViewModel.refreshArtistSample(getViewLifecycleOwner());
             return true;
         });
-        bind.artistCatalogueSampleTextViewRefreshable.setOnClickListener( v ->
-            Toast.makeText(requireContext(), R.string.library_toast_long_press_to_refresh, Toast.LENGTH_SHORT).show()
-        );
-
-        // Genre
         bind.genreCatalogueSampleTextViewRefreshable.setOnLongClickListener(view -> {
             libraryViewModel.refreshGenreSample(getViewLifecycleOwner());
             return true;
         });
-        bind.genreCatalogueSampleTextViewRefreshable.setOnClickListener(v ->
-            Toast.makeText(requireContext(), R.string.library_toast_long_press_to_refresh, Toast.LENGTH_SHORT).show()
-        );
-
-        // Playlist
         bind.playlistCatalogueSampleTextViewRefreshable.setOnLongClickListener(view -> {
             libraryViewModel.refreshPlaylistSample(getViewLifecycleOwner());
             return true;
         });
-        bind.playlistCatalogueSampleTextViewRefreshable.setOnClickListener( v ->
-            Toast.makeText(requireContext(), R.string.library_toast_long_press_to_refresh, Toast.LENGTH_SHORT).show()
-        );
     }
 
     private void initAppBar() {
@@ -173,6 +165,45 @@ public class LibraryFragment extends Fragment implements ClickCallback {
         navigationController.setHamburgerMenuForLandscape(activity, materialToolbar);
 
         Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
+
+        AppBarLayout appBarLayout = bind.getRoot().findViewById(R.id.appbar);
+        View anchors = getLayoutInflater().inflate(R.layout.view_library_anchor_chips, appBarLayout, false);
+        appBarLayout.addView(anchors);
+
+        anchorChips.put(anchors.findViewById(R.id.library_anchor_folders), bind.libraryMusicFolderSector);
+        anchorChips.put(anchors.findViewById(R.id.library_anchor_albums), bind.libraryAlbumSector);
+        anchorChips.put(anchors.findViewById(R.id.library_anchor_artists), bind.libraryArtistSector);
+        anchorChips.put(anchors.findViewById(R.id.library_anchor_genres), bind.libraryGenresSector);
+        anchorChips.put(anchors.findViewById(R.id.library_anchor_playlists), bind.libraryPlaylistSector);
+
+        for (Map.Entry<View, View> anchor : anchorChips.entrySet()) {
+            View sector = anchor.getValue();
+            anchor.getKey().setOnClickListener(v -> bind.fragmentLibraryNestedScrollView.smoothScrollTo(0, sector.getTop()));
+        }
+
+        // Sections come and go with the server's answers; a chip whose section is hidden would jump nowhere.
+        bind.libraryLinearLayoutContainer.getViewTreeObserver().addOnGlobalLayoutListener(this::syncAnchorChips);
+        syncAnchorChips();
+    }
+
+    private void syncAnchorChips() {
+        for (Map.Entry<View, View> anchor : anchorChips.entrySet()) {
+            int visibility = anchor.getValue().getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE;
+            if (anchor.getKey().getVisibility() != visibility) anchor.getKey().setVisibility(visibility);
+        }
+    }
+
+    private void initSectionCounts() {
+        LifecycleOwner owner = getViewLifecycleOwner();
+        libraryViewModel.getAlbumCount(owner).observe(owner, count -> setSectionCount(bind.albumCountTextView, count));
+        libraryViewModel.getArtistCount(owner).observe(owner, count -> setSectionCount(bind.artistCountTextView, count));
+        libraryViewModel.getGenreCount().observe(owner, count -> setSectionCount(bind.genreCountTextView, count));
+        libraryViewModel.getPlaylistCount().observe(owner, count -> setSectionCount(bind.playlistCountTextView, count));
+    }
+
+    private void setSectionCount(TextView view, Integer count) {
+        if (bind == null) return;
+        view.setText(count != null ? getString(R.string.library_section_count, count) : null);
     }
 
     private void initMusicFolderView() {
@@ -241,7 +272,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     }
 
     private void initGenreView() {
-        bind.genreRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 3, GridLayoutManager.HORIZONTAL, false));
+        bind.genreRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false));
         bind.genreRecyclerView.setHasFixedSize(true);
 
         genreAdapter = new GenreAdapter(this);
@@ -344,6 +375,6 @@ public class LibraryFragment extends Fragment implements ClickCallback {
         libraryViewModel.refreshGenreSample(lifecycleOwner);
         libraryViewModel.refreshArtistSample(lifecycleOwner);
         libraryViewModel.refreshPlaylistSample(lifecycleOwner);
-
+        libraryViewModel.refreshArtistAndAlbumCount(lifecycleOwner);
     }
 }

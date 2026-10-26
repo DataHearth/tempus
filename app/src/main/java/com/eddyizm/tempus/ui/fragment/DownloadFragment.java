@@ -2,6 +2,7 @@ package com.eddyizm.tempus.ui.fragment;
 
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,9 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @UnstableApi
@@ -61,6 +64,8 @@ public class DownloadFragment extends Fragment implements ClickCallback {
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
 
     private MaterialToolbar materialToolbar;
+
+    private final Map<Integer, String> groupByChips = new LinkedHashMap<>();
 
     private final ActivityResultLauncher<Uri> directoryPickerLauncher = registerForActivityResult(
             new ActivityResultContracts.OpenDocumentTree(),
@@ -141,14 +146,13 @@ public class DownloadFragment extends Fragment implements ClickCallback {
                     if (bind != null) {
                         bind.emptyDownloadLayout.setVisibility(View.VISIBLE);
                         bind.downloadDownloadedSector.setVisibility(View.GONE);
-                        bind.downloadedGroupByImageView.setVisibility(View.GONE);
                         bind.downloadFastScrollbar.setVisibility(View.GONE);
                     }
                 } else {
                     if (bind != null) {
                         bind.emptyDownloadLayout.setVisibility(View.GONE);
                         bind.downloadDownloadedSector.setVisibility(View.VISIBLE);
-                        bind.downloadedGroupByImageView.setVisibility(View.VISIBLE);
+                        bind.downloadedSummaryTextView.setText(summaryOf(songs));
 
                         finishDownloadView(songs);
                     }
@@ -176,7 +180,19 @@ public class DownloadFragment extends Fragment implements ClickCallback {
             }
         });
 
-        bind.downloadedGroupByImageView.setOnClickListener(view -> showPopupMenu(view, R.menu.download_popup_menu));
+        groupByChips.put(R.id.downloaded_group_by_track, Constants.DOWNLOAD_TYPE_TRACK);
+        groupByChips.put(R.id.downloaded_group_by_album, Constants.DOWNLOAD_TYPE_ALBUM);
+        groupByChips.put(R.id.downloaded_group_by_artist, Constants.DOWNLOAD_TYPE_ARTIST);
+        groupByChips.put(R.id.downloaded_group_by_genre, Constants.DOWNLOAD_TYPE_GENRE);
+        groupByChips.put(R.id.downloaded_group_by_year, Constants.DOWNLOAD_TYPE_YEAR);
+        groupByChips.put(R.id.downloaded_group_by_playlist, Constants.DOWNLOAD_TYPE_PLAYLIST);
+
+        // Clicks, not checked-state changes: the chip is also checked from code when the stack changes.
+        for (Map.Entry<Integer, String> chip : groupByChips.entrySet()) {
+            bind.downloadedGroupByChipGroup.findViewById(chip.getKey()).setOnClickListener(v -> setDownloadViewModel(chip.getValue()));
+        }
+
+        bind.downloadedMoreButton.setOnClickListener(view -> showPopupMenu(view, R.menu.download_popup_menu));
         bind.downloadedGoBackImageView.setOnClickListener(view -> downloadViewModel.popViewStack());
         bind.downloadedRefreshImageView.setOnClickListener(view -> downloadViewModel.refreshExternalDownloads());
     }
@@ -209,11 +225,30 @@ public class DownloadFragment extends Fragment implements ClickCallback {
             }
 
             bind.downloadFastScrollbar.setVisibility(downloadHorizontalAdapter.getItemCount() > 1 ? View.VISIBLE : View.GONE);
+            checkGroupByChip(stack.get(0).getId());
             bind.downloadedGoBackImageView.setVisibility(stack.size() > 1 ? View.VISIBLE : View.GONE);
 
             setupBackPressing(stack.size());
             setupShuffleButton();
         });
+    }
+
+    private void checkGroupByChip(String downloadType) {
+        for (Map.Entry<Integer, String> chip : groupByChips.entrySet()) {
+            if (chip.getValue().equals(downloadType)) bind.downloadedGroupByChipGroup.check(chip.getKey());
+        }
+    }
+
+    private String summaryOf(List<Child> songs) {
+        long bytes = 0;
+        for (Child song : songs) {
+            if (song.getSize() != null) bytes += song.getSize();
+        }
+
+        String count = getResources().getQuantityString(R.plurals.player_queue_song_count, songs.size(), songs.size());
+        if (bytes == 0) return count;
+
+        return getString(R.string.browse_meta_formatter, count, Formatter.formatShortFileSize(requireContext(), bytes));
     }
 
     private void setupShuffleButton() {
@@ -248,30 +283,6 @@ public class DownloadFragment extends Fragment implements ClickCallback {
         popup.getMenuInflater().inflate(menuResource, popup.getMenu());
 
         popup.setOnMenuItemClickListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.menu_download_group_by_track) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_TRACK);
-            }
-
-            if (menuItem.getItemId() == R.id.menu_download_group_by_album) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_ALBUM);
-            }
-
-            if (menuItem.getItemId() == R.id.menu_download_group_by_artist) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_ARTIST);
-            }
-
-            if (menuItem.getItemId() == R.id.menu_download_group_by_genre) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_GENRE);
-            }
-
-            if (menuItem.getItemId() == R.id.menu_download_group_by_year) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_YEAR);
-            }
-
-            if (menuItem.getItemId() == R.id.menu_download_group_by_playlist) {
-                return setDownloadViewModel(Constants.DOWNLOAD_TYPE_PLAYLIST);
-            }
-
             if (menuItem.getItemId() == R.id.menu_download_set_directory) {
                 directoryPickerLauncher.launch(null);
                 return true;

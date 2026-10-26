@@ -22,6 +22,8 @@ import com.eddyizm.tempus.subsonic.models.MusicFolder;
 import com.eddyizm.tempus.subsonic.models.Playlist;
 import com.eddyizm.tempus.util.Preferences;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,6 +42,10 @@ public class LibraryViewModel extends AndroidViewModel {
     private final MutableLiveData<List<AlbumID3>> sampleAlbum = new MutableLiveData<>(null);
     private final MutableLiveData<List<ArtistID3>> sampleArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Genre>> sampleGenres = new MutableLiveData<>(null);
+    private final MutableLiveData<Integer> albumCount = new MutableLiveData<>(null);
+    private final MutableLiveData<Integer> artistCount = new MutableLiveData<>(null);
+    private final MutableLiveData<Integer> genreCount = new MutableLiveData<>(null);
+    private final MutableLiveData<Integer> playlistCount = new MutableLiveData<>(null);
 
     private String cachedMusicFolderId = Preferences.getActiveMusicFolderId();
     private int musicFolderGeneration = 0;
@@ -67,6 +73,8 @@ public class LibraryViewModel extends AndroidViewModel {
 
         sampleAlbum.setValue(null);
         sampleArtist.setValue(null);
+        albumCount.setValue(null);
+        artistCount.setValue(null);
 
         return true;
     }
@@ -79,6 +87,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
         refreshAlbumSample(owner);
         refreshArtistSample(owner);
+        refreshArtistAndAlbumCount(owner);
     }
 
     /**
@@ -126,7 +135,7 @@ public class LibraryViewModel extends AndroidViewModel {
 
     public LiveData<List<Genre>> getGenreSample(LifecycleOwner owner) {
         if (sampleGenres.getValue() == null) {
-            genreRepository.getGenres(true, 15).observe(owner, sampleGenres::postValue);
+            refreshGenreSample(owner);
         }
 
         return sampleGenres;
@@ -134,10 +143,52 @@ public class LibraryViewModel extends AndroidViewModel {
 
     public LiveData<List<Playlist>> getPlaylistSample(LifecycleOwner owner) {
         if (playlistSample.getValue() == null) {
-            playlistRepository.getPlaylists(true, 10).observe(owner, playlistSample::postValue);
+            refreshPlaylistSample(owner);
         }
 
         return playlistSample;
+    }
+
+    /**
+     * Album total is the sum of the artists' album counts: the API has no album count of its own,
+     * and paging through getAlbumList2 to count would cost a request per 500 albums.
+     */
+    public LiveData<Integer> getAlbumCount(LifecycleOwner owner) {
+        if (albumCount.getValue() == null) refreshArtistAndAlbumCount(owner);
+        return albumCount;
+    }
+
+    public LiveData<Integer> getArtistCount(LifecycleOwner owner) {
+        if (artistCount.getValue() == null) refreshArtistAndAlbumCount(owner);
+        return artistCount;
+    }
+
+    public LiveData<Integer> getGenreCount() {
+        return genreCount;
+    }
+
+    public LiveData<Integer> getPlaylistCount() {
+        return playlistCount;
+    }
+
+    public void refreshArtistAndAlbumCount(LifecycleOwner owner) {
+        int generation = musicFolderGeneration;
+
+        artistRepository.getArtists(false, 0).observe(owner, artists -> {
+            if (generation != musicFolderGeneration || artists == null) return;
+
+            int albums = 0;
+            for (ArtistID3 artist : artists) albums += artist.getAlbumCount();
+
+            artistCount.setValue(artists.size());
+            albumCount.setValue(albums);
+        });
+    }
+
+    private static <T> List<T> sampleOf(List<T> items, int size) {
+        List<T> shuffled = new ArrayList<>(items);
+        Collections.shuffle(shuffled);
+        return shuffled.subList(0, Math.min(size, shuffled.size()));
     }
 
     public void refreshAlbumSample(LifecycleOwner owner) {
@@ -148,11 +199,19 @@ public class LibraryViewModel extends AndroidViewModel {
         artistRepository.getArtists(true, 10).observe(owner, setIfCurrentGeneration(sampleArtist));
     }
 
+    // The full lists are fetched and sampled here rather than by the repository, so the section
+    // headers can show the total.
     public void refreshGenreSample(LifecycleOwner owner) {
-        genreRepository.getGenres(true, 15).observe(owner, sampleGenres::postValue);
+        genreRepository.getGenres(false, -1).observe(owner, genres -> {
+            genreCount.postValue(genres.size());
+            sampleGenres.postValue(sampleOf(genres, 15));
+        });
     }
 
     public void refreshPlaylistSample(LifecycleOwner owner) {
-        playlistRepository.getPlaylists(true, 10).observe(owner, playlistSample::postValue);
+        playlistRepository.getPlaylists(false, 10).observe(owner, playlists -> {
+            playlistCount.postValue(playlists.size());
+            playlistSample.postValue(sampleOf(playlists, 10));
+        });
     }
 }

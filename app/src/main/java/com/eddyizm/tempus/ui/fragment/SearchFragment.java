@@ -2,6 +2,7 @@ package com.eddyizm.tempus.ui.fragment;
 
 import androidx.core.os.BundleCompat;
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,23 +24,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentSearchBinding;
-import com.eddyizm.tempus.helper.recyclerview.CustomLinearSnapHelper;
+import com.eddyizm.tempus.glide.CustomGlideRequest;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
+import com.eddyizm.tempus.subsonic.models.AlbumID3;
+import com.eddyizm.tempus.subsonic.models.ArtistID3;
 import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.subsonic.models.Playlist;
 import com.eddyizm.tempus.ui.activity.MainActivity;
-import com.eddyizm.tempus.ui.adapter.AlbumAdapter;
-import com.eddyizm.tempus.ui.adapter.ArtistAdapter;
+import com.eddyizm.tempus.ui.adapter.SearchResultAdapter;
 import com.eddyizm.tempus.ui.adapter.SongHorizontalAdapter;
 import com.eddyizm.tempus.ui.adapter.PlaylistHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
 import com.eddyizm.tempus.viewmodel.SearchViewModel;
 import com.eddyizm.tempus.subsonic.models.PlaylistWithSongs;
+import com.google.android.material.shape.RelativeCornerSize;
+import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +57,12 @@ public class SearchFragment extends Fragment implements ClickCallback {
     private SearchViewModel searchViewModel;
     private PlaybackViewModel playbackViewModel;
 
-    private ArtistAdapter artistAdapter;
-    private AlbumAdapter albumAdapter;
+    private SearchResultAdapter artistAdapter;
+    private SearchResultAdapter albumAdapter;
+
+    private List<ArtistID3> artists = Collections.emptyList();
+    private List<AlbumID3> albums = Collections.emptyList();
+    private List<Child> songs = Collections.emptyList();
     private SongHorizontalAdapter songHorizontalAdapter;
     private PlaylistHorizontalAdapter playlistHorizontalAdapter;
 
@@ -104,31 +113,19 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
 
     private void initSearchResultView() {
-        // Artists
-        bind.searchResultArtistRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        bind.searchResultArtistRecyclerView.setHasFixedSize(true);
-
-        artistAdapter = new ArtistAdapter(this, false, false);
+        bind.searchResultArtistRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        artistAdapter = SearchResultAdapter.forArtists(this);
         bind.searchResultArtistRecyclerView.setAdapter(artistAdapter);
 
-        CustomLinearSnapHelper artistSnapHelper = new CustomLinearSnapHelper();
-        artistSnapHelper.attachToRecyclerView(bind.searchResultArtistRecyclerView);
-
-        // Albums
-        bind.searchResultAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        bind.searchResultAlbumRecyclerView.setHasFixedSize(true);
-
-        albumAdapter = new AlbumAdapter(this);
+        bind.searchResultAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        albumAdapter = SearchResultAdapter.forAlbums(this);
         bind.searchResultAlbumRecyclerView.setAdapter(albumAdapter);
 
-        CustomLinearSnapHelper albumSnapHelper = new CustomLinearSnapHelper();
-        albumSnapHelper.attachToRecyclerView(bind.searchResultAlbumRecyclerView);
-
-        // Songs
         bind.searchResultTracksRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         bind.searchResultTracksRecyclerView.setHasFixedSize(true);
 
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, false, null);
+        songHorizontalAdapter.setShowKind(true);
         setMediaBrowserListenableFuture();
         reapplyPlayback();
 
@@ -139,6 +136,8 @@ public class SearchFragment extends Fragment implements ClickCallback {
 
         playlistHorizontalAdapter = new PlaylistHorizontalAdapter(this);
         bind.allsongsview.setAdapter(playlistHorizontalAdapter);
+
+        bind.searchFilterChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> showResult());
     }
 
     private void initSearchView() {
@@ -184,7 +183,14 @@ public class SearchFragment extends Fragment implements ClickCallback {
     public void setRecentSuggestions() {
         bind.searchViewSuggestionContainer.removeAllViews();
 
-        for (String suggestion : searchViewModel.getRecentSearchSuggestion()) {
+        List<String> recentSearches = searchViewModel.getRecentSearchSuggestion();
+        if (!recentSearches.isEmpty()) {
+            TextView header = new TextView(requireContext(), null, 0, R.style.Browse_Subheader);
+            header.setText(R.string.search_recent_title);
+            bind.searchViewSuggestionContainer.addView(header);
+        }
+
+        for (String suggestion : recentSearches) {
             View view = LayoutInflater.from(bind.searchViewSuggestionContainer.getContext()).inflate(R.layout.item_search_suggestion, bind.searchViewSuggestionContainer, false);
 
             ImageView leadingImageView = view.findViewById(R.id.search_suggestion_icon);
@@ -248,44 +254,89 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
     private void performSearch(String query) {
         searchViewModel.search3(this, query).observe(getViewLifecycleOwner(), result -> {
-            int sectionsThatMatchedTheQuery = 0;
-            if (bind != null) {
-                if (result.getArtists() != null) {
-                    bind.searchArtistSector.setVisibility(!result.getArtists().isEmpty() ? View.VISIBLE : View.GONE);
-                    artistAdapter.setItems(result.getArtists());
-                    sectionsThatMatchedTheQuery+=1;
-                } else {
-                    artistAdapter.setItems(Collections.emptyList());
-                    bind.searchArtistSector.setVisibility(View.GONE);
-                }
+            if (bind == null) return;
 
-                if (result.getAlbums() != null) {
-                    bind.searchAlbumSector.setVisibility(!result.getAlbums().isEmpty() ? View.VISIBLE : View.GONE);
-                    albumAdapter.setItems(result.getAlbums());
-                    sectionsThatMatchedTheQuery+=1;
-                } else {
-                    albumAdapter.setItems(Collections.emptyList());
-                    bind.searchAlbumSector.setVisibility(View.GONE);
-                }
+            artists = result.getArtists() != null ? result.getArtists() : Collections.emptyList();
+            albums = result.getAlbums() != null ? result.getAlbums() : Collections.emptyList();
+            songs = result.getSongs() != null ? result.getSongs() : Collections.emptyList();
 
-                if (result.getSongs() != null) {
-                    bind.searchSongSector.setVisibility(!result.getSongs().isEmpty() ? View.VISIBLE : View.GONE);
-                    songHorizontalAdapter.setItems(result.getSongs());
-                    sectionsThatMatchedTheQuery+=1;
-                } else {
-                    songHorizontalAdapter.setItems(Collections.emptyList());
-                    bind.searchSongSector.setVisibility(View.GONE);
-                }
+            artistAdapter.setItems(artists);
+            albumAdapter.setItems(albums);
+            songHorizontalAdapter.setItems(songs);
 
-                if (sectionsThatMatchedTheQuery == 0) {
-                    bind.emptyResponseContainer.setVisibility(View.VISIBLE);
-                } else {
-                    bind.emptyResponseContainer.setVisibility(View.GONE);
-                }
-            }
+            bind.searchFilterContainer.setVisibility(View.VISIBLE);
+            showResult();
         });
 
         bind.searchResultLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showResult() {
+        if (bind == null) return;
+
+        int checked = bind.searchFilterChipGroup.getCheckedChipId();
+        boolean all = checked == R.id.search_filter_all;
+        boolean showArtists = (all || checked == R.id.search_filter_artists) && !artists.isEmpty();
+        boolean showAlbums = (all || checked == R.id.search_filter_albums) && !albums.isEmpty();
+        boolean showSongs = (all || checked == R.id.search_filter_songs) && !songs.isEmpty();
+
+        bind.searchArtistSector.setVisibility(showArtists ? View.VISIBLE : View.GONE);
+        bind.searchAlbumSector.setVisibility(showAlbums ? View.VISIBLE : View.GONE);
+        bind.searchSongSector.setVisibility(showSongs ? View.VISIBLE : View.GONE);
+        bind.emptyResponseContainer.setVisibility(showArtists || showAlbums || showSongs ? View.GONE : View.VISIBLE);
+
+        showTopResult(all);
+    }
+
+    /**
+     * The best match is the first artist, else the first album, else the first song: the server
+     * ranks within each kind only, and a query that names an artist most likely means the artist.
+     */
+    private void showTopResult(boolean all) {
+        if (!all || (artists.isEmpty() && albums.isEmpty() && songs.isEmpty())) {
+            bind.searchTopResultCard.setVisibility(View.GONE);
+            return;
+        }
+
+        Context context = requireContext();
+        ShapeAppearanceModel tile = ShapeAppearanceModel.builder(context, 0, R.style.ShapeAppearance_Browse_Tile).build();
+        bind.searchTopResultCard.setVisibility(View.VISIBLE);
+
+        if (!artists.isEmpty()) {
+            ArtistID3 artist = artists.get(0);
+            bind.searchTopResultTitle.setText(artist.getName());
+            bind.searchTopResultKind.setText(SearchResultAdapter.artistKind(context));
+            bind.searchTopResultCover.setShapeAppearanceModel(tile.withCornerSize(new RelativeCornerSize(0.5f)));
+            CustomGlideRequest.Builder.from(context, artist.getCoverArtId(), CustomGlideRequest.ResourceType.Artist).build().into(bind.searchTopResultCover);
+            bind.searchTopResultCard.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Constants.ARTIST_OBJECT, artist.strippedForNav());
+                onArtistClick(bundle);
+            });
+        } else if (!albums.isEmpty()) {
+            AlbumID3 album = albums.get(0);
+            bind.searchTopResultTitle.setText(album.getName());
+            bind.searchTopResultKind.setText(SearchResultAdapter.albumKind(context, album));
+            bind.searchTopResultCover.setShapeAppearanceModel(tile);
+            CustomGlideRequest.Builder.from(context, album.getCoverArtId(), CustomGlideRequest.ResourceType.Album).build().into(bind.searchTopResultCover);
+            bind.searchTopResultCard.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Constants.ALBUM_OBJECT, album.strippedForNav());
+                onAlbumClick(bundle);
+            });
+        } else {
+            Child song = songs.get(0);
+            bind.searchTopResultTitle.setText(song.getTitle());
+            bind.searchTopResultKind.setText(getString(R.string.search_result_song, song.getArtist()));
+            bind.searchTopResultCover.setShapeAppearanceModel(tile);
+            CustomGlideRequest.Builder.from(context, song.getCoverArtId(), CustomGlideRequest.ResourceType.Song).build().into(bind.searchTopResultCover);
+            bind.searchTopResultCard.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, new ArrayList<>(Collections.singletonList(song)));
+                bundle.putInt(Constants.ITEM_POSITION, 0);
+                onMediaClick(bundle);
+            });
+        }
     }
 
     private boolean isQueryValid(String query) {

@@ -126,8 +126,10 @@ public class HomeTabPodcastFragment extends Fragment implements ClickCallback, P
             if (podcastChannels == null) {
                 if (bind != null) bind.homePodcastChannelsSector.setVisibility(View.GONE);
             } else {
-                if (bind != null)
+                if (bind != null) {
                     bind.homePodcastChannelsSector.setVisibility(!podcastChannels.isEmpty() ? View.VISIBLE : View.GONE);
+                    bind.podcastChannelsTextViewClickable.setVisibility(!podcastChannels.isEmpty() ? View.VISIBLE : View.GONE);
+                }
 
                 podcastChannelHorizontalAdapter.setItems(podcastChannels);
             }

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Browse.ScreenTitle" parent="InterFontFamily">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Browse" />
+
+    <style name="Browse.SectionHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingEnd">4dp</item>
+    </style>
+
+    <style name="Browse.SectionTitle" parent="InterFontFamily">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Browse.SectionCount" parent="InterFontFamily">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">6dp</item>
+    </style>
+
+    <style name="Browse.SectionSupporting" parent="InterFontFamily">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+
+    <style name="Browse.Subheader" parent="InterFontFamily">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Browse.SeeAll" parent="InterFontFamily">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:drawableEnd">@drawable/ic_navigate_next</item>
+        <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="Browse.ActionButton" parent="Widget.Material3.Button.TextButton.Icon">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="rippleColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Browse.IconButton" parent="Widget.Material3.Button.IconButton">
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="iconSize">20dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Browse.TabChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/browse_tab_chip_background</item>
+        <item name="android:textColor">@color/browse_tab_chip_text</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Browse.Pill</item>
+        <item name="android:textAppearance">@style/Browse.ChipText</item>
+    </style>
+
+    <style name="Browse.FilterChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/browse_filter_chip_background</item>
+        <item name="android:textColor">@color/browse_filter_chip_text</item>
+        <item name="chipStrokeColor">@color/browse_filter_chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="checkedIconTint">?attr/colorOnSecondaryContainer</item>
+        <item name="android:textAppearance">@style/Browse.ChipText</item>
+    </style>
+
+    <style name="Browse.AnchorChip" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Browse.Pill</item>
+        <item name="android:textAppearance">@style/Browse.ChipText</item>
+    </style>
+
+    <style name="Browse.ChipText" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/inter</item>
+    </style>
+
+    <style name="ShapeAppearance.Browse.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Browse.Tile" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Browse.RowCover" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">6dp</item>
+    </style>
+
+    <style name="Browse.RowTitle" parent="InterFontFamily">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight" tools:targetApi="28">500</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Browse.RowSubtitle" parent="InterFontFamily">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+</resources>

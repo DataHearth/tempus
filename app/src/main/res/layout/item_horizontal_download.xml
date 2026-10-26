@@ -1,88 +1,126 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipChildren="false"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
-        <TextView
-            android:id="@+id/downloaded_item_pre_text_view"
-            style="@style/LabelExtraSmall"
-            android:layout_width="wrap_content"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/downloaded_item_header_cover"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Browse.RowCover" />
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <View
-            style="@style/Divider"
-            android:layout_gravity="center_vertical" />
+            <TextView
+                android:id="@+id/downloaded_item_pre_text_view"
+                style="@style/Browse.RowTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                tools:text="Fortitude" />
+
+            <TextView
+                android:id="@+id/downloaded_item_header_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/inter"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                tools:text="Gojira · 4 songs" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/downloaded_item_header_play"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/album_page_play_button"
+            app:icon="@drawable/ic_play_circle"
+            app:iconSize="32dp"
+            app:iconTint="?attr/colorOnSurface" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/item_cover_image_view"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintEnd_toStartOf="@id/downloaded_item_title_text_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
-
-    <TextView
-        android:id="@+id/downloaded_item_title_text_view"
-        style="@style/LabelMedium"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/downloaded_item_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:paddingEnd="12dp"
-        android:singleLine="true"
-        android:text="@string/label_placeholder"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintEnd_toStartOf="@+id/downloaded_item_more_button"
-        app:layout_constraintStart_toEndOf="@+id/item_cover_image_view"
-        app:layout_constraintTop_toTopOf="@+id/item_cover_image_view"
-        app:layout_constraintBottom_toTopOf="@id/downloaded_item_subtitle_text_view"/>
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:minHeight="56dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp">
 
-    <TextView
-        android:id="@+id/downloaded_item_subtitle_text_view"
-        style="@style/LabelSmall"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:paddingEnd="12dp"
-        android:paddingBottom="6dp"
-        android:singleLine="true"
-        android:text="@string/label_placeholder"
-        app:layout_constraintTop_toBottomOf="@id/downloaded_item_title_text_view"
-        app:layout_constraintEnd_toStartOf="@+id/downloaded_item_more_button"
-        app:layout_constraintStart_toStartOf="@+id/downloaded_item_title_text_view"
-        app:layout_constraintBottom_toBottomOf="@+id/item_cover_image_view" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/item_cover_image_view"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="12dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Browse.RowCover" />
 
-    <FrameLayout
-        android:id="@+id/downloaded_item_more_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingVertical="12dp"
-        android:paddingStart="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/item_cover_image_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/item_cover_image_view" >
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:background="@drawable/ic_more_vert"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless" />
-    </FrameLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/downloaded_item_title_text_view"
+                style="@style/Browse.RowTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/label_placeholder" />
+
+            <TextView
+                android:id="@+id/downloaded_item_subtitle_text_view"
+                style="@style/Browse.RowSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/label_placeholder" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/downloaded_item_more_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_description_more_options">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_more_vert"
+                app:tint="?attr/colorOnSurfaceVariant" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

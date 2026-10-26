@@ -59,69 +59,138 @@
             android:text="@string/download_info_empty_subtitle" />
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/download_downloaded_sector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
+        android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/downloaded_text_view_refreshable"
-            style="@style/TitleLarge"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/download_title_section"
-            app:layout_constraintEnd_toStartOf="@+id/downloaded_refresh_image_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/shuffle_downloaded_text_view_clickable"
-            style="@style/TitleMedium"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/download_shuffle_all_subtitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/downloaded_text_view_refreshable" />
+            android:scrollbars="none">
 
-        <ImageView
-            android:id="@+id/downloaded_refresh_image_view"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/ic_refresh"
-            android:contentDescription="@string/download_refresh_button_content_description"
-            app:layout_constraintBottom_toBottomOf="@+id/downloaded_text_view_refreshable"
-            app:layout_constraintEnd_toStartOf="@id/downloaded_go_back_image_view"
-            app:layout_constraintStart_toEndOf="@id/downloaded_text_view_refreshable"
-            app:layout_constraintTop_toTopOf="@+id/downloaded_text_view_refreshable" />
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/downloaded_group_by_chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="16dp"
+                app:chipSpacingHorizontal="8dp"
+                app:selectionRequired="true"
+                app:singleLine="true"
+                app:singleSelection="true">
 
-        <ImageView
-            android:id="@+id/downloaded_go_back_image_view"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:background="@drawable/ic_arrow_back"
-            app:layout_constraintBottom_toBottomOf="@+id/downloaded_text_view_refreshable"
-            app:layout_constraintEnd_toStartOf="@id/downloaded_group_by_image_view"
-            app:layout_constraintStart_toEndOf="@id/downloaded_refresh_image_view"
-            app:layout_constraintTop_toTopOf="@+id/downloaded_text_view_refreshable" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_track"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_track"
+                    app:checkedIconVisible="false" />
 
-        <ImageView
-            android:id="@+id/downloaded_group_by_image_view"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_filter_list"
-            app:layout_constraintBottom_toBottomOf="@+id/downloaded_text_view_refreshable"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/downloaded_text_view_refreshable" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_album"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_album"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_artist"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_artist"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_genre"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_genre"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_year"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_year"
+                    app:checkedIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/downloaded_group_by_playlist"
+                    style="@style/Browse.FilterChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_group_by_playlist"
+                    app:checkedIconVisible="false" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <Button
+                android:id="@+id/downloaded_go_back_image_view"
+                style="@style/Browse.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/download_go_back_content_description"
+                android:visibility="gone"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconTint="?attr/colorOnSurface"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/downloaded_summary_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/inter"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+                tools:text="10 songs · 61 MB" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/shuffle_downloaded_text_view_clickable"
+                style="@style/Browse.ActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/download_shuffle_all_subtitle"
+                app:icon="@drawable/ic_shuffle" />
+
+            <Button
+                android:id="@+id/downloaded_refresh_image_view"
+                style="@style/Browse.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/download_refresh_button_content_description"
+                app:icon="@drawable/ic_refresh" />
+
+            <Button
+                android:id="@+id/downloaded_more_button"
+                style="@style/Browse.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/content_description_more_options"
+                app:icon="@drawable/ic_more_vert" />
+        </LinearLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -133,9 +202,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingStart="12dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="36dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="20dp"
             android:paddingBottom="@dimen/global_padding_bottom" />
 
         <com.eddyizm.tempus.helper.recyclerview.FastScrollbar

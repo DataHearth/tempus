@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,42 +7,40 @@
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingRight="16dp"
-    android:paddingBottom="16dp">
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="4dp">
 
     <ImageView
         android:id="@+id/search_suggestion_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/ic_history"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurfaceVariant"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/search_suggestion_title"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/inter"
+        android:maxLines="1"
         android:text="@string/label_placeholder"
-        android:textAppearance="?attr/textAppearanceBody2"
-        app:layout_constraintBottom_toBottomOf="@id/search_suggestion_icon"
-        app:layout_constraintEnd_toStartOf="@id/search_suggestion_delete_icon"
-        app:layout_constraintStart_toEndOf="@id/search_suggestion_icon"
-        app:layout_constraintTop_toTopOf="@id/search_suggestion_icon" />
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/search_suggestion_delete_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="?selectableItemBackgroundBorderless"
+        android:padding="14dp"
         android:src="@drawable/ic_close"
-        app:layout_constraintBottom_toBottomOf="@id/search_suggestion_icon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/search_suggestion_title"
-        app:layout_constraintTop_toTopOf="@id/search_suggestion_icon"
+        app:tint="?attr/colorOnSurfaceVariant"
         tools:ignore="ContentDescription" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

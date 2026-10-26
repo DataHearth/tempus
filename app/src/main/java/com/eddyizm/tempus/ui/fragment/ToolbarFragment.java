@@ -89,7 +89,26 @@ public class ToolbarFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initTitle();
         initMusicLibrarySwitcher();
+    }
+
+    /**
+     * The brand bar belongs to Home; every other host names itself so the screen says where you are.
+     */
+    private void initTitle() {
+        Fragment parent = getParentFragment();
+        boolean isHome = parent instanceof HomeFragment;
+
+        bind.toolbarLogo.setVisibility(isHome ? View.VISIBLE : View.GONE);
+
+        if (parent instanceof LibraryFragment) {
+            bind.toolbarTitle.setText(R.string.menu_library_label);
+        } else if (parent instanceof DownloadFragment) {
+            bind.toolbarTitle.setText(R.string.download_title_section);
+        } else {
+            bind.toolbarTitle.setText(R.string.app_name);
+        }
     }
 
     @Override

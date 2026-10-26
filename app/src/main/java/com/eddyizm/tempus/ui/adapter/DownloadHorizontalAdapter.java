@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -276,8 +277,6 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
                 )
         );
 
-        holder.item.downloadedItemPreTextView.setText(song.getAlbum());
-
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), song.getCoverArtId(), CustomGlideRequest.ResourceType.Song)
                 .build()
@@ -285,13 +284,49 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
 
         holder.item.itemCoverImageView.setVisibility(View.VISIBLE);
         holder.item.downloadedItemMoreButton.setVisibility(View.VISIBLE);
-        holder.item.divider.setVisibility(View.VISIBLE);
 
-        if (position > 0 && grouped.get(position - 1) != null && !sameAlbum(grouped.get(position - 1), grouped.get(position))) {
-            holder.item.divider.setPadding(0, (int) holder.itemView.getContext().getResources().getDimension(R.dimen.downloaded_item_padding), 0, 0);
-        } else {
-            if (position > 0) holder.item.divider.setVisibility(View.GONE);
+        boolean startsAlbum = position == 0 || grouped.get(position - 1) == null || !sameAlbum(grouped.get(position - 1), song);
+        bindGroupHeader(holder, position, startsAlbum);
+
+        if (startsAlbum) {
+            Context context = holder.itemView.getContext();
+            int count = albumRunFrom(position).size();
+
+            holder.item.downloadedItemPreTextView.setText(song.getAlbum());
+            holder.item.downloadedItemHeaderMeta.setText(context.getString(R.string.browse_meta_formatter,
+                    albumArtistOrArtist(song),
+                    context.getResources().getQuantityString(R.plurals.player_queue_song_count, count, count)));
+            holder.item.downloadedItemHeaderMeta.setVisibility(View.VISIBLE);
+            holder.item.downloadedItemHeaderCover.setVisibility(View.VISIBLE);
+            holder.item.downloadedItemHeaderPlay.setVisibility(View.VISIBLE);
+
+            CustomGlideRequest.Builder
+                    .from(context, song.getCoverArtId(), CustomGlideRequest.ResourceType.Song)
+                    .build()
+                    .into(holder.item.downloadedItemHeaderCover);
         }
+    }
+
+    /**
+     * Album and track views split their rows into groups; the header sits above the first row of
+     * each and leaves a gap from the group before it.
+     */
+    private void bindGroupHeader(ViewHolder holder, int position, boolean visible) {
+        holder.item.divider.setVisibility(visible ? View.VISIBLE : View.GONE);
+        if (!visible) return;
+
+        int top = position == 0 ? 0 : holder.itemView.getResources().getDimensionPixelSize(R.dimen.downloaded_item_padding);
+        holder.item.divider.setPadding(holder.item.divider.getPaddingStart(), top, holder.item.divider.getPaddingEnd(), holder.item.divider.getPaddingBottom());
+    }
+
+    // Tracks arrive sorted, so an album's tracks are the consecutive run that starts with it.
+    private List<Child> albumRunFrom(int position) {
+        List<Child> run = new ArrayList<>();
+        Child first = grouped.get(position);
+        for (int i = position; i < grouped.size() && grouped.get(i) != null && sameAlbum(first, grouped.get(i)); i++) {
+            run.add(grouped.get(i));
+        }
+        return run;
     }
 
     private static String albumArtistOrNull(Child song) {
@@ -331,7 +366,6 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
 
         holder.item.downloadedItemTitleTextView.setText(song.getAlbum());
         holder.item.downloadedItemSubtitleTextView.setText(holder.itemView.getContext().getString(R.string.download_item_single_subtitle_formatter, countSong(Constants.DOWNLOAD_TYPE_ALBUM, song.getAlbumId(), songs)));
-        holder.item.downloadedItemPreTextView.setText(albumArtistOrArtist(song));
 
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), song.getCoverArtId(), CustomGlideRequest.ResourceType.Song)
@@ -340,12 +374,15 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
 
         holder.item.itemCoverImageView.setVisibility(View.VISIBLE);
         holder.item.downloadedItemMoreButton.setVisibility(View.VISIBLE);
-        holder.item.divider.setVisibility(View.VISIBLE);
 
-        if (position > 0 && grouped.get(position - 1) != null && !sameAlbumGroup(grouped.get(position - 1), grouped.get(position))) {
-            holder.item.divider.setPadding(0, (int) holder.itemView.getContext().getResources().getDimension(R.dimen.downloaded_item_padding), 0, 0);
-        } else {
-            if (position > 0) holder.item.divider.setVisibility(View.GONE);
+        boolean startsArtist = position == 0 || grouped.get(position - 1) == null || !sameAlbumGroup(grouped.get(position - 1), song);
+        bindGroupHeader(holder, position, startsArtist);
+
+        if (startsArtist) {
+            holder.item.downloadedItemPreTextView.setText(albumArtistOrArtist(song));
+            holder.item.downloadedItemHeaderMeta.setVisibility(View.GONE);
+            holder.item.downloadedItemHeaderCover.setVisibility(View.GONE);
+            holder.item.downloadedItemHeaderPlay.setVisibility(View.GONE);
         }
     }
 
@@ -434,10 +471,21 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
             item.downloadedItemTitleTextView.setSelected(true);
             item.downloadedItemSubtitleTextView.setSelected(true);
 
-            itemView.setOnClickListener(v -> onClick());
-            itemView.setOnLongClickListener(v -> onLongClick());
+            item.downloadedItemRow.setOnClickListener(v -> onClick());
+            item.downloadedItemRow.setOnLongClickListener(v -> onLongClick());
 
             item.downloadedItemMoreButton.setOnClickListener(v -> onLongClick());
+            item.downloadedItemHeaderPlay.setOnClickListener(v -> playAlbum());
+        }
+
+        private void playAlbum() {
+            int position = getBindingAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return;
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, new ArrayList<>(albumRunFrom(position)));
+            bundle.putInt(Constants.ITEM_POSITION, 0);
+            click.onMediaClick(bundle);
         }
 
         public void onClick() {

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.ItemLibraryGenreBinding;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.subsonic.models.Genre;
@@ -38,6 +39,8 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
         Genre genre = genres.get(position);
 
         holder.item.genreLabel.setText(genre.getGenre());
+        holder.item.genreMetaLabel.setText(holder.itemView.getContext().getResources()
+                .getQuantityString(R.plurals.player_queue_song_count, genre.getSongCount(), genre.getSongCount()));
     }
 
     @Override

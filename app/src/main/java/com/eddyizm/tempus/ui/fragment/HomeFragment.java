@@ -19,8 +19,8 @@ import com.eddyizm.tempus.ui.fragment.pager.HomePager;
 import com.eddyizm.tempus.util.Preferences;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
 
     private MaterialToolbar materialToolbar;
     private AppBarLayout appBarLayout;
-    private TabLayout tabLayout;
+    private ChipGroup tabChipGroup;
 
     @Nullable
     @Override
@@ -76,11 +76,8 @@ public class HomeFragment extends Fragment {
 
         Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
 
-        tabLayout = new TabLayout(requireContext());
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-
-        appBarLayout.addView(tabLayout);
+        tabChipGroup = (ChipGroup) getLayoutInflater().inflate(R.layout.view_home_tab_chips, appBarLayout, false);
+        appBarLayout.addView(tabChipGroup);
     }
 
     private void initHomePager() {
@@ -98,18 +95,22 @@ public class HomeFragment extends Fragment {
         bind.homeViewPager.setOffscreenPageLimit(3);
         bind.homeViewPager.setUserInputEnabled(false);
 
-        new TabLayoutMediator(tabLayout, bind.homeViewPager,
-                (tab, position) -> {
-                    tab.setText(pager.getPageTitle(position));
-                    // tab.setIcon(pager.getPageIcon(position));
-                }
-        ).attach();
+        for (int position = 0; position < pager.getItemCount(); position++) {
+            Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_home_tab_chip, tabChipGroup, false);
+            chip.setId(View.generateViewId());
+            chip.setText(pager.getPageTitle(position));
+            int page = position;
+            chip.setOnClickListener(v -> bind.homeViewPager.setCurrentItem(page, false));
+            tabChipGroup.addView(chip);
+        }
+        tabChipGroup.check(tabChipGroup.getChildAt(bind.homeViewPager.getCurrentItem()).getId());
 
-        tabLayout.setVisibility(Preferences.isPodcastSectionVisible() || Preferences.isRadioSectionVisible() ? View.VISIBLE : View.GONE);
+        tabChipGroup.setVisibility(Preferences.isPodcastSectionVisible() || Preferences.isRadioSectionVisible() ? View.VISIBLE : View.GONE);
 
         bind.homeViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                tabChipGroup.check(tabChipGroup.getChildAt(position).getId());
                 refreshToolbarLibraryScope();
             }
         });

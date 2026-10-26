@@ -38,8 +38,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:elevation="0dp"
-            android:background="?attr/colorSurface"
-            app:menu="@menu/bottom_nav_menu" />
+            android:background="@drawable/bg_bottom_navigation_tinted"            app:menu="@menu/bottom_nav_menu" />
 
         <TextView
             android:id="@+id/offline_mode_text_view"

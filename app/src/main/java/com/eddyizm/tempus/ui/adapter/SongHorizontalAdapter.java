@@ -50,6 +50,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private final boolean showAlbum;
     private final AlbumID3 album;
     private boolean showRowNumbers;
+    private boolean showKind = false;
 
     private List<Child> songsFull;
     private final AsyncListDiffer<Child> differ = new AsyncListDiffer<>(this, new DiffUtil.ItemCallback<Child>() {
@@ -123,6 +124,13 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         }
     }
 
+    /**
+     * Search mixes songs with albums and artists, so its rows lead with what they are.
+     */
+    public void setShowKind(boolean showKind) {
+        this.showKind = showKind;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -152,7 +160,10 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         holder.item.searchResultSongTitleTextView.setText(song.getTitle());
 
-        if (showCoverArt) {
+        if (showKind) {
+            holder.item.searchResultSongSubtitleTextView.setText(
+                    holder.itemView.getContext().getString(R.string.search_result_song, song.getArtist()));
+        } else if (showCoverArt) {
             holder.item.searchResultSongSubtitleTextView.setText(
                     holder.itemView.getContext().getString(
                             R.string.song_subtitle_formatter,

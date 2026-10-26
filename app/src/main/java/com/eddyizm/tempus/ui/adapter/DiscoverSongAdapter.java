@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.eddyizm.tempus.databinding.ItemHomeDiscoverSongBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.util.Constants;
@@ -24,6 +25,9 @@ public class DiscoverSongAdapter extends RecyclerView.Adapter<DiscoverSongAdapte
     private final ClickCallback click;
 
     private List<Child> songs;
+
+    private static final int CARD_WIDTH_DP = 260;
+    private static final int ART_HEIGHT_DP = 146;
 
     private int widthPx = 800;
     private int heightPx = 400;
@@ -39,8 +43,8 @@ public class DiscoverSongAdapter extends RecyclerView.Adapter<DiscoverSongAdapte
         ItemHomeDiscoverSongBinding view = ItemHomeDiscoverSongBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 
         TileSizeManager.getInstance().calculateDiscoverSize(parent.getContext());
-        widthPx  = TileSizeManager.getInstance().getDiscoverWidthPx(parent.getContext());;
-        heightPx = TileSizeManager.getInstance().getDiscoverHeightPx(parent.getContext());;
+        widthPx = Math.min(TileSizeManager.getInstance().getDiscoverWidthPx(parent.getContext()), TileSizeManager.dpToPx(parent.getContext(), CARD_WIDTH_DP));
+        heightPx = widthPx * ART_HEIGHT_DP / CARD_WIDTH_DP;
 
         return new ViewHolder(view);
     }
@@ -55,7 +59,16 @@ public class DiscoverSongAdapter extends RecyclerView.Adapter<DiscoverSongAdapte
         Child song = songs.get(position);
 
         holder.item.titleDiscoverSongLabel.setText(song.getTitle());
-        holder.item.albumDiscoverSongLabel.setText(song.getAlbum());
+        holder.item.albumDiscoverSongLabel.setText(song.getArtist());
+
+        // A recycled holder can still have a load running for its previous song.
+        String coverArtId = song.getCoverArtId();
+        holder.itemView.setTag(coverArtId);
+        CoverTint.load(holder.itemView.getContext(), coverArtId, tint -> {
+            if (java.util.Objects.equals(holder.itemView.getTag(), coverArtId)) {
+                holder.item.discoverSongCard.setCardBackgroundColor(tint.getBand());
+            }
+        });
 
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), song.getCoverArtId(), CustomGlideRequest.ResourceType.Song)
