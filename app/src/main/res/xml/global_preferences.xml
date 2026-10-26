@@ -1,6 +1,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_general">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_general_category_key"
+        android:icon="@drawable/ic_settings_tune"
+        app:summary="@string/settings_general_category_summary"
+        app:title="@string/settings_title_general">
         <Preference
             android:key="logout"
             android:title="@string/settings_logout_title"/>
@@ -30,7 +34,15 @@
             android:title="@string/settings_permissions"/>
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_ui">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_ui_category_key"
+        android:icon="@drawable/ic_settings_palette"
+        app:summary="@string/settings_ui_category_summary"
+        app:title="@string/settings_title_ui">
+        <Preference
+            app:selectable="false"
+            app:summary="@string/settings_ui_restart_note" />
+
         <ListPreference
             android:layout_height="match_parent"
             app:defaultValue="default"
@@ -156,7 +168,11 @@
             android:key="sort_search_chronologically" />
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_sound">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_sound_category_key"
+        android:icon="@drawable/ic_graphic_eq"
+        app:summary="@string/settings_sound_category_summary"
+        app:title="@string/settings_title_sound">
 
         <PreferenceCategory app:title="@string/settings_title_equalizer">
             <ListPreference
@@ -227,7 +243,11 @@
         </PreferenceCategory>
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_players">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_players_category_key"
+        android:icon="@drawable/ic_settings_play_circle"
+        app:summary="@string/settings_players_category_summary"
+        app:title="@string/settings_title_players">
         <SwitchPreference
             android:title="@string/settings_continuous_play_title"
             android:defaultValue="true"
@@ -281,7 +301,29 @@
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_playlist_category_key"
+        android:icon="@drawable/ic_queue"
+        app:summary="@string/settings_playlist_category_summary"
+        app:title="@string/settings_title_playlist">
+        <SwitchPreference
+            android:title="@string/settings_allow_playlist_duplicates"
+            android:defaultValue="false"
+            android:summary="@string/settings_allow_playlist_duplicates_summary"
+            android:key="allow_playlist_duplicates" />
+        <ListPreference
+            app:defaultValue="ORDER_BY_NAME"
+            app:dialogTitle="@string/settings_playlist_sort"
+            app:entries="@array/playlist_sort_option_titles"
+            app:entryValues="@array/playlist_sort_option_values"
+            app:key="home_sort_playlists"
+            app:title="@string/settings_playlist_sort"
+            app:useSimpleSummaryProvider="true" />
+    </com.eddyizm.tempus.util.ClickablePreferenceCategory>
+
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="network_playback"
+        android:icon="@drawable/ic_settings_cast"
+        app:summary="@string/settings_network_playback_category_summary"
         app:title="@string/settings_network_playback_title">
 
         <SwitchPreference
@@ -300,26 +342,15 @@
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="lan_playback"
-        android:title="@string/lan_title"
-        android:icon="@drawable/ic_navigate_next" />
+        android:icon="@drawable/ic_lan_remote"
+        app:summary="@string/settings_lan_playback_category_summary"
+        app:title="@string/lan_title" />
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_playlist">
-        <SwitchPreference
-            android:title="@string/settings_allow_playlist_duplicates"
-            android:defaultValue="false"
-            android:summary="@string/settings_allow_playlist_duplicates_summary"
-            android:key="allow_playlist_duplicates" />
-        <ListPreference
-            app:defaultValue="ORDER_BY_NAME"
-            app:dialogTitle="@string/settings_playlist_sort"
-            app:entries="@array/playlist_sort_option_titles"
-            app:entryValues="@array/playlist_sort_option_values"
-            app:key="home_sort_playlists"
-            app:title="@string/settings_playlist_sort"
-            app:useSimpleSummaryProvider="true" />
-    </com.eddyizm.tempus.util.ClickablePreferenceCategory>
-
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_data">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_data_category_key"
+        android:icon="@drawable/ic_settings_storage"
+        app:summary="@string/settings_data_category_summary"
+        app:title="@string/settings_title_data">
         <ListPreference
             app:defaultValue="256"
             app:dialogTitle="@string/settings_streaming_cache_size"
@@ -428,7 +459,11 @@
             app:summary="@string/settings_delete_download_storage_summary"/>
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_transcoding">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_transcoding_category_key"
+        android:icon="@drawable/ic_transcode"
+        app:summary="@string/settings_transcoding_category_summary"
+        app:title="@string/settings_title_transcoding">
         <Preference
             app:selectable="false"
             app:summary="@string/settings_summary_transcoding" />
@@ -512,7 +547,11 @@
         </PreferenceCategory>
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_title_misc">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_misc_category_key"
+        android:icon="@drawable/ic_settings_more"
+        app:summary="@string/settings_misc_category_summary"
+        app:title="@string/settings_title_misc">
         <PreferenceCategory app:title="@string/settings_title_scrobble">
             <Preference
                 app:selectable="false"
@@ -554,6 +593,8 @@
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="settings_androidauto_category_key"
+        android:icon="@drawable/ic_settings_car"
+        app:summary="@string/settings_androidauto_category_summary"
         app:title="@string/settings_androidauto">
         <Preference
             app:selectable="false"
@@ -652,6 +693,8 @@
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="settings_github_update_category_key"
+        android:icon="@drawable/ic_settings_update"
+        app:summary="@string/settings_github_update_category_summary"
         app:title="@string/settings_github_update">
         <Preference
             app:selectable="false"
@@ -662,7 +705,11 @@
             android:key="github_update_check" />
     </com.eddyizm.tempus.util.ClickablePreferenceCategory>
 
-    <com.eddyizm.tempus.util.ClickablePreferenceCategory app:title="@string/settings_about_title">
+    <com.eddyizm.tempus.util.ClickablePreferenceCategory
+        android:key="settings_about_category_key"
+        android:icon="@drawable/ic_info_stream"
+        app:summary="@string/settings_about_category_summary"
+        app:title="@string/settings_about_title">
         <Preference
             app:selectable="false"
             app:summary="@string/settings_about_summary" />

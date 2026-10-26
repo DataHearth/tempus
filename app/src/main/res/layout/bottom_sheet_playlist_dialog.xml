@@ -1,130 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:clipChildren="false">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="12dp">
 
-        <!-- Header -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/playlist_cover_image_view"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:layout_margin="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            style="@style/BottomSheetHeaderCover" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/playlist_title_text_view"
+                style="@style/BottomSheetHeaderTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/label_placeholder" />
+
+            <TextView
+                android:id="@+id/playlist_count_text_view"
+                style="@style/BottomSheetHeaderSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/label_placeholder" />
+        </LinearLayout>
 
         <ToggleButton
             android:id="@+id/button_favorite"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/button_favorite_selector"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/button_favorite_inset"
             android:checked="false"
+            android:contentDescription="@string/favorite_icon_description"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:gravity="center_vertical"
             android:text=""
             android:textOff=""
             android:textOn=""
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/playlist_title_text_view"
-            style="@style/LabelMedium"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ellipsize="marquee"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:singleLine="true"
-            android:text="@string/label_placeholder"
-            app:layout_constraintEnd_toStartOf="@id/button_favorite"
-            app:layout_constraintStart_toEndOf="@+id/playlist_cover_image_view"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/playlist_count_text_view"
-            style="@style/LabelSmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="@string/label_placeholder"
-            app:layout_constraintEnd_toStartOf="@id/button_favorite"
-            app:layout_constraintStart_toEndOf="@+id/playlist_cover_image_view"
-            app:layout_constraintTop_toBottomOf="@+id/playlist_title_text_view" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:visibility="gone" />
+    </LinearLayout>
 
     <include
         android:id="@+id/song_asset_link_row"
         layout="@layout/view_asset_link_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="12dp" />
+        android:paddingStart="24dp"
+        android:paddingEnd="16dp" />
 
     <LinearLayout
         android:id="@+id/option_linear_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        style="@style/BottomSheetActionGroups">
 
-        <TextView
-            android:id="@+id/play_next_text_view"
-            style="@style/LabelMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:paddingStart="20dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="12dp"
-            android:text="@string/song_bottom_sheet_play_next" />
+        <LinearLayout style="@style/BottomSheetActionGroup">
 
-        <TextView
-            android:id="@+id/add_to_queue_text_view"
-            style="@style/LabelMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:paddingStart="20dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="12dp"
-            android:text="@string/song_bottom_sheet_add_to_queue" />
+            <TextView
+                android:id="@+id/play_next_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_skip_next"
+                android:text="@string/song_bottom_sheet_play_next" />
 
-        <TextView
-            android:id="@+id/share_text_view"
-            style="@style/LabelMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:paddingStart="20dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="12dp"
-            android:text="@string/song_bottom_sheet_share"
-            android:visibility="gone"/>
+            <TextView
+                android:id="@+id/add_to_queue_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_queue"
+                android:text="@string/song_bottom_sheet_add_to_queue" />
+
+            <TextView
+                android:id="@+id/share_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_share"
+                android:text="@string/song_bottom_sheet_share"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -90,10 +90,9 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingEnd">20dp</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
     </style>
 
     <style name="BottomSheetIconRowIcon">
@@ -102,6 +101,123 @@
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:importantForAccessibility">no</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- The same row as BottomSheetIconRow, as a single TextView with the icon set through
+         android:drawableStart, so sheets can keep binding their rows as TextViews. -->
+    <style name="BottomSheetActionRow" parent="LabelMedium">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:drawableTint">?attr/colorOnSurface</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="BottomSheetActionRow.Destructive">
+        <item name="android:drawableTint">?attr/colorError</item>
+        <item name="android:textColor">?attr/colorError</item>
+    </style>
+
+    <style name="BottomSheetActionGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <!-- Hidden groups take their divider with them, as LinearLayout skips gone children. -->
+    <style name="BottomSheetActionGroups">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:divider">@drawable/bottom_sheet_group_divider</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <style name="BottomSheetTile" parent="LabelMedium">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">76dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_bottom_sheet_tile</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:drawableTint">?attr/colorOnSurface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="BottomSheetHeaderCover">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="shapeAppearanceOverlay">@style/BottomSheetHeaderCoverShape</item>
+    </style>
+
+    <style name="BottomSheetHeaderCoverShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="Widget.App.TextInputLayout.Filled" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <!-- For fields that sit inside a surfaceContainer card. -->
+    <style name="Widget.App.TextInputLayout.Filled.OnCard">
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+    </style>
+
+    <style name="Widget.App.TextInputLayout.Filled.Dropdown" parent="Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <style name="ServerEditorOptionTitle" parent="LabelMedium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="ServerEditorOptionHelp" parent="LabelSmall">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="BottomSheetHeaderTitle" parent="LabelMedium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="BottomSheetHeaderSubtitle" parent="LabelSmall">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- Material3 puts a snackbar on the inverse surface, which lands it a light bar in the dark

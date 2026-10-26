@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stands in for the header of the category whose page is open: hiding the category itself
+     would hide its children with it, and the toolbar already shows its title. -->
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="0dp" />

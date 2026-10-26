@@ -17,6 +17,8 @@ public class ClickablePreferenceCategory extends PreferenceCategory {
     public ClickablePreferenceCategory(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectable(true);
+        // A category reports itself disabled, which would disable the row and swallow its clicks.
+        setShouldDisableView(false);
     }
 
     public void setOnClickListener(OnClickListener listener) {

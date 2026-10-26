@@ -63,6 +63,8 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
 
     private TextView downloadButton;
     private TextView removeButton;
+    private TextView removeFromPlaylistButton;
+    private View removeGroup;
     private ChipGroup assetLinkChipGroup;
     private Chip songLinkChip;
     private Chip albumLinkChip;
@@ -132,7 +134,11 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
         titleSong.setSelected(true);
 
         TextView artistSong = view.findViewById(R.id.song_artist_text_view);
-        artistSong.setText(songBottomSheetViewModel.getSong().getArtist());
+        String artistName = songBottomSheetViewModel.getSong().getArtist();
+        String albumName = songBottomSheetViewModel.getSong().getAlbum();
+        artistSong.setText(albumName == null || albumName.isEmpty() || artistName == null || artistName.isEmpty()
+                ? (artistName != null ? artistName : albumName)
+                : getString(R.string.song_bottom_sheet_subtitle, artistName, albumName));
 
         initAssetLinkChips(view);
         bindAssetLinkView(coverSong, currentSongLink);
@@ -251,9 +257,9 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
             dismissBottomSheet();
         });
 
-        updateDownloadButtons();
-
-        TextView removeFromPlaylist = view.findViewById(R.id.remove_from_playlist_text_view);
+        removeGroup = view.findViewById(R.id.remove_group);
+        removeFromPlaylistButton = view.findViewById(R.id.remove_from_playlist_text_view);
+        TextView removeFromPlaylist = removeFromPlaylistButton;
         if (playlistId != null && itemPosition != -1) {
             removeFromPlaylist.setVisibility(View.VISIBLE);
             removeFromPlaylist.setOnClickListener(v -> {
@@ -303,6 +309,8 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
                 });
             });
         }
+
+        updateDownloadButtons();
 
         TextView addToPlaylist = view.findViewById(R.id.add_to_playlist_text_view);
         addToPlaylist.setOnClickListener(v -> {
@@ -383,6 +391,12 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
             boolean hasLocal = ExternalAudioReader.getUri(song) != null;
             downloadButton.setVisibility(hasLocal ? View.GONE : View.VISIBLE);
             removeButton.setVisibility(hasLocal ? View.VISIBLE : View.GONE);
+        }
+
+        if (removeGroup != null && removeFromPlaylistButton != null) {
+            boolean anyRemoval = removeButton.getVisibility() == View.VISIBLE
+                    || removeFromPlaylistButton.getVisibility() == View.VISIBLE;
+            removeGroup.setVisibility(anyRemoval ? View.VISIBLE : View.GONE);
         }
     }
 

@@ -1,23 +1,33 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -41,9 +51,12 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.eddyizm.tempus.BuildConfig;
 import com.eddyizm.tempus.R;
@@ -69,6 +82,7 @@ import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.util.UIUtil;
 import com.eddyizm.tempus.viewmodel.MainViewModel;
 import com.eddyizm.tempus.viewmodel.SettingViewModel;
+import com.google.android.material.color.MaterialColors;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -76,6 +90,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -101,7 +116,26 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
 
     private static final int PARAMETRIC_EQ_MAX_BYTES = 16 * 1024;
 
-    private final Set<String> expandedCategories = new HashSet<>();
+    private static final String STATE_OPEN_CATEGORY = "open_category";
+
+    // Root categories that begin a new card on the category index.
+    private static final Set<String> CARD_GROUP_STARTS = new HashSet<>(Arrays.asList(
+            "network_playback", "settings_misc_category_key"));
+
+    // Null on the category index; otherwise the key of the category whose page is showing.
+    private String openCategoryKey;
+
+    // Kept apart from the categories, which carry them only on the index: as section headers
+    // in search results they would add noise, and the filter would match against them.
+    private final Map<String, CharSequence> categorySummaries = new HashMap<>();
+    private final Map<String, Drawable> categoryIcons = new HashMap<>();
+    private int categoryHeaderLayout;
+
+    private OnBackPressedCallback closeCategoryCallback;
+
+    private int cardColor;
+    private int cardSeparatorColor;
+    private int cardRippleColor;
 
     private boolean musicFoldersObserved = false;
 
@@ -112,12 +146,46 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
 
     public void setSearchQuery(String query) {
         this.searchQuery = UIUtil.normalizeForSearch(query).trim();
-        applyAccordionState();
+        applyPageState();
+    }
+
+    /**
+     * Leaves a category page for the category index.
+     *
+     * @return false when the index is already showing, so the caller can leave the settings.
+     */
+    public boolean closeCategory() {
+        if (openCategoryKey == null) return false;
+        openCategoryKey = null;
+        applyPageState();
+        scrollToTop();
+        return true;
+    }
+
+    private void openCategory(String key) {
+        openCategoryKey = key;
+        applyPageState();
+        scrollToTop();
+    }
+
+    private void scrollToTop() {
+        if (getView() != null) getListView().scrollToPosition(0);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            openCategoryKey = savedInstanceState.getString(STATE_OPEN_CATEGORY);
+        }
         super.onCreate(savedInstanceState);
+
+        closeCategoryCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                closeCategory();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, closeCategoryCallback);
 
         equalizerResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -165,7 +233,101 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
             getListView().setPadding(0, 0, 0, (int) getResources().getDimension(R.dimen.global_padding_bottom));
         }
 
+        Context context = requireContext();
+        cardColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceContainer, Color.TRANSPARENT);
+        cardSeparatorColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOutlineVariant, Color.TRANSPARENT);
+        cardRippleColor = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorControlHighlight, Color.TRANSPARENT);
+
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_OPEN_CATEGORY, openCategoryKey);
+    }
+
+    @SuppressLint("RestrictedApi")
+    @NonNull
+    @Override
+    protected RecyclerView.Adapter onCreateAdapter(@NonNull PreferenceScreen preferenceScreen) {
+        // PreferenceGroupAdapter is library-internal, but it is the only place that knows which
+        // preference a row shows, which the cards need to know where each one starts and ends.
+        return new PreferenceGroupAdapter(preferenceScreen) {
+            @Override
+            public void onBindViewHolder(@NonNull PreferenceViewHolder holder, int position) {
+                super.onBindViewHolder(holder, position);
+                Preference preference = getItem(position);
+                boolean card = isCardRow(preference);
+                boolean first = card && (position == 0
+                        || !isCardRow(getItem(position - 1))
+                        || startsCardGroup(preference));
+                boolean last = card && (position == getItemCount() - 1
+                        || !isCardRow(getItem(position + 1))
+                        || startsCardGroup(getItem(position + 1)));
+                styleCardRow(holder.itemView, card, first, last);
+            }
+        };
+    }
+
+    private boolean isIndexShowing() {
+        return searchQuery.isEmpty() && openCategoryKey == null;
+    }
+
+    /**
+     * Settings sit in rounded cards. Category headers, and the explanatory notes that have no
+     * title and cannot be tapped, sit between cards instead.
+     */
+    private boolean isCardRow(@Nullable Preference preference) {
+        if (preference == null) return false;
+        if (preference instanceof PreferenceCategory) {
+            return isIndexShowing() && preference.getParent() == getPreferenceScreen();
+        }
+        return preference.isSelectable() || !TextUtils.isEmpty(preference.getTitle());
+    }
+
+    private boolean startsCardGroup(@Nullable Preference preference) {
+        return preference != null && isIndexShowing() && CARD_GROUP_STARTS.contains(preference.getKey());
+    }
+
+    private void styleCardRow(View row, boolean card, boolean first, boolean last) {
+        float density = getResources().getDisplayMetrics().density;
+        int side = card ? Math.round(16 * density) : 0;
+        int gap = Math.round(8 * density);
+
+        ViewGroup.LayoutParams params = row.getLayoutParams();
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ((ViewGroup.MarginLayoutParams) params).setMargins(side, first ? gap : 0, side, last ? gap : 0);
+            row.setLayoutParams(params);
+        }
+
+        // Non-card rows keep the background resetState() restored before this bind.
+        if (!card) return;
+
+        float radius = 16 * density;
+        float top = first ? radius : 0;
+        float bottom = last ? radius : 0;
+        float[] radii = {top, top, top, top, bottom, bottom, bottom, bottom};
+
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadii(radii);
+        shape.setColor(cardColor);
+
+        Drawable content = shape;
+        if (!first) {
+            GradientDrawable separator = new GradientDrawable();
+            separator.setColor(cardSeparatorColor);
+            LayerDrawable layers = new LayerDrawable(new Drawable[]{shape, separator});
+            layers.setLayerGravity(1, Gravity.TOP | Gravity.FILL_HORIZONTAL);
+            layers.setLayerHeight(1, Math.max(1, Math.round(density)));
+            content = layers;
+        }
+
+        GradientDrawable mask = new GradientDrawable();
+        mask.setCornerRadii(radii);
+        mask.setColor(Color.WHITE);
+
+        row.setBackground(new RippleDrawable(ColorStateList.valueOf(cardRippleColor), content, mask));
     }
 
     @Override
@@ -178,8 +340,6 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
-
-        expandedCategories.clear();
 
         setStreamingCacheSize();
         setAppLanguage();
@@ -210,7 +370,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         actionParametricEqImport();
         actionReplayGainPreamp();
 
-        applyAccordionState();
+        applyPageState();
     }
 
     @Override
@@ -242,6 +402,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
 
         PreferenceScreen screen = getPreferenceScreen();
         if (screen != null) {
+            disableIconSpace(screen);
             for (int i = 0; i < screen.getPreferenceCount(); i++) {
                 Preference pref = screen.getPreference(i);
                 if (pref instanceof ClickablePreferenceCategory) {
@@ -249,20 +410,23 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
                     if (category.getKey() == null) {
                         category.setKey("category_key_" + i);
                     }
+                    if (categoryHeaderLayout == 0) {
+                        categoryHeaderLayout = category.getLayoutResource();
+                    }
+                    categorySummaries.put(category.getKey(), category.getSummary());
+                    categoryIcons.put(category.getKey(), category.getIcon());
                     category.setOnClickListener(cat -> {
                         String key = cat.getKey();
                         if ("lan_playback".equals(key)) {
                             startActivity(new Intent(requireContext(), com.eddyizm.tempus.lan.LanPlaybackActivity.class));
                             return;
                         }
-                        if (expandedCategories.contains(key)) {
-                            expandedCategories.remove(key);
-                        } else {
-                            expandedCategories.add(key);
-                        }
-                        applyAccordionState();
+                        if (isIndexShowing()) openCategory(key);
                     });
                 }
+            }
+            if (openCategoryKey != null && findPreference(openCategoryKey) == null) {
+                openCategoryKey = null;
             }
         }
 
@@ -282,7 +446,23 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void applyAccordionState() {
+    private static void disableIconSpace(PreferenceGroup group) {
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            Preference pref = group.getPreference(i);
+            pref.setIconSpaceReserved(false);
+            if (pref instanceof PreferenceGroup) {
+                disableIconSpace((PreferenceGroup) pref);
+            }
+        }
+    }
+
+    /**
+     * Shows one of three pages from the single preference tree: the category index (each root
+     * category as a row, children hidden), one category's page (only that category, its header
+     * collapsed to nothing), or search results across every category. Keeping one tree is what
+     * lets every findPreference(...) in this class work whichever page is showing.
+     */
+    private void applyPageState() {
         PreferenceScreen screen = getPreferenceScreen();
         if (screen == null) return;
 
@@ -296,22 +476,41 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         checkMusicLibrary();
         checkLanPlayback();
 
-        if (!searchQuery.isEmpty()) {
-            filterPreferences(screen);
-        } else {
-            for (int i = 0; i < screen.getPreferenceCount(); i++) {
-                Preference pref = screen.getPreference(i);
-                if (pref instanceof PreferenceCategory) {
-                    PreferenceCategory category = (PreferenceCategory) pref;
-                    boolean expanded = expandedCategories.contains(category.getKey());
-                    category.setIcon(expanded ? R.drawable.ic_arrow_down : R.drawable.ic_navigate_next);
-                    if (!expanded) {
-                        for (int j = 0; j < category.getPreferenceCount(); j++) {
-                            category.getPreference(j).setVisible(false);
-                        }
-                    }
+        boolean searching = !searchQuery.isEmpty();
+        boolean index = isIndexShowing();
+        for (int i = 0; i < screen.getPreferenceCount(); i++) {
+            Preference pref = screen.getPreference(i);
+            if (!(pref instanceof ClickablePreferenceCategory)) continue;
+            PreferenceCategory category = (PreferenceCategory) pref;
+            String key = category.getKey();
+
+            category.setSummary(index ? categorySummaries.get(key) : null);
+            category.setIcon(index ? categoryIcons.get(key) : null);
+
+            if (searching) {
+                category.setLayoutResource(categoryHeaderLayout);
+            } else if (index) {
+                category.setLayoutResource(R.layout.preference_settings_category);
+                for (int j = 0; j < category.getPreferenceCount(); j++) {
+                    category.getPreference(j).setVisible(false);
                 }
+            } else if (key.equals(openCategoryKey)) {
+                category.setLayoutResource(R.layout.preference_settings_hidden);
+            } else {
+                category.setVisible(false);
             }
+        }
+
+        if (searching) {
+            filterPreferences(screen);
+        }
+
+        closeCategoryCallback.setEnabled(openCategoryKey != null);
+        if (getParentFragment() instanceof SettingsFragment) {
+            Preference open = openCategoryKey != null ? findPreference(openCategoryKey) : null;
+            ((SettingsFragment) getParentFragment()).setPageTitle(open != null
+                    ? open.getTitle()
+                    : getString(R.string.menu_settings_button));
         }
 
         if (getListView() != null && getListView().getAdapter() != null) {
@@ -323,9 +522,6 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         for (int i = 0; i < group.getPreferenceCount(); i++) {
             Preference pref = group.getPreference(i);
             pref.setVisible(true);
-            if (pref instanceof PreferenceCategory) {
-                pref.setIcon(null);
-            }
             if (pref instanceof PreferenceGroup) {
                 resetVisibility((PreferenceGroup) pref);
             }
@@ -356,9 +552,6 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
                 boolean childMatches = filterPreferences((PreferenceGroup) pref, matches && wasVisible);
                 boolean groupVisible = (matches || childMatches) && wasVisible;
                 pref.setVisible(groupVisible);
-                if (pref instanceof PreferenceCategory && isRoot) {
-                    pref.setIcon(R.drawable.ic_arrow_down);
-                }
                 if (groupVisible) {
                     hasVisibleChild = true;
                 }
@@ -613,7 +806,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
             }
 
             musicFolderCount = ids.size();
-            applyAccordionState();
+            applyPageState();
 
             setMusicLibrarySummary(libraryPref);
         }
@@ -636,9 +829,9 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
                 requireContext().stopService(new Intent(requireContext(), com.eddyizm.tempus.lan.LanReceiverService.class));
             }
             // Posted so the new value is saved before checkLanPlayback reads it, and run through
-            // applyAccordionState so an active search filter still applies to the row it reveals.
+            // applyPageState so an active search filter still applies to the row it reveals.
             getListView().post(() -> {
-                if (getView() != null) applyAccordionState();
+                if (getView() != null) applyPageState();
             });
             return true;
         });
@@ -647,10 +840,10 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
     /**
      * Below two libraries there is nothing to choose between, so the setting is noise.
      *
-     * Call applyAccordionState rather than this, including from the folder response. That method
+     * Call applyPageState rather than this, including from the folder response. That method
      * resets every category child to visible, runs these checks, and only then re-hides the
-     * children of collapsed categories. Calling this alone performs only the middle step, so a row
-     * it reveals would stay showing under a category the user has collapsed.
+     * children of the categories whose page is not showing. Calling this alone performs only the
+     * middle step, so a row it reveals would show on the category index.
      */
     private void checkMusicLibrary() {
         Preference libraryPref = findPreference("active_music_folder_id");
@@ -943,7 +1136,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
                 pendingEqualizerReload = false;
             }
             checkEqualizerBands();
-            applyAccordionState();
+            applyPageState();
         }
 
         @Override

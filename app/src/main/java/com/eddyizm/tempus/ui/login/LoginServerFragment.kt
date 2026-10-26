@@ -71,6 +71,15 @@ class LoginServerFragment : Fragment() {
         initLocalUrlSwitch()
         initClientCertSwitch()
         initCustomHeadersSwitch()
+        initAdvancedOptionRows()
+    }
+
+    // performClick, not toggle, so each switch's own listener still shows or hides its field.
+    private fun initAdvancedOptionRows() {
+        binding.serverPlaintextPasswordRow.setOnClickListener { binding.serverPlaintextPassowrd.performClick() }
+        binding.serverLocalUrlRow.setOnClickListener { binding.serverLocalUrlSwitch.performClick() }
+        binding.serverCertRow.setOnClickListener { binding.serverCertSwitch.performClick() }
+        binding.serverHeadersRow.setOnClickListener { binding.serverHeadersSwitch.performClick() }
     }
 
     @OptIn(UnstableApi::class)
@@ -124,7 +133,7 @@ class LoginServerFragment : Fragment() {
             if (!isInitialSyncDone && serverList.isNotEmpty()) {
                 binding.serversList.setText(serverList[0].serverName, false)
                 binding.createOrUpdateButton.text = getString(R.string.la_server_button_create)
-                binding.deleteButton.isEnabled = false
+                binding.deleteButton.visibility = View.GONE
                 binding.testButton.isEnabled = false
                 isInitialSyncDone = true
             }
@@ -147,7 +156,7 @@ class LoginServerFragment : Fragment() {
 
     private fun onFirstServerSelected() {
         binding.createOrUpdateButton.text = getString(R.string.la_server_button_create)
-        binding.deleteButton.isEnabled = false
+        binding.deleteButton.visibility = View.GONE
         binding.testButton.isEnabled = false
         binding.serverNameField.setText("")
         binding.serverUserField.setText("")
@@ -162,7 +171,7 @@ class LoginServerFragment : Fragment() {
 
     private fun onNonFirstServerSelected(position: Int) {
         binding.createOrUpdateButton.text = getString(R.string.la_server_button_update)
-        binding.deleteButton.isEnabled = true
+        binding.deleteButton.visibility = View.VISIBLE
         binding.testButton.isEnabled = true
         binding.serverNameField.setText(serverList[position].serverName)
         binding.serverUserField.setText(serverList[position].username)

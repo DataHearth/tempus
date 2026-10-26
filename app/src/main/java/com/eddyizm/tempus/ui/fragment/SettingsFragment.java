@@ -123,13 +123,24 @@ public class SettingsFragment extends Fragment {
             }
         }
         bind.settingsToolbar.setNavigationOnClickListener(v -> {
+            SettingsContainerFragment prefFragment = getPreferenceFragment();
+            if (prefFragment != null && prefFragment.closeCategory()) return;
             activity.navController.navigateUp();
         });
     }
 
-    private void updateSearchQuery(String query) {
-        SettingsContainerFragment prefFragment = (SettingsContainerFragment) getChildFragmentManager()
+    void setPageTitle(CharSequence title) {
+        if (bind != null) bind.settingsToolbar.setTitle(title);
+    }
+
+    @Nullable
+    private SettingsContainerFragment getPreferenceFragment() {
+        return (SettingsContainerFragment) getChildFragmentManager()
                 .findFragmentById(R.id.settings_container);
+    }
+
+    private void updateSearchQuery(String query) {
+        SettingsContainerFragment prefFragment = getPreferenceFragment();
         if (prefFragment != null) {
             prefFragment.setSearchQuery(query);
         }

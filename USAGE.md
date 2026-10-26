@@ -104,7 +104,7 @@ The first screen lists your servers. Tap **Open server editor** to add one:
 
 **Server name**, **User name**, **Password** and **Public URL** are required, and so is **Local URL** once its switch is on. Tap **Create**, then **Go to login** to return to the server list, and tap the server there to log in. If the login fails, Tempus shows the error and you stay on the list.
 
-To edit a server, open the editor, pick the server in the menu at the top, change what you need and tap **Update**. **Test** checks a saved server's connection. **Delete** removes the picked server at once, with no confirmation. A change to the server you are logged in to takes effect after you log out and tap the server again.
+To edit a server, open the editor, pick the server in the menu at the top, change what you need and tap **Update**. **Test** checks a saved server's connection. **Delete**, below the advanced options, shows only for a saved server and removes it at once, with no confirmation. A change to the server you are logged in to takes effect after you log out and tap the server again.
 
 Long press the Tempus icon and pick **Introduction** to open the welcome, permissions, themes and server pages on their own. The heart icon at the top of the server list opens the same pages.
 
@@ -392,6 +392,8 @@ To make a playlist a fave, tap **Add to faves** in its ⋮ menu, or long press i
 [Back to top](#table-of-contents)
 
 ## Settings
+
+Settings opens on a list of pages, such as **General**, **UI** and **Sound**. Tap one to open it, and use back or the arrow at the top to return to the list.
 
 ### Finding a setting
 

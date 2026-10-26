@@ -548,7 +548,7 @@
     <string name="settings_music_directory">Show music directories</string>
     <string name="settings_music_directory_summary">If enabled, show the music directory section. Please note that for folder navigation to work properly, the server must support this feature.</string>
     <string name="settings_podcast">Show podcast</string>
-    <string name="settings_podcast_summary">If enabled, show the podcast section. Restart the app for it to take full effect.</string>
+    <string name="settings_podcast_summary">If enabled, show the podcast section.</string>
     <string name="settings_playlist_sort">Playlist sorting</string>
     <string name="settings_androidauto">Android Auto</string>
     <string name="settings_androidauto_album_view">Grid view for albums and artists</string>
@@ -570,7 +570,7 @@
     <string name="settings_audio_quality">Show audio quality</string>
     <string name="settings_audio_quality_summary">The bitrate and audio format will be shown for each audio track.</string>
     <string name="settings_song_rating">Show song star rating</string>
-    <string name="settings_song_rating_summary">If enabled, shows 5 star rating for track on song page\n\n*Requires App restart</string>
+    <string name="settings_song_rating_summary">If enabled, shows 5 star rating for track on song page.</string>
     <string name="settings_track_number">Show track number</string>
     <string name="settings_track_number_summary">If enabled, shows the track number of the song being played.</string>
     <string name="settings_album_year">Show album year</string>
@@ -585,18 +585,18 @@
     <string name="settings_custom_command_second_button">Second custom command</string>
 
     <string name="settings_radio">Show radio</string>
-    <string name="settings_radio_summary">If enabled, show the radio section. Restart the app for it to take full effect.</string>
+    <string name="settings_radio_summary">If enabled, show the radio section.</string>
     <string name="settings_enable_drawer_on_landscape">Enable drawer on portrait</string>
     <string name="settings_enable_drawer_on_landscape_summary">Unlocks the lateral landscape menu drawer on portrait.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Hide bottom navbar on portrait [Experimental]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Increases vertical space by removing the bottom navbar. The changes will take effect on restart.</string>
+    <string name="settings_hide_bottom_navbar_on_portrait_summary">Increases vertical space by removing the bottom navbar.</string>
     <string name="settings_auto_download_lyrics">Auto download lyrics</string>
     <string name="settings_auto_download_lyrics_summary">Automatically save lyrics when they are available so they can be shown while offline.</string>
     <string name="settings_replay_gain">Set replay gain mode</string>
     <string name="settings_rounded_corner">Rounded corners</string>
     <string name="settings_rounded_corner_size">Corners size</string>
     <string name="settings_rounded_corner_size_summary">Sets the magnitude of the curvature angle.</string>
-    <string name="settings_rounded_corner_summary">If enabled, sets a curvature angle for all rendered covers. The changes will take effect on restart.</string>
+    <string name="settings_rounded_corner_summary">If enabled, sets a curvature angle for all rendered covers.</string>
     <string name="settings_scan_title">Scan library</string>
     <string name="settings_music_library">Music library</string>
     <string name="settings_music_library_all">All libraries</string>
@@ -633,6 +633,20 @@
     <string name="settings_tile_size">Tiles size</string>
     <string name="settings_title_data">Data</string>
     <string name="settings_title_general">General</string>
+    <string name="settings_general_category_summary">Server, library scan, permissions</string>
+    <string name="settings_ui_category_summary">Theme, language, covers, layout</string>
+    <string name="settings_ui_restart_note">Rounded corners, the bottom navbar, song ratings and the podcast and radio sections change fully after the app restarts.</string>
+    <string name="settings_sound_category_summary">Equalizer, ReplayGain, loudness</string>
+    <string name="settings_players_category_summary">Continuous play, queue, player buttons</string>
+    <string name="settings_playlist_category_summary">Duplicates, sort order</string>
+    <string name="settings_network_playback_category_summary">UPnP / DLNA, LAN remote</string>
+    <string name="settings_lan_playback_category_summary">Devices on this network</string>
+    <string name="settings_data_category_summary">Cache, downloads, Wi-Fi only</string>
+    <string name="settings_transcoding_category_summary">Format and bitrate per network</string>
+    <string name="settings_misc_category_summary">Scrobbling, sharing, queue sync</string>
+    <string name="settings_androidauto_category_summary">Tabs and grid views</string>
+    <string name="settings_github_update_category_summary">Release checks on GitHub</string>
+    <string name="settings_about_category_summary">Version, GitHub, support</string>
     <string name="settings_title_misc">Miscellaneous</string>
     <string name="settings_title_players">Players</string>
     <string name="settings_title_playlist">Playlist</string>
@@ -693,6 +707,7 @@
     <string name="share_update_dialog_negative_button">Cancel</string>
     <string name="share_update_dialog_positive_button">Save</string>
     <string name="share_update_dialog_title">Share</string>
+    <string name="song_bottom_sheet_subtitle">%1$s · %2$s</string>
     <string name="song_bottom_sheet_add_to_playlist">Add to playlist</string>
     <string name="song_bottom_sheet_add_to_queue">Add to queue</string>
     <string name="song_bottom_sheet_download">Download</string>
@@ -915,6 +930,13 @@
     <string name="la_server_switch_cert">Client certificate (mTLS)</string>
     <string name="la_server_switch_headers">Custom HTTP headers</string>
     <string name="la_server_field_server_headers">One per line, e.g. CF-Access-Client-Id: value</string>
+    <string name="la_server_field_server">Server</string>
+    <string name="la_server_field_url_supporting">Include http:// or https://</string>
+    <string name="la_server_advanced">Advanced</string>
+    <string name="la_server_plaintext_password_help">Only for legacy servers</string>
+    <string name="la_server_local_url_help">Used when you are on the same network</string>
+    <string name="la_server_cert_help">Authenticate with a certificate file</string>
+    <string name="la_server_headers_help">Sent with every request to this server</string>
     <string name="error_custom_headers_invalid">Invalid header on line %1$s. Use Name: Value</string>
 
     <string name="la_theme_title">Choose Accent Color</string>
