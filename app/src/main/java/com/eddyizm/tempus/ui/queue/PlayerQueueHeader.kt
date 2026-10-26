@@ -1,9 +1,7 @@
 package com.eddyizm.tempus.ui.queue
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.eddyizm.tempus.R
 
 @Composable
@@ -86,123 +84,112 @@ fun PlayerQueueHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Title and Subtitle Column
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 12.dp)
+                    .padding(end = 8.dp)
             ) {
                 Text(
                     text = stringResource(R.string.player_queue_playing_next),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
 
-            // Quick Actions: [Clear] button & [⋮] More menu
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            IconButton(
+                onClick = onShuffleUpcoming,
+                enabled = upcomingSongsCount > 1,
+                modifier = Modifier.size(48.dp)
             ) {
-                FilledTonalButton(
-                    onClick = onClearUpcoming,
-                    enabled = upcomingSongsCount > 0,
-                    shape = RoundedCornerShape(18.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
-                    modifier = Modifier.height(36.dp)
+                Icon(
+                    painter = painterResource(R.drawable.ic_shuffle),
+                    contentDescription = stringResource(R.string.player_queue_shuffle_upcoming),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (upcomingSongsCount > 1) 1f else 0.38f)
+                )
+            }
+
+            IconButton(
+                onClick = onClearUpcoming,
+                enabled = upcomingSongsCount > 0,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_clear_all),
+                    contentDescription = stringResource(R.string.player_queue_clear),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (upcomingSongsCount > 0) 1f else 0.38f)
+                )
+            }
+
+            Box {
+                IconButton(
+                    onClick = { menuExpanded = true },
+                    modifier = Modifier.size(48.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.player_queue_clear),
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = stringResource(R.string.content_description_more_options),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Box {
-                    IconButton(
-                        onClick = { menuExpanded = true },
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_more_vert),
-                            contentDescription = stringResource(R.string.content_description_more_options),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.player_queue_shuffle_upcoming)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_shuffle),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onShuffleUpcoming()
-                            },
-                            enabled = upcomingSongsCount > 1
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.player_queue_save_to_playlist)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_playlist_add),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onSaveToPlaylist()
-                            },
-                            enabled = songCount > 0
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.player_queue_download_all)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_download),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onDownloadAll()
-                            },
-                            enabled = songCount > 0
-                        )
-                        if (isSyncEnabled) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.player_queue_load_queue)) },
-                                leadingIcon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_bookmark_sync),
-                                        contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    menuExpanded = false
-                                    onLoadSavedQueue()
-                                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.player_queue_save_to_playlist)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_playlist_add),
+                                contentDescription = null
                             )
-                        }
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onSaveToPlaylist()
+                        },
+                        enabled = songCount > 0
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.player_queue_download_all)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_download),
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onDownloadAll()
+                        },
+                        enabled = songCount > 0
+                    )
+                    if (isSyncEnabled) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.player_queue_load_queue)) },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_bookmark_sync),
+                                    contentDescription = null
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onLoadSavedQueue()
+                            }
+                        )
                     }
                 }
             }

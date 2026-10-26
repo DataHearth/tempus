@@ -1,6 +1,8 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import android.animation.ValueAnimator;
 import android.content.ComponentName;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +30,7 @@ import androidx.media3.session.SessionToken;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentPlayerBottomSheetBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
 import com.eddyizm.tempus.subsonic.models.PlayQueue;
@@ -64,6 +67,11 @@ public class PlayerBottomSheetFragment extends Fragment {
     private Handler progressBarHandler;
     private Runnable progressBarRunnable;
 
+    private boolean tintRequested = false;
+    private String tintCoverId = null;
+    private Integer paintedTint = null;
+    private ValueAnimator tintAnimator;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,6 +85,7 @@ public class PlayerBottomSheetFragment extends Fragment {
         initPlayerController();
         initQueueBridge(playbackViewModel);
         setHeaderBookmarksButton();
+        playerBottomSheetViewModel.getCoverTint().observe(getViewLifecycleOwner(), this::applyCoverTint);
         com.eddyizm.tempus.lan.LanRemoteSession.state().observe(getViewLifecycleOwner(), this::renderRemote);
         // Settings is a fragment in this activity, so a flipped switch is heard here rather than on resume.
         com.eddyizm.tempus.App.getInstance().getPreferences().registerOnSharedPreferenceChangeListener(lanSwitchListener);
@@ -121,6 +130,9 @@ public class PlayerBottomSheetFragment extends Fragment {
             progressBarHandler.removeCallbacks(progressBarRunnable);
         }
         com.eddyizm.tempus.App.getInstance().getPreferences().unregisterOnSharedPreferenceChangeListener(lanSwitchListener);
+        if (tintAnimator != null) tintAnimator.cancel();
+        tintAnimator = null;
+        paintedTint = null;
         remoteVisible = false;
         remoteCover = null;
         remoteMediaSignature = null;
@@ -299,15 +311,50 @@ public class PlayerBottomSheetFragment extends Fragment {
                                 mediaMetadata.extras.getString("coverArtId"), CustomGlideRequest.ResourceType.Radio));
                 request = RadioCoverArtDownloader.applyLocalFileSignature(request, mediaMetadata.artworkUri);
                 request.into(bind.playerHeaderLayout.playerHeaderMediaCoverImage);
+                loadCoverTint(null);
             } else {
                 CustomGlideRequest.Builder
                         .from(requireContext(), mediaMetadata.extras.getString("coverArtId"), CustomGlideRequest.ResourceType.Song)
                         .build()
                         .into(bind.playerHeaderLayout.playerHeaderMediaCoverImage);
+                loadCoverTint(mediaMetadata.extras.getString("coverArtId"));
             }
         }
     }
 
+
+    private void loadCoverTint(String coverArtId) {
+        if (tintRequested && Objects.equals(tintCoverId, coverArtId)) return;
+        tintRequested = true;
+        tintCoverId = coverArtId;
+        CoverTint.load(requireContext(), coverArtId, tint -> {
+            if (Objects.equals(tintCoverId, coverArtId)) playerBottomSheetViewModel.setCoverTint(tint);
+        });
+    }
+
+    private void applyCoverTint(CoverTint tint) {
+        if (bind == null || tint == null) return;
+        bind.playerHeaderLayout.playerHeaderSeekBar.setProgressTintList(ColorStateList.valueOf(tint.getAccent()));
+        if (tintAnimator != null) tintAnimator.cancel();
+        if (paintedTint == null) {
+            paintTint(tint.getTint());
+            return;
+        }
+        tintAnimator = ValueAnimator.ofArgb(paintedTint, tint.getTint());
+        tintAnimator.setDuration(250);
+        tintAnimator.addUpdateListener(animator -> paintTint((int) animator.getAnimatedValue()));
+        tintAnimator.start();
+    }
+
+    private void paintTint(int color) {
+        if (bind == null) return;
+        paintedTint = color;
+        bind.playerHeaderLayout.getRoot().setBackgroundColor(color);
+        // The sheet container, not this fragment's root, reaches under the navigation bar inset.
+        if (bind.getRoot().getParent() instanceof View) {
+            ((View) bind.getRoot().getParent()).setBackgroundColor(color);
+        }
+    }
 
     private void setMediaControllerUI(MediaBrowser mediaBrowser) {
         if (com.eddyizm.tempus.lan.LanRemoteSession.isActive() || bind == null) return;
@@ -415,6 +462,7 @@ public class PlayerBottomSheetFragment extends Fragment {
                 remoteCover = state.getCoverId();
                 CustomGlideRequest.Builder.from(requireContext(), remoteCover.isEmpty() ? null : remoteCover,
                         CustomGlideRequest.ResourceType.Song).build().into(bind.playerHeaderLayout.playerHeaderMediaCoverImage);
+                loadCoverTint(remoteCover.isEmpty() ? null : remoteCover);
             }
         } else if (wasRemote) {
             remoteCover = null;

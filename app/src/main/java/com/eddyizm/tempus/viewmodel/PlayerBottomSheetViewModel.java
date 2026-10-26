@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.media3.common.util.UnstableApi;
 
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.interfaces.StarCallback;
 import com.eddyizm.tempus.model.Download;
 import com.eddyizm.tempus.model.LyricsCache;
@@ -63,6 +64,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<AlbumID3> liveAlbum = new MutableLiveData<>(null);
     private final MutableLiveData<ArtistID3> liveArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
+    private final MutableLiveData<CoverTint> coverTint = new MutableLiveData<>(null);
     private final Gson gson = new Gson();
     private boolean lyricsSyncState = true;
     private LiveData<LyricsCache> cachedLyricsSource;
@@ -274,6 +276,14 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
 
     public LiveData<String> getLiveDescription() {
         return descriptionLiveData;
+    }
+
+    public LiveData<CoverTint> getCoverTint() {
+        return coverTint;
+    }
+
+    public void setCoverTint(CoverTint tint) {
+        coverTint.setValue(tint);
     }
 
     public LiveData<List<Child>> getMediaInstantMix(LifecycleOwner owner, Child media) {

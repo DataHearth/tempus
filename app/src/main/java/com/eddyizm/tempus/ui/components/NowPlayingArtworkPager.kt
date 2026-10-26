@@ -94,11 +94,7 @@ fun NowPlayingArtworkPager(
         }
     }
 
-    val cornerRadius = if (Preferences.isCornerRoundingEnabled()) {
-        Preferences.getRoundedCornerSize().dp
-    } else {
-        0.dp
-    }
+    val cornerRadius = 20.dp
 
     if (!isRadio && queue.isEmpty()) {
         Box(

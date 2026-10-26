@@ -2,6 +2,7 @@ package com.eddyizm.tempus.ui.queue
 
 import android.os.Build
 import androidx.annotation.AttrRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -122,6 +123,7 @@ fun PlayerQueueSheet(
     onLoadSavedQueue: () -> Unit,
     modifier: Modifier = Modifier,
     currentSongId: String? = null,
+    currentItemColor: Color? = null,
     externalRefreshTrigger: Any? = null,
     onSheetReady: ((suspend () -> Unit)) -> Unit = {},
 ) {
@@ -206,14 +208,17 @@ fun PlayerQueueSheet(
         lazyListState = lazyListState,
         scrollThresholdPadding = reorderScrollPadding
     ) { from, to ->
+        val fromIndex = currentSongs.indexOfFirst { it.stableId == from.key }
+        val toIndex = currentSongs.indexOfFirst { it.stableId == to.key }
+        if (fromIndex < 0 || toIndex < 0) return@rememberReorderableLazyListState
         if (dragStartIndex == null) {
-            dragStartIndex = from.index
+            dragStartIndex = fromIndex
         }
-        dragEndIndex = to.index
+        dragEndIndex = toIndex
         val current = currentRawSongs.toMutableList()
-        if (from.index in current.indices && to.index in current.indices) {
-            val item = current.removeAt(from.index)
-            current.add(to.index, item)
+        if (fromIndex in current.indices && toIndex in current.indices) {
+            val item = current.removeAt(fromIndex)
+            current.add(toIndex, item)
             reorderedChildList = current
         }
         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
@@ -261,6 +266,10 @@ fun PlayerQueueSheet(
                     lazyListState = lazyListState,
                     reorderableState = reorderableState,
                     itemContainerColor = containerColor,
+                    currentItemColor = animateColorAsState(
+                        targetValue = currentItemColor ?: colorScheme.surfaceContainerHighest,
+                        label = "queueCurrentItemColor"
+                    ).value,
                     downloadedIds = downloadedIds,
                     externalRefreshTrigger = externalRefreshTrigger,
                     onDragStarted = {

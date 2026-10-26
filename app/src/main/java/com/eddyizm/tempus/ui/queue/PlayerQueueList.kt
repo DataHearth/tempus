@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,10 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.eddyizm.tempus.R
 import com.eddyizm.tempus.subsonic.models.Child
 import com.eddyizm.tempus.util.Preferences
@@ -53,6 +55,7 @@ fun PlayerQueueList(
     lazyListState: LazyListState,
     reorderableState: ReorderableLazyListState,
     itemContainerColor: Color,
+    currentItemColor: Color,
     onTrackClick: (Int, Child) -> Unit,
     onRemoveTrack: (Int, QueueSongItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -73,16 +76,6 @@ fun PlayerQueueList(
         }
     }
 
-    val density = LocalDensity.current
-    val cornerRadius = remember(density) {
-        with(density) {
-            if (Preferences.isCornerRoundingEnabled()) {
-                Preferences.getRoundedCornerSize().toDp()
-            } else {
-                1.toDp()
-            }
-        }
-    }
     val showRating = Preferences.showItemRating()
 
     if (items.isEmpty()) {
@@ -121,13 +114,10 @@ fun PlayerQueueList(
             contentPadding = PaddingValues(
                 top = 4.dp,
                 bottom = bottomInsets.calculateBottomPadding() + 24.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            )
         ) {
-            itemsIndexed(
-                items = items,
-                key = { _, item -> item.stableId }
-            ) { index, queueItem ->
+            val hasCurrent = currentIndex in items.indices
+            val queueRow: @Composable LazyItemScope.(Int, QueueSongItem) -> Unit = { index, queueItem ->
                 ReorderableItem(
                     state = reorderableState,
                     key = queueItem.stableId
@@ -145,8 +135,7 @@ fun PlayerQueueList(
                         isPrior = currentIndex >= 0 && index < currentIndex,
                         isDragging = isDragging,
                         dragHandleModifier = handleModifier,
-                        itemContainerColor = itemContainerColor,
-                        cornerRadius = cornerRadius,
+                        itemContainerColor = if (isCurrent) currentItemColor else itemContainerColor,
                         showRating = showRating,
                         downloadedIds = downloadedIds,
                         externalRefreshTrigger = externalRefreshTrigger,
@@ -156,6 +145,54 @@ fun PlayerQueueList(
                     )
                 }
             }
+
+            if (!hasCurrent) {
+                itemsIndexed(items = items, key = { _, item -> item.stableId }) { index, item ->
+                    queueRow(index, item)
+                }
+            } else {
+                // Subheaders are not ReorderableItems, so drags skip over them; the
+                // sheet maps moves back to song indices by key, not by list position.
+                itemsIndexed(
+                    items = items.subList(0, currentIndex),
+                    key = { _, item -> item.stableId }
+                ) { index, item ->
+                    queueRow(index, item)
+                }
+                item(key = NOW_PLAYING_HEADER_KEY) {
+                    QueueSubheader(stringResource(R.string.player_queue_now_playing))
+                }
+                item(key = items[currentIndex].stableId) {
+                    queueRow(currentIndex, items[currentIndex])
+                }
+                if (currentIndex < items.lastIndex) {
+                    item(key = NEXT_UP_HEADER_KEY) {
+                        QueueSubheader(
+                            stringResource(R.string.player_queue_next_up),
+                            Modifier.padding(top = 12.dp)
+                        )
+                    }
+                    itemsIndexed(
+                        items = items.subList(currentIndex + 1, items.size),
+                        key = { _, item -> item.stableId }
+                    ) { offset, item ->
+                        queueRow(currentIndex + 1 + offset, item)
+                    }
+                }
+            }
         }
     }
+}
+
+private const val NOW_PLAYING_HEADER_KEY = "queue_header_now_playing"
+private const val NEXT_UP_HEADER_KEY = "queue_header_next_up"
+
+@Composable
+private fun QueueSubheader(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(start = 8.dp, top = 8.dp, bottom = 2.dp)
+    )
 }

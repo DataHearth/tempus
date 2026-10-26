@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.Format;
@@ -38,6 +38,7 @@ import androidx.media3.common.util.RepeatModeUtil;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
+import androidx.media3.ui.DefaultTimeBar;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
@@ -56,7 +57,6 @@ import com.eddyizm.tempus.ui.dialog.PlaylistChooserDialog;
 import com.eddyizm.tempus.ui.dialog.SleepTimerDialog;
 import com.eddyizm.tempus.util.SleepTimerManager;
 
-import androidx.core.widget.ImageViewCompat;
 import android.content.res.ColorStateList;
 import com.eddyizm.tempus.ui.dialog.RatingDialog;
 import com.eddyizm.tempus.ui.dialog.TrackInfoDialog;
@@ -69,7 +69,9 @@ import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.PlayerBottomSheetViewModel;
 import com.eddyizm.tempus.viewmodel.RatingViewModel;
 import com.eddyizm.tempus.util.FavoriteRegistry;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -99,16 +101,14 @@ public class PlayerControllerFragment extends Fragment {
     private TextView playerArtistNameLabel;
     private Button playbackSpeedButton;
     private ToggleButton skipSilenceToggleButton;
-    private Chip playerMediaExtension;
+    private TextView playerMediaExtension;
     private TextView playerMediaBitrate;
-    private ConstraintLayout playerQuickActionView;
-    private ImageButton playerOpenQueueButton;
-    private ImageButton playerOpenLyricsButton;
+    private View playerQuickActionView;
+    private MaterialButton playerOpenQueueButton;
+    private MaterialButton playerOpenLyricsButton;
     private ImageButton playerTrackInfo;
     private LinearLayout ratingContainer;
-    private LinearLayout sleepTimerContainer;
-    private ImageButton sleepTimerButton;
-    private android.widget.TextView sleepTimerLabel;
+    private MaterialButton sleepTimerButton;
     private ChipGroup assetLinkChipGroup;
     private Chip playerSongLinkChip;
     private Chip playerAlbumLinkChip;
@@ -238,10 +238,9 @@ public class PlayerControllerFragment extends Fragment {
         playerSongLinkChip = bind.getRoot().findViewById(R.id.asset_link_song_chip);
         playerAlbumLinkChip = bind.getRoot().findViewById(R.id.asset_link_album_chip);
         playerArtistLinkChip = bind.getRoot().findViewById(R.id.asset_link_artist_chip);
-        sleepTimerContainer = bind.getRoot().findViewById(R.id.player_sleep_timer_container);
         sleepTimerButton = bind.getRoot().findViewById(R.id.player_sleep_timer_button);
-        sleepTimerLabel = bind.getRoot().findViewById(R.id.player_sleep_timer_label);
         checkAndSetRatingContainerVisibility();
+        styleTimeBar();
     }
 
     private void initOverflowButton() {
@@ -474,7 +473,7 @@ public class PlayerControllerFragment extends Fragment {
                     items.add(bitDepth);
                 if (!samplingRate.trim().isEmpty())
                     items.add(samplingRate);
-                String mediaQuality = TextUtils.join(" • ", items);
+                String mediaQuality = TextUtils.join(" · ", items);
 
                 playerMediaBitrate.setVisibility(Preferences.getBitrateVisible() ? View.VISIBLE : View.GONE);
                 playerMediaBitrate.setText(isLocal ? mediaQuality : mediaQuality);
@@ -804,7 +803,7 @@ public class PlayerControllerFragment extends Fragment {
      * main thread.
      */
     private void updateSleepTimerUI() {
-        if (sleepTimerButton == null || sleepTimerLabel == null)
+        if (sleepTimerButton == null)
             return;
 
         boolean remote = com.eddyizm.tempus.lan.LanRemoteSession.isActive();
@@ -816,20 +815,11 @@ public class PlayerControllerFragment extends Fragment {
             String label = isEndOfTrack
                     ? getString(R.string.sleep_timer_end_of_track_label)
                     : remote ? remoteState.getTimerRemaining() : SleepTimerManager.getInstance().getRemainingFormatted();
-            sleepTimerLabel.setText(label);
-            sleepTimerLabel.setVisibility(View.VISIBLE);
-            int accentColor = com.google.android.material.color.MaterialColors.getColor(
-                    sleepTimerButton, com.google.android.material.R.attr.colorPrimary);
-            ImageViewCompat.setImageTintList(sleepTimerButton,
-                    ColorStateList.valueOf(accentColor));
+            sleepTimerButton.setText(label);
         } else {
-            sleepTimerLabel.setVisibility(View.GONE);
-            sleepTimerLabel.setText("");
-            int defaultColor = com.google.android.material.color.MaterialColors.getColor(
-                    sleepTimerButton, com.google.android.material.R.attr.colorOnSurface);
-            ImageViewCompat.setImageTintList(sleepTimerButton,
-                    ColorStateList.valueOf(defaultColor));
+            sleepTimerButton.setText(R.string.player_action_timer);
         }
+        setActionActive(sleepTimerButton, active);
     }
 
     private void initCoverLyricsSlideView() {
@@ -865,23 +855,35 @@ public class PlayerControllerFragment extends Fragment {
     }
 
     private void updateLyricsButtonTint(boolean isLyricsActive) {
-        if (playerOpenLyricsButton == null)
-            return;
-        int colorAttr = isLyricsActive
-                ? com.google.android.material.R.attr.colorPrimary
-                : com.google.android.material.R.attr.colorOnSurface;
-        int color = com.google.android.material.color.MaterialColors.getColor(playerOpenLyricsButton, colorAttr);
-        ImageViewCompat.setImageTintList(playerOpenLyricsButton, ColorStateList.valueOf(color));
+        setActionActive(playerOpenLyricsButton, isLyricsActive);
     }
 
     public void updateQueueButtonTint(boolean isQueueActive) {
-        if (playerOpenQueueButton == null)
+        setActionActive(playerOpenQueueButton, isQueueActive);
+    }
+
+    private void setActionActive(MaterialButton button, boolean active) {
+        if (button == null)
             return;
-        int colorAttr = isQueueActive
-                ? com.google.android.material.R.attr.colorPrimary
-                : com.google.android.material.R.attr.colorOnSurface;
-        int color = com.google.android.material.color.MaterialColors.getColor(playerOpenQueueButton, colorAttr);
-        ImageViewCompat.setImageTintList(playerOpenQueueButton, ColorStateList.valueOf(color));
+        int onSurface = MaterialColors.getColor(button, com.google.android.material.R.attr.colorOnSurface);
+        int surface = MaterialColors.getColor(button, com.google.android.material.R.attr.colorSurface);
+        ColorStateList content = ColorStateList.valueOf(active ? surface : onSurface);
+        button.setBackgroundTintList(active
+                ? ColorStateList.valueOf(onSurface)
+                : androidx.core.content.ContextCompat.getColorStateList(button.getContext(), R.color.player_control_container));
+        button.setIconTint(content);
+        button.setTextColor(content);
+    }
+
+    private void styleTimeBar() {
+        DefaultTimeBar timeBar = bind.getRoot().findViewById(androidx.media3.ui.R.id.exo_progress);
+        if (timeBar == null)
+            return;
+        int onSurface = MaterialColors.getColor(timeBar, com.google.android.material.R.attr.colorOnSurface);
+        timeBar.setPlayedColor(onSurface);
+        timeBar.setScrubberColor(onSurface);
+        timeBar.setBufferedColor(ColorUtils.setAlphaComponent(onSurface, 0x5C));
+        timeBar.setUnplayedColor(ColorUtils.setAlphaComponent(onSurface, 0x38));
     }
 
     private void initMediaListenable() {

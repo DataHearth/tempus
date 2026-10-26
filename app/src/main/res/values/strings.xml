@@ -343,6 +343,11 @@
     <string name="player_queue_all_downloaded">All songs already downloaded</string>
     <string name="player_queue_loaded">Queue loaded</string>
     <string name="player_queue_no_saved_queue">No saved queue found</string>
+    <string name="player_queue_now_playing">Now playing</string>
+    <string name="player_queue_next_up">Next up</string>
+    <string name="player_action_timer">Timer</string>
+    <string name="player_action_lyrics">Lyrics</string>
+    <string name="player_action_queue">Queue</string>
     <string name="player_lyrics_download_content_description">Download lyrics for offline playback</string>
     <string name="player_lyrics_downloaded_content_description">Lyrics downloaded for offline playback</string>
     <string name="player_lyrics_download_success">Lyrics saved for offline playback.</string>

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -70,7 +72,6 @@ fun PlayerQueueItem(
     isPrior: Boolean,
     isDragging: Boolean,
     itemContainerColor: Color,
-    cornerRadius: Dp,
     showRating: Boolean,
     onClick: (Int, Child) -> Unit,
     onRemove: (Int, QueueSongItem) -> Unit,
@@ -150,33 +151,34 @@ fun PlayerQueueItem(
             }
         },
         content = {
-            val itemBackground = if (isCurrent) {
-                MaterialTheme.colorScheme.surfaceContainerHighest
-            } else {
-                itemContainerColor
-            }
+            val rowShape = RoundedCornerShape(if (isCurrent) 16.dp else 12.dp)
 
             Surface(
                 modifier = modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(rowShape)
                     .clickable { onClick(index, item.song) },
-                color = itemBackground,
-                shape = RoundedCornerShape(12.dp),
+                color = itemContainerColor,
+                shape = rowShape,
                 tonalElevation = if (isDragging) 8.dp else 0.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .heightIn(min = 56.dp)
+                        .padding(
+                            start = 8.dp,
+                            end = 0.dp,
+                            top = if (isCurrent) 8.dp else 0.dp,
+                            bottom = if (isCurrent) 8.dp else 0.dp
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Artwork with play/pause overlay
                     QueueArtwork(
                         coverArtId = item.song.coverArtId,
                         size = 160,
-                        cornerRadius = cornerRadius,
-                        modifier = Modifier.size(52.dp),
+                        cornerRadius = if (isCurrent) 8.dp else 6.dp,
+                        modifier = Modifier.size(if (isCurrent) 52.dp else 44.dp),
                         overlayContent = if (isCurrent) {
                             {
                                 Box(
@@ -207,10 +209,10 @@ fun PlayerQueueItem(
                         Text(
                             text = item.song.title ?: "",
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium
+                                fontSize = if (isCurrent) 15.sp else 14.sp,
+                                fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Medium
                             ),
-                            color = (if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
-                                .copy(alpha = textAlpha),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = textAlpha),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = if (isCurrent) Modifier.basicMarquee() else Modifier
@@ -220,7 +222,7 @@ fun PlayerQueueItem(
 
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = textAlpha),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

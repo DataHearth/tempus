@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
@@ -148,6 +149,7 @@ class PlayerQueueBridge @JvmOverloads constructor(
                     }
                 }
                 val effectiveIsPlaying = if (isLanActive) (lanState?.playing == true) else (isPlayingState ?: false)
+                val coverTint by playerBottomSheetViewModel.coverTint.observeAsState()
 
                 PlayerQueueSheet(
                     isOpen = isQueueOpen,
@@ -155,6 +157,7 @@ class PlayerQueueBridge @JvmOverloads constructor(
                     queueSongs = currentRawSongs,
                     currentIndex = currentIndex,
                     currentSongId = currentSongIdState,
+                    currentItemColor = coverTint?.band?.let { Color(it) },
                     isPlaying = effectiveIsPlaying,
                     downloadedIds = downloadedIds,
                     externalRefreshTrigger = externalRefresh,
