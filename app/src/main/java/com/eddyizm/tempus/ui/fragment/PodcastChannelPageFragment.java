@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -53,7 +54,7 @@ public class PodcastChannelPageFragment extends Fragment implements ClickCallbac
         podcastChannelPageViewModel = new ViewModelProvider(requireActivity()).get(PodcastChannelPageViewModel.class);
 
         Bundle args = getArguments();
-        PodcastChannel channelArg = args != null ? args.getParcelable(Constants.PODCAST_CHANNEL_OBJECT) : null;
+        PodcastChannel channelArg = args != null ? BundleCompat.getParcelable(args, Constants.PODCAST_CHANNEL_OBJECT, PodcastChannel.class) : null;
         if (channelArg == null) {
             if (activity != null && activity.navController != null) activity.navController.navigateUp();
             return view;
@@ -178,7 +179,7 @@ public class PodcastChannelPageFragment extends Fragment implements ClickCallbac
 
     @Override
     public void onPodcastEpisodeClick(Bundle bundle) {
-        MediaManager.startPodcast(mediaBrowserListenableFuture, bundle.getParcelable(Constants.PODCAST_OBJECT));
+        MediaManager.startPodcast(mediaBrowserListenableFuture, BundleCompat.getParcelable(bundle, Constants.PODCAST_OBJECT, PodcastEpisode.class));
         activity.setBottomSheetInPeek(true);
     }
 
@@ -189,7 +190,7 @@ public class PodcastChannelPageFragment extends Fragment implements ClickCallbac
 
     @Override
     public void onPodcastEpisodeAltClick(Bundle bundle) {
-        PodcastEpisode episode = bundle.getParcelable(Constants.PODCAST_OBJECT);
+        PodcastEpisode episode = BundleCompat.getParcelable(bundle, Constants.PODCAST_OBJECT, PodcastEpisode.class);
         podcastChannelPageViewModel.requestPodcastEpisodeDownload(episode);
 
         Snackbar.make(requireView(), R.string.podcast_episode_download_request_snackbar, Snackbar.LENGTH_SHORT)

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
@@ -37,7 +38,7 @@ public class PlaylistBottomSheetDialog extends BottomSheetDialogFragment impleme
         View view = inflater.inflate(R.layout.bottom_sheet_playlist_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (playlist = args.getParcelable(Constants.PLAYLIST_OBJECT)) == null) {
+        if (args == null || (playlist = BundleCompat.getParcelable(args, Constants.PLAYLIST_OBJECT, PlaylistWithSongs.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

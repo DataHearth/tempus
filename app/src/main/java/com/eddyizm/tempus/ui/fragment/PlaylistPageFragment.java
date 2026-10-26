@@ -18,9 +18,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
+import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -59,7 +62,7 @@ import java.util.stream.Collectors;
 import kotlin.collections.ArrayDeque;
 
 @UnstableApi
-public class PlaylistPageFragment extends Fragment implements ClickCallback {
+public class PlaylistPageFragment extends Fragment implements ClickCallback, MenuProvider {
     private FragmentPlaylistPageBinding bind;
     private MainActivity activity;
     private PlaylistPageViewModel playlistPageViewModel;
@@ -78,11 +81,11 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.playlist_page_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -118,7 +121,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
         playbackViewModel = new ViewModelProvider(requireActivity()).get(PlaybackViewModel.class);
 
         Bundle args = getArguments();
-        Playlist playlistArg = args != null ? args.getParcelable(Constants.PLAYLIST_OBJECT) : null;
+        Playlist playlistArg = args != null ? BundleCompat.getParcelable(args, Constants.PLAYLIST_OBJECT, Playlist.class) : null;
         if (playlistArg == null) {
             if (activity != null && activity.navController != null) activity.navController.navigateUp();
             return view;
@@ -187,7 +190,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_download_playlist) {
             if (downloadAllWaiting) return true;
             downloadAllWaiting = true;
@@ -474,7 +477,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
         activity.setBottomSheetInPeek(true);
     }
 
@@ -485,7 +488,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
         // hold a song twice and Child compares by value. No index while a remove or an undo is
         // out, which hides the option in the sheet.
         List<Child> songs = playlistPageViewModel.getPlaylistSongLiveList().getValue();
-        Child track = bundle.getParcelable(Constants.TRACK_OBJECT);
+        Child track = BundleCompat.getParcelable(bundle, Constants.TRACK_OBJECT, Child.class);
         if (songs != null) {
             int index = -1;
             for (int i = 0; i < songs.size(); i++) {

@@ -22,14 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -39,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,8 +58,6 @@ import com.eddyizm.tempus.util.FavoriteRegistry
 import com.eddyizm.tempus.util.MusicUtil
 import com.eddyizm.tempus.util.Preferences
 import com.eddyizm.tempus.util.RadioCoverArtDownloader
-
-private class StateHolder<T>(var value: T? = null)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -91,10 +86,6 @@ fun PlayerQueueItem(
     val currentIndex by rememberUpdatedState(index)
     val currentOnRemove by rememberUpdatedState(onRemove)
     val currentItem by rememberUpdatedState(item)
-    // confirmValueChange is captured on first composition: read these through
-    // updated state or rows keep their original dismiss behavior forever.
-    val currentIsCurrent by rememberUpdatedState(isCurrent)
-    val currentCanDismiss by rememberUpdatedState(canDismiss)
 
     val downloadDirUri = remember { Preferences.getDownloadDirectoryUri() }
     val downloaderManager = remember(context) { DownloadUtil.getDownloadTracker(context) }
@@ -125,37 +116,19 @@ fun PlayerQueueItem(
     ).trim()
 
     var hasTriggeredDismiss by remember(item.song.id) { mutableStateOf(false) }
-    var itemWidthPx by remember { mutableFloatStateOf(0f) }
-    val dismissStateRef = remember { StateHolder<SwipeToDismissBoxState>() }
-
-    val dismissState = rememberSwipeToDismissBoxState(
-        positionalThreshold = { it * 0.4f },
-        confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart && !currentIsCurrent && currentCanDismiss) {
-                val offset = runCatching { dismissStateRef.value?.requireOffset() }.getOrNull() ?: 0f
-                val fraction = if (itemWidthPx > 0f) kotlin.math.abs(offset) / itemWidthPx else 1f
-                if (fraction < 0.4f) {
-                    return@rememberSwipeToDismissBoxState false
-                }
-                if (!hasTriggeredDismiss) {
-                    hasTriggeredDismiss = true
-                    currentOnRemove(currentIndex, currentItem)
-                }
-                true
-            } else {
-                false
-            }
-        }
-    )
-    dismissStateRef.value = dismissState
+    val dismissState = rememberSwipeToDismissBoxState(positionalThreshold = { it * 0.4f })
 
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = !isCurrent && canDismiss,
-        modifier = Modifier
-            .fillMaxWidth()
-            .onSizeChanged { itemWidthPx = it.width.toFloat() },
+        onDismiss = { direction ->
+            if (direction == SwipeToDismissBoxValue.EndToStart && !hasTriggeredDismiss) {
+                hasTriggeredDismiss = true
+                currentOnRemove(currentIndex, currentItem)
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
         backgroundContent = {
             if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart ||
                 dismissState.targetValue == SwipeToDismissBoxValue.EndToStart

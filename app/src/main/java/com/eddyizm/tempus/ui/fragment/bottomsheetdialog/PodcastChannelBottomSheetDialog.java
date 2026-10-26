@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
@@ -37,7 +38,7 @@ public class PodcastChannelBottomSheetDialog extends BottomSheetDialogFragment i
         View view = inflater.inflate(R.layout.bottom_sheet_podcast_channel_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (podcastChannel = args.getParcelable(Constants.PODCAST_CHANNEL_OBJECT)) == null) {
+        if (args == null || (podcastChannel = BundleCompat.getParcelable(args, Constants.PODCAST_CHANNEL_OBJECT, PodcastChannel.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

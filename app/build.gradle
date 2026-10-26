@@ -149,6 +149,7 @@ dependencies {
     implementation libs.media3.exoplayer
     implementation libs.media3.ui
     implementation libs.media3.exoplayer.hls
+    implementation libs.media3.inspector
     implementation libs.media3.datasource.okhttp
     tempusImplementation libs.media3.cast
     playImplementation libs.media3.cast
@@ -175,6 +176,9 @@ dependencies {
         }
     }
     implementation libs.kotlin.metadata
+    // Guava's class files reference these annotations; without them javac warns "unknown enum constant Level.FULL".
+    compileOnly libs.j2objc.annotations
+    implementation libs.guava
     implementation(libs.colorpickerview)
 
     testImplementation 'junit:junit:4.13.2'
@@ -184,6 +188,10 @@ dependencies {
 
     androidTestImplementation libs.androidx.test.ext.junit
     androidTestImplementation libs.androidx.test.runner
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
 java {

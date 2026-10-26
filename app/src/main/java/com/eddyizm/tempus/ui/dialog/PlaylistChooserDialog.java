@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.dialog;
 
+import androidx.core.os.BundleCompat;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.DialogPlaylistChooserBinding;
 import com.eddyizm.tempus.interfaces.ClickCallback;
+import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.subsonic.models.Playlist;
 import com.eddyizm.tempus.ui.adapter.PlaylistDialogHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
@@ -62,7 +64,7 @@ public class PlaylistChooserDialog extends DialogFragment implements ClickCallba
     }
 
     private void setSongInfo() {
-        playlistChooserViewModel.setSongsToAdd(requireArguments().getParcelableArrayList(Constants.TRACKS_OBJECT));
+        playlistChooserViewModel.setSongsToAdd(BundleCompat.getParcelableArrayList(requireArguments(), Constants.TRACKS_OBJECT, Child.class));
     }
 
     private void launchPlaylistEditor() {
@@ -105,7 +107,7 @@ public class PlaylistChooserDialog extends DialogFragment implements ClickCallba
     @Override
     public void onPlaylistClick(Bundle bundle) {
         if (playlistChooserViewModel.getSongsToAdd() != null && !playlistChooserViewModel.getSongsToAdd().isEmpty()) {
-            Playlist playlist = bundle.getParcelable(Constants.PLAYLIST_OBJECT);
+            Playlist playlist = BundleCompat.getParcelable(bundle, Constants.PLAYLIST_OBJECT, Playlist.class);
             playlistChooserViewModel.addSongsToPlaylist(this, getDialog(), playlist.getId());
         } else {
             Toast.makeText(requireContext(), R.string.playlist_chooser_dialog_toast_add_failure, Toast.LENGTH_SHORT).show();

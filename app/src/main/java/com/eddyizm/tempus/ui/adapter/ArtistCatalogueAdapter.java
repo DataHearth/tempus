@@ -48,9 +48,10 @@ public class ArtistCatalogueAdapter extends RecyclerView.Adapter<ArtistCatalogue
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             artists.clear();
-            if (results.count > 0) artists.addAll((List) results.values);
+            if (results.count > 0) artists.addAll((List<ArtistID3>) results.values);
             notifyDataSetChanged();
         }
     };

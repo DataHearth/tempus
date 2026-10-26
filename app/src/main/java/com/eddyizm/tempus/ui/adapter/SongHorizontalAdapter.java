@@ -96,6 +96,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
+            @SuppressWarnings("unchecked")
             List<Child> newSongs = (List<Child>) results.values;
             differ.submitList(newSongs, () -> {
                 for (int pos : currentPlayingPositions) {

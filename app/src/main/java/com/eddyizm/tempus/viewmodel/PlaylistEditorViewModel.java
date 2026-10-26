@@ -47,7 +47,7 @@ public class PlaylistEditorViewModel extends AndroidViewModel {
     }
 
     public void createPlaylist(String name, PlaylistRepository.PlaylistActionCallback callback) {
-        playlistRepository.createPlaylist(null, name, new ArrayList(Lists.transform(toAdd, Child::getId)), callback);
+        playlistRepository.createPlaylist(null, name, new ArrayList<>(Lists.transform(toAdd, Child::getId)), callback);
     }
 
     public void updatePlaylist(String name, PlaylistRepository.PlaylistActionCallback callback) {

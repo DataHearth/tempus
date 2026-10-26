@@ -1,5 +1,8 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import androidx.core.os.BundleCompat;
+import com.eddyizm.tempus.subsonic.models.AlbumID3;
+import com.eddyizm.tempus.subsonic.models.ArtistID3;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,8 +20,9 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -34,6 +38,7 @@ import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
 import com.eddyizm.tempus.subsonic.models.Child;
+import com.eddyizm.tempus.subsonic.models.Genre;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.SongHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
@@ -45,7 +50,7 @@ import java.util.Collections;
 import java.util.List;
 
 @UnstableApi
-public class SongListPageFragment extends Fragment implements ClickCallback {
+public class SongListPageFragment extends Fragment implements ClickCallback, MenuProvider {
     private static final String TAG = "SongListPageFragment";
 
     private FragmentSongListPageBinding bind;
@@ -62,7 +67,7 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
@@ -131,12 +136,12 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
             bind.pageTitleLabel.setText(R.string.song_list_page_recently_added);
         } else if (args.getString(Constants.MEDIA_BY_GENRE) != null) {
             songListPageViewModel.title = Constants.MEDIA_BY_GENRE;
-            songListPageViewModel.genre = args.getParcelable(Constants.GENRE_OBJECT);
+            songListPageViewModel.genre = BundleCompat.getParcelable(args, Constants.GENRE_OBJECT, Genre.class);
             songListPageViewModel.toolbarTitle = songListPageViewModel.genre.getGenre();
             bind.pageTitleLabel.setText(songListPageViewModel.genre.getGenre());
         } else if (args.getString(Constants.MEDIA_BY_ARTIST) != null) {
             songListPageViewModel.title = Constants.MEDIA_BY_ARTIST;
-            songListPageViewModel.artist = args.getParcelable(Constants.ARTIST_OBJECT);
+            songListPageViewModel.artist = BundleCompat.getParcelable(args, Constants.ARTIST_OBJECT, ArtistID3.class);
             songListPageViewModel.toolbarTitle = getString(R.string.song_list_page_top, songListPageViewModel.artist.getName());
             bind.pageTitleLabel.setText(getString(R.string.song_list_page_top, songListPageViewModel.artist.getName()));
         } else if (args.getString(Constants.MEDIA_BY_GENRES) != null) {
@@ -158,8 +163,8 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
             songListPageViewModel.title = Constants.MEDIA_DOWNLOADED;
             songListPageViewModel.toolbarTitle = getString(R.string.song_list_page_downloaded);
             bind.pageTitleLabel.setText(getString(R.string.song_list_page_downloaded));
-        } else if (args.getParcelable(Constants.ALBUM_OBJECT) != null) {
-            songListPageViewModel.album = args.getParcelable(Constants.ALBUM_OBJECT);
+        } else if (BundleCompat.getParcelable(args, Constants.ALBUM_OBJECT, AlbumID3.class) != null) {
+            songListPageViewModel.album = BundleCompat.getParcelable(args, Constants.ALBUM_OBJECT, AlbumID3.class);
             songListPageViewModel.title = Constants.MEDIA_FROM_ALBUM;
             songListPageViewModel.toolbarTitle = songListPageViewModel.album.getName();
             bind.pageTitleLabel.setText(songListPageViewModel.album.getName());
@@ -182,7 +187,7 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
         bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (bind == null) return;
 
-            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                 bind.toolbar.setTitle(songListPageViewModel.toolbarTitle);
             } else {
                 bind.toolbar.setTitle(R.string.empty_string);
@@ -242,7 +247,7 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -264,6 +269,11 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 
     private void hideKeyboard(View view) {
@@ -341,7 +351,7 @@ public class SongListPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onMediaClick(Bundle bundle) {
         hideKeyboard(requireView());
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
         activity.setBottomSheetInPeek(true);
     }
 

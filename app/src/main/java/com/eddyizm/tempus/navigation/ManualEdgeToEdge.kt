@@ -67,6 +67,7 @@ private interface EdgeToEdgeImpl {
 @RequiresApi(29)
 private class EdgeToEdgeApi29 : EdgeToEdgeImpl {
 
+    @Suppress("DEPRECATION")
     override fun setUp(window: Window, view: View, theme: Resources.Theme) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val resources = view.resources
@@ -83,6 +84,7 @@ private class EdgeToEdgeApi29 : EdgeToEdgeImpl {
 @RequiresApi(26)
 private class EdgeToEdgeApi26 : EdgeToEdgeImpl {
 
+    @Suppress("DEPRECATION")
     override fun setUp(window: Window, view: View, theme: Resources.Theme) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val resources = view.resources
@@ -100,6 +102,7 @@ private class EdgeToEdgeApi26 : EdgeToEdgeImpl {
 @RequiresApi(23)
 private class EdgeToEdgeApi23 : EdgeToEdgeImpl {
 
+    @Suppress("DEPRECATION")
     override fun setUp(window: Window, view: View, theme: Resources.Theme) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val resources = view.resources
@@ -107,7 +110,6 @@ private class EdgeToEdgeApi23 : EdgeToEdgeImpl {
         window.statusBarColor = transparent
         val controller = WindowInsetsControllerCompat(window, view)
         controller.isAppearanceLightStatusBars = true
-        @Suppress("DEPRECATION")
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
     }
 }

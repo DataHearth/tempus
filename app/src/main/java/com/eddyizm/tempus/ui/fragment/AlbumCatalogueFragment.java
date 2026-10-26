@@ -19,8 +19,9 @@ import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.core.view.ViewCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
@@ -43,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 @OptIn(markerClass = UnstableApi.class)
-public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
+public class AlbumCatalogueFragment extends Fragment implements ClickCallback, MenuProvider {
     private static final String TAG = "AlbumCatalogueFragment";
 
     private FragmentAlbumCatalogueBinding bind;
@@ -58,7 +59,7 @@ public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
         currentSortOrder = Preferences.getAlbumSortOrder();
 
         initData();
@@ -132,7 +133,7 @@ public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
         bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (bind == null) return;
 
-            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                 bind.toolbar.setTitle(R.string.album_catalogue_title);
             } else {
                 bind.toolbar.setTitle(R.string.empty_string);
@@ -218,7 +219,7 @@ public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -240,6 +241,11 @@ public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 
     private void hideKeyboard(View view) {

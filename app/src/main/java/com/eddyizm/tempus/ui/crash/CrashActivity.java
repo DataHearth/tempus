@@ -123,7 +123,7 @@ public class CrashActivity extends AppCompatActivity {
 
     private void setupBottomNav(BottomNavigationView nav) {
         String toolbarTitle = "Crash Landing";
-        nav.setOnNavigationItemSelectedListener(item -> {
+        nav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.crash_nav_info) {
                 loadFragment(new CrashInfoFragment(), toolbarTitle);

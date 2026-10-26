@@ -46,6 +46,7 @@ public class GenreCatalogueAdapter extends RecyclerView.Adapter<GenreCatalogueAd
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             genres = ((ArrayList<Genre>) results.values);
             notifyDataSetChanged();

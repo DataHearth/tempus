@@ -1,5 +1,7 @@
 package com.eddyizm.tempus.ui.dialog;
 
+import androidx.core.os.BundleCompat;
+import com.eddyizm.tempus.subsonic.models.Child;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -17,6 +19,7 @@ import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.DialogPlaylistEditorBinding;
 import com.eddyizm.tempus.interfaces.PlaylistCallback;
 import com.eddyizm.tempus.repository.PlaylistRepository;
+import com.eddyizm.tempus.subsonic.models.Playlist;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.PlaylistEditorViewModel;
@@ -67,12 +70,12 @@ public class PlaylistEditorDialog extends DialogFragment {
     }
 
     private void setParameterInfo() {
-        if (requireArguments().getParcelableArrayList(Constants.TRACKS_OBJECT) != null) {
-            playlistEditorViewModel.setSongsToAdd(requireArguments().getParcelableArrayList(Constants.TRACKS_OBJECT));
+        if (BundleCompat.getParcelableArrayList(requireArguments(), Constants.TRACKS_OBJECT, Child.class) != null) {
+            playlistEditorViewModel.setSongsToAdd(BundleCompat.getParcelableArrayList(requireArguments(), Constants.TRACKS_OBJECT, Child.class));
             playlistEditorViewModel.setPlaylistToEdit(null);
-        } else if (requireArguments().getParcelable(Constants.PLAYLIST_OBJECT) != null) {
+        } else if (BundleCompat.getParcelable(requireArguments(), Constants.PLAYLIST_OBJECT, Playlist.class) != null) {
             playlistEditorViewModel.setSongsToAdd(null);
-            playlistEditorViewModel.setPlaylistToEdit(requireArguments().getParcelable(Constants.PLAYLIST_OBJECT));
+            playlistEditorViewModel.setPlaylistToEdit(BundleCompat.getParcelable(requireArguments(), Constants.PLAYLIST_OBJECT, Playlist.class));
 
             if (playlistEditorViewModel.getPlaylistToEdit() != null) {
                 bind.playlistNameTextView.setText(playlistEditorViewModel.getPlaylistToEdit().getName());

@@ -46,9 +46,10 @@ public class PodcastChannelCatalogueAdapter extends RecyclerView.Adapter<Podcast
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             podcastChannels.clear();
-            if (results.count > 0) podcastChannels.addAll((List) results.values);
+            if (results.count > 0) podcastChannels.addAll((List<PodcastChannel>) results.values);
             notifyDataSetChanged();
         }
     };

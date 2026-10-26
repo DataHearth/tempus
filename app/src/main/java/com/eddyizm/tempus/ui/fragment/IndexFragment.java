@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -57,7 +57,7 @@ public class IndexFragment extends Fragment implements ClickCallback {
         View view = bind.getRoot();
         indexViewModel = new ViewModelProvider(requireActivity()).get(IndexViewModel.class);
         directoryRepository = new DirectoryRepository();
-        musicFolder = getArguments() != null ? getArguments().getParcelable(Constants.MUSIC_FOLDER_OBJECT) : null;
+        musicFolder = getArguments() != null ? BundleCompat.getParcelable(getArguments(), Constants.MUSIC_FOLDER_OBJECT, MusicFolder.class) : null;
 
         initAppBar();
         initDirectoryListView();
@@ -104,7 +104,7 @@ public class IndexFragment extends Fragment implements ClickCallback {
         bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (bind == null) return;
 
-            if ((bind.indexInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+            if ((bind.indexInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                 bind.toolbar.setTitle(indexViewModel.getMusicFolderName());
             } else {
                 bind.toolbar.setTitle(R.string.empty_string);

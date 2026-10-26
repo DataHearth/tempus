@@ -16,9 +16,12 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
+import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -61,7 +64,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @UnstableApi
-public class AlbumPageFragment extends Fragment implements ClickCallback {
+public class AlbumPageFragment extends Fragment implements ClickCallback, MenuProvider {
     private FragmentAlbumPageBinding bind;
     private MainActivity activity;
     private AlbumPageViewModel albumPageViewModel;
@@ -75,13 +78,11 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
-    /** @noinspection deprecation*/
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.album_page_menu, menu);
     }
 
@@ -102,7 +103,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
             return view;
         }
 
-        AlbumID3 albumArg = args.getParcelable(Constants.ALBUM_OBJECT);
+        AlbumID3 albumArg = BundleCompat.getParcelable(args, Constants.ALBUM_OBJECT, AlbumID3.class);
         if (albumArg == null) {
             if (activity != null && activity.navController != null) activity.navController.navigateUp();
             return view;
@@ -155,9 +156,8 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
         pendingArtistObserver = null;
     }
 
-        /** @noinspection deprecation*/
         @Override
-        public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        public boolean onMenuItemSelected(@NonNull MenuItem item) {
             if (item.getItemId() == R.id.action_rate_album) {
                 Bundle bundle = new Bundle();
                 AlbumID3 album = albumPageViewModel.getAlbum().getValue();
@@ -444,7 +444,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
         activity.setBottomSheetInPeek(true);
     }
 

@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -25,6 +26,7 @@ import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.util.Util;
 import com.google.android.material.elevation.SurfaceColors;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class CustomGlideRequest {
@@ -53,7 +55,7 @@ public class CustomGlideRequest {
                 .error(getPlaceholder(context, type))
                 .diskCacheStrategy(DEFAULT_DISK_CACHE_STRATEGY)
                 .signature(new ObjectKey(item != null ? item : 0))
-                .transform(new CenterCrop(), new RoundedCorners(CustomGlideRequest.CORNER_RADIUS));
+                .transform(new MultiTransformation<Bitmap>(Arrays.asList(new CenterCrop(), new RoundedCorners(CustomGlideRequest.CORNER_RADIUS))));
     }
 
     @Nullable

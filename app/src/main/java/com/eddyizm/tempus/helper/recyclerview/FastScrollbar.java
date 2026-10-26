@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -83,7 +82,7 @@ public class FastScrollbar extends LinearLayout {
         final int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                if (event.getX() < handle.getX() - ViewCompat.getPaddingStart(handle)) return false;
+                if (event.getX() < handle.getX() - handle.getPaddingStart()) return false;
                 if (currentAnimator != null) currentAnimator.cancel();
                 if (bubble != null && bubble.getVisibility() == INVISIBLE) showBubble();
                 handle.setSelected(true);

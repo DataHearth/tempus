@@ -55,6 +55,7 @@ public class AlbumHorizontalAdapter extends RecyclerView.Adapter<AlbumHorizontal
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             albums = (List<AlbumID3>) results.values;
             notifyDataSetChanged();

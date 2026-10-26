@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -71,8 +72,8 @@ public class RadioEditorDialog extends DialogFragment {
         // clean state — otherwise a retained toEdit / isSuccess leaks between add and edit flows.
         radioEditorViewModel = new ViewModelProvider(this).get(RadioEditorViewModel.class);
 
-        if (getArguments() != null && getArguments().getParcelable(Constants.INTERNET_RADIO_STATION_OBJECT) != null) {
-            radioEditorViewModel.setRadioToEdit(requireArguments().getParcelable(Constants.INTERNET_RADIO_STATION_OBJECT));
+        if (getArguments() != null && BundleCompat.getParcelable(getArguments(), Constants.INTERNET_RADIO_STATION_OBJECT, InternetRadioStation.class) != null) {
+            radioEditorViewModel.setRadioToEdit(BundleCompat.getParcelable(requireArguments(), Constants.INTERNET_RADIO_STATION_OBJECT, InternetRadioStation.class));
         }
 
         setupObservers();

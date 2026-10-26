@@ -16,8 +16,9 @@ import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.core.view.ViewCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
@@ -33,7 +34,7 @@ import com.eddyizm.tempus.ui.adapter.PodcastChannelCatalogueAdapter;
 import com.eddyizm.tempus.viewmodel.PodcastChannelCatalogueViewModel;
 
 @OptIn(markerClass = UnstableApi.class)
-public class PodcastChannelCatalogueFragment extends Fragment implements ClickCallback {
+public class PodcastChannelCatalogueFragment extends Fragment implements ClickCallback, MenuProvider {
     private static final String TAG = "PodcastChannelCatalogue";
 
     private FragmentPodcastChannelCatalogueBinding bind;
@@ -45,7 +46,7 @@ public class PodcastChannelCatalogueFragment extends Fragment implements ClickCa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class PodcastChannelCatalogueFragment extends Fragment implements ClickCa
         bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (bind == null) return;
 
-            if ((bind.podcastChannelInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+            if ((bind.podcastChannelInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                 bind.toolbar.setTitle(R.string.podcast_channel_catalogue_title);
             } else {
                 bind.toolbar.setTitle(R.string.empty_string);
@@ -115,7 +116,7 @@ public class PodcastChannelCatalogueFragment extends Fragment implements ClickCa
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -137,6 +138,11 @@ public class PodcastChannelCatalogueFragment extends Fragment implements ClickCa
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 
     private void hideKeyboard(View view) {

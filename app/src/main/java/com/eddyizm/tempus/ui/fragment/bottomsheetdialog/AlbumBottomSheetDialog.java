@@ -15,6 +15,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
@@ -71,7 +72,7 @@ public class AlbumBottomSheetDialog extends BottomSheetDialogFragment implements
         View view = inflater.inflate(R.layout.bottom_sheet_album_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (album = args.getParcelable(Constants.ALBUM_OBJECT)) == null) {
+        if (args == null || (album = BundleCompat.getParcelable(args, Constants.ALBUM_OBJECT, AlbumID3.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

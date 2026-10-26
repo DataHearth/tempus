@@ -4,13 +4,13 @@ import static com.eddyizm.tempus.navigation.ManualEdgeToEdgeKt.setUpEdgeToEdge;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +42,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.eddyizm.tempus.BuildConfig;
 import com.eddyizm.tempus.R;
-import com.eddyizm.tempus.broadcast.receiver.ConnectivityStatusBroadcastReceiver;
 import com.eddyizm.tempus.databinding.ActivityMainBinding;
 import com.eddyizm.tempus.github.utils.UpdateUtil;
 import com.eddyizm.tempus.helper.ThemeHelper;
@@ -96,12 +95,22 @@ public class MainActivity extends BaseActivity {
     public NavController navController;
     private NavigationController navigationController;
     private BottomSheetController bottomSheetController;
-    public BottomSheetBehavior bottomSheetBehavior;
+    public BottomSheetBehavior<View> bottomSheetBehavior;
     private boolean isLandscape = false;
     private AssetLinkNavigator assetLinkNavigator;
     private AssetLinkUtil.AssetLink pendingAssetLink;
 
-    ConnectivityStatusBroadcastReceiver connectivityStatusBroadcastReceiver;
+    private final ConnectivityManager.NetworkCallback offlineModeCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(@NonNull Network network) {
+            showOfflineMode(false);
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            showOfflineMode(true);
+        }
+    };
     private Intent pendingDownloadPlaybackIntent;
     private boolean pendingOpenNowPlaying = false;
 
@@ -157,7 +166,6 @@ public class MainActivity extends BaseActivity {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         assetLinkNavigator = new AssetLinkNavigator(this);
 
-        connectivityStatusBroadcastReceiver = new ConnectivityStatusBroadcastReceiver(this);
         connectivityStatusReceiverManager(true);
 
         isLandscape = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
@@ -592,12 +600,20 @@ public class MainActivity extends BaseActivity {
 
     // CONNECTION
     private void connectivityStatusReceiverManager(boolean isActive) {
+        ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
         if (isActive) {
-            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(connectivityStatusBroadcastReceiver, filter);
+            // The default-network callback stays silent while there is no network at all.
+            showOfflineMode(connectivityManager.getActiveNetwork() == null);
+            connectivityManager.registerDefaultNetworkCallback(offlineModeCallback);
         } else {
-            unregisterReceiver(connectivityStatusBroadcastReceiver);
+            connectivityManager.unregisterNetworkCallback(offlineModeCallback);
         }
+    }
+
+    private void showOfflineMode(boolean offline) {
+        runOnUiThread(() -> {
+            if (bind != null) bind.offlineModeTextView.setVisibility(offline ? View.VISIBLE : View.GONE);
+        });
     }
 
     private void pingServer() {
@@ -720,10 +736,10 @@ public class MainActivity extends BaseActivity {
 
     private void checkConnectionType() {
         if (Preferences.isWifiOnly()) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
 
-            if (networkInfo != null && networkInfo.getType() != ConnectivityManager.TYPE_WIFI) {
+            if (capabilities != null && !capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 ConnectionAlertDialog dialog = new ConnectionAlertDialog();
                 dialog.show(getSupportFragmentManager(), null);
             }

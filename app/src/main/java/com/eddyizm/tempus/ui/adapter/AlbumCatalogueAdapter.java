@@ -54,6 +54,7 @@ public class AlbumCatalogueAdapter extends RecyclerView.Adapter<AlbumCatalogueAd
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             albums = (List<AlbumID3>) results.values;
             notifyDataSetChanged();

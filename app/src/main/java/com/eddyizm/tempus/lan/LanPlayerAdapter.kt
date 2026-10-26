@@ -63,7 +63,7 @@ class LanPlayerAdapter : SimpleBasePlayer(Looper.getMainLooper()) {
     override fun handleSetShuffleModeEnabled(enabled: Boolean): ListenableFuture<*> {
         LanRemoteSession.command("shuffle", if (enabled) 1 else 0); return Futures.immediateVoidFuture()
     }
-    override fun handleSetVolume(volume: Float): ListenableFuture<*> {
+    override fun handleSetVolume(volume: Float, volumeOperationType: Int): ListenableFuture<*> {
         LanRemoteSession.command("volume", (volume * 100).toLong()); return Futures.immediateVoidFuture()
     }
     override fun handleSetPlaybackParameters(parameters: PlaybackParameters): ListenableFuture<*> {

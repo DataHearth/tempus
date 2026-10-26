@@ -63,7 +63,9 @@ public class AlbumCatalogueViewModel extends AndroidViewModel {
 
                 List<AlbumID3> liveAlbum = albumList.getValue();
 
-                liveAlbum.addAll((List<AlbumID3>) media);
+                @SuppressWarnings("unchecked")
+                List<AlbumID3> loaded = (List<AlbumID3>) media;
+                liveAlbum.addAll(loaded);
                 albumList.setValue(liveAlbum);
 
                 if (media.size() == size) {
