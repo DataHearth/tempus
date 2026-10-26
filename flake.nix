@@ -30,9 +30,18 @@
               platformVersions = [ "37.0" ];
               buildToolsVersions = [ buildToolsVersion ];
               includeEmulator = false;
+              includeNDK = true;
+              # AGP strips native libs with its own default NDK version and won't use any
+              # other unless android.ndkVersion is set; bump this together with AGP.
+              ndkVersions = [ "28.2.13676358" ];
             }).androidsdk;
           androidHome = "${androidSdk}/libexec/android-sdk";
-          aapt2Override = "android.aapt2FromMavenOverride=${androidHome}/build-tools/${buildToolsVersion}/aapt2";
+          nixosGradleProps = [
+            "android.aapt2FromMavenOverride=${androidHome}/build-tools/${buildToolsVersion}/aapt2"
+            # Silences AGP's "experimental option" notice for the override above. A command-line
+            # value replaces gradle.properties' one rather than merging, so repeat its entry.
+            "android.sync.suppressAgpWarnings=LIBRARY_CONSTRAINTS_SHOULD_BE_DISABLED,UNSUPPORTED_PROJECT_OPTION_USE"
+          ];
 
           releaseTasks = [
             "assembleTempusRelease"
@@ -146,8 +155,8 @@
             gradleBuildTask = releaseTasks;
             gradleFlags = [
               "-Porg.gradle.java.installations.auto-download=false"
-              "-P${aapt2Override}"
-            ];
+            ]
+            ++ map (p: "-P${p}") nixosGradleProps;
 
             # AGP writes the debug keystore under ANDROID_USER_HOME (~/.android by default).
             preBuild = ''
@@ -205,7 +214,7 @@
               }
               {
                 name = "GRADLE_OPTS";
-                value = "-Dorg.gradle.project.${aapt2Override}";
+                value = toString (map (p: "-Dorg.gradle.project.${p}") nixosGradleProps);
               }
             ];
             commands = [

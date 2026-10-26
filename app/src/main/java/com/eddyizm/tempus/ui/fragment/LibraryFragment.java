@@ -2,6 +2,7 @@ package com.eddyizm.tempus.ui.fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -280,7 +281,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     }
 
     private void refreshPlaylistView() {
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
 
         final Runnable runnable = () -> {
             if (getView() != null && bind != null && libraryViewModel != null)

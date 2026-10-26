@@ -38,6 +38,7 @@ class MediaService : BaseMediaService(), SessionAvailabilityListener {
         return sessionCallback!!
     }
 
+    @Suppress("DEPRECATION")
     override fun playerInitHook() {
         super.playerInitHook()
         initializeCastPlayer()
@@ -45,6 +46,7 @@ class MediaService : BaseMediaService(), SessionAvailabilityListener {
             setPlayer(null, castPlayer)
     }
 
+    @Suppress("DEPRECATION")
     override fun releasePlayers() {
         if (this::castPlayer.isInitialized) {
             castPlayer.setSessionAvailabilityListener(null)

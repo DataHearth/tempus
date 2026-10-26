@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import androidx.core.os.BundleCompat;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.text.Editable;
@@ -26,6 +27,7 @@ import com.eddyizm.tempus.helper.recyclerview.CustomLinearSnapHelper;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
+import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.subsonic.models.Playlist;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.AlbumAdapter;
@@ -304,7 +306,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
         songHorizontalAdapter.notifyDataSetChanged();
         activity.setBottomSheetInPeek(true);
     }
@@ -316,7 +318,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onPlaylistClick(Bundle bundle) {
-        PlaylistWithSongs playlistWithSongs = bundle.getParcelable(Constants.PLAYLIST_OBJECT);
+        PlaylistWithSongs playlistWithSongs = BundleCompat.getParcelable(bundle, Constants.PLAYLIST_OBJECT, PlaylistWithSongs.class);
         if (playlistWithSongs != null) {
             MediaManager.startQueue(mediaBrowserListenableFuture, playlistWithSongs.getEntries(), 0);
         }

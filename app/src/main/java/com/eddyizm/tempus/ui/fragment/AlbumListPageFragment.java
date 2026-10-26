@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import androidx.core.os.BundleCompat;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,8 +18,9 @@ import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.core.view.ViewCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
@@ -29,6 +31,7 @@ import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentAlbumListPageBinding;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.subsonic.models.AlbumID3;
+import com.eddyizm.tempus.subsonic.models.ArtistID3;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.AlbumHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
@@ -37,7 +40,7 @@ import com.eddyizm.tempus.viewmodel.AlbumListPageViewModel;
 import java.util.List;
 
 @OptIn(markerClass = UnstableApi.class)
-public class AlbumListPageFragment extends Fragment implements ClickCallback {
+public class AlbumListPageFragment extends Fragment implements ClickCallback, MenuProvider {
     private FragmentAlbumListPageBinding bind;
 
     private MainActivity activity;
@@ -47,7 +50,7 @@ public class AlbumListPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
@@ -96,12 +99,12 @@ public class AlbumListPageFragment extends Fragment implements ClickCallback {
         } else if (args.getString(Constants.ALBUM_DOWNLOADED) != null) {
             albumListPageViewModel.title = Constants.ALBUM_DOWNLOADED;
             bind.pageTitleLabel.setText(R.string.album_list_page_downloaded);
-        } else if (args.getParcelable(Constants.ARTIST_OBJECT) != null) {
-            albumListPageViewModel.artist = args.getParcelable(Constants.ARTIST_OBJECT);
+        } else if (BundleCompat.getParcelable(args, Constants.ARTIST_OBJECT, ArtistID3.class) != null) {
+            albumListPageViewModel.artist = BundleCompat.getParcelable(args, Constants.ARTIST_OBJECT, ArtistID3.class);
             albumListPageViewModel.title = Constants.ALBUM_FROM_ARTIST;
             bind.pageTitleLabel.setText(albumListPageViewModel.artist.getName());
-        } else if (args.getParcelableArrayList(Constants.ALBUMS_OBJECT) != null) {
-            albumListPageViewModel.albums = args.getParcelableArrayList(Constants.ALBUMS_OBJECT);
+        } else if (BundleCompat.getParcelableArrayList(args, Constants.ALBUMS_OBJECT, AlbumID3.class) != null) {
+            albumListPageViewModel.albums = BundleCompat.getParcelableArrayList(args, Constants.ALBUMS_OBJECT, AlbumID3.class);
             albumListPageViewModel.title = args.getString(Constants.ALBUM_LIST_TITLE, "");
             bind.pageTitleLabel.setText(albumListPageViewModel.title);
         }
@@ -123,7 +126,7 @@ public class AlbumListPageFragment extends Fragment implements ClickCallback {
         bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (bind == null) return;
 
-            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+            if ((bind.albumInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                 bind.toolbar.setTitle(R.string.album_list_page_title);
             } else {
                 bind.toolbar.setTitle(R.string.empty_string);
@@ -161,7 +164,7 @@ public class AlbumListPageFragment extends Fragment implements ClickCallback {
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.artist_list_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -183,6 +186,11 @@ public class AlbumListPageFragment extends Fragment implements ClickCallback {
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 
     private void hideKeyboard(View view) {

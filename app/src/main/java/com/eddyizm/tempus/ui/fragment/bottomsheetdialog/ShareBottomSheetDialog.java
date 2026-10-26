@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 
@@ -40,7 +41,7 @@ public class ShareBottomSheetDialog extends BottomSheetDialogFragment implements
         View view = inflater.inflate(R.layout.bottom_sheet_share_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (share = args.getParcelable(Constants.SHARE_OBJECT)) == null) {
+        if (args == null || (share = BundleCompat.getParcelable(args, Constants.SHARE_OBJECT, Share.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

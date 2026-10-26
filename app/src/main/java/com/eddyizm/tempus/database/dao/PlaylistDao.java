@@ -66,7 +66,7 @@ public interface PlaylistDao {
     /**
      * Full list query used by PlaylistCatalogueFragment.
      */
-    @Query("SELECT p.*, (pp.playlistId IS NOT NULL) AS isPinned " +
+    @Query("SELECT p.* " +
        "FROM playlist p " +
        "LEFT JOIN pinned_playlist pp ON p.id = pp.playlistId " +
        "ORDER BY " +
@@ -84,7 +84,7 @@ public interface PlaylistDao {
      * Preview query used by HomeViewModel.
      * Includes a LIMIT clause to only return a subset (e.g., 5 items).
      */
-    @Query("SELECT p.*, (pp.playlistId IS NOT NULL) AS isPinned " +
+    @Query("SELECT p.* " +
        "FROM playlist p " +
        "LEFT JOIN pinned_playlist pp ON p.id = pp.playlistId " +
        "ORDER BY " +

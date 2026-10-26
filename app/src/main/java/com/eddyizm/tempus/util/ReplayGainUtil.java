@@ -12,7 +12,7 @@ import androidx.media3.common.TrackGroup;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.Player;
-import androidx.media3.exoplayer.MetadataRetriever;
+import androidx.media3.inspector.MetadataRetriever;
 import androidx.media3.exoplayer.source.TrackGroupArray;
 import androidx.media3.extractor.metadata.id3.InternalFrame;
 import androidx.media3.extractor.metadata.id3.TextInformationFrame;

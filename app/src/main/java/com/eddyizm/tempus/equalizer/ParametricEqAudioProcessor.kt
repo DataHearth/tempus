@@ -1,6 +1,7 @@
 package com.eddyizm.tempus.equalizer
 
 import androidx.media3.common.C
+import androidx.media3.common.audio.AudioProcessor
 import androidx.media3.common.audio.AudioProcessor.AudioFormat
 import androidx.media3.common.audio.BaseAudioProcessor
 import androidx.media3.common.util.UnstableApi
@@ -93,7 +94,7 @@ class ParametricEqAudioProcessor : BaseAudioProcessor() {
     }
 
     // media3 flushes at every gapless transition, so keep the filter state unless something changed.
-    override fun onFlush() {
+    override fun onFlush(streamMetadata: AudioProcessor.StreamMetadata) {
         if (dsp == null || profile !== builtFor || inputAudioFormat != builtFormat) rebuild()
     }
 

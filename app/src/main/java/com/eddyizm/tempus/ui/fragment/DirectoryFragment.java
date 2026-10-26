@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
+import androidx.core.os.BundleCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
@@ -49,7 +51,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @UnstableApi
-public class DirectoryFragment extends Fragment implements ClickCallback {
+public class DirectoryFragment extends Fragment implements ClickCallback, MenuProvider {
     private static final String TAG = "DirectoryFragment";
 
     private FragmentDirectoryBinding bind;
@@ -66,12 +68,11 @@ public class DirectoryFragment extends Fragment implements ClickCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.directory_page_menu, menu);
 
         menuItem = menu.getItem(0);
@@ -117,7 +118,7 @@ public class DirectoryFragment extends Fragment implements ClickCallback {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_download_directory) {
             DownloadDirectoryDialog dialog = new DownloadDirectoryDialog(new DialogClickCallback() {
                 @Override
@@ -168,7 +169,7 @@ public class DirectoryFragment extends Fragment implements ClickCallback {
             bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
                 if (bind == null) return;
 
-                if ((bind.directoryInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
+                if ((bind.directoryInfoSector.getHeight() + verticalOffset) < (2 * bind.toolbar.getMinimumHeight())) {
                     bind.toolbar.setTitle(directory.getName());
                 } else {
                     bind.toolbar.setTitle(R.string.empty_string);
@@ -199,7 +200,7 @@ public class DirectoryFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
     }
 
     @Override

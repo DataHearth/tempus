@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -36,7 +39,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import android.content.Intent;
-import android.app.Activity;
 import android.net.Uri;
 import android.widget.Toast;
 
@@ -47,7 +49,6 @@ import java.util.Objects;
 @UnstableApi
 public class DownloadFragment extends Fragment implements ClickCallback {
     private static final String TAG = "DownloadFragment";
-    private static final int REQUEST_CODE_PICK_DIRECTORY = 1002;
 
     private FragmentDownloadBinding bind;
     private MainActivity activity;
@@ -60,6 +61,20 @@ public class DownloadFragment extends Fragment implements ClickCallback {
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
 
     private MaterialToolbar materialToolbar;
+
+    private final ActivityResultLauncher<Uri> directoryPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocumentTree(),
+            uri -> {
+                if (uri != null) {
+                    requireContext().getContentResolver().takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    );
+                    Preferences.setDownloadDirectoryUri(uri.toString());
+                    ExternalAudioReader.refreshCache();
+                    Toast.makeText(requireContext(), "Download directory set", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Nullable
     @Override
@@ -258,8 +273,7 @@ public class DownloadFragment extends Fragment implements ClickCallback {
             }
 
             if (menuItem.getItemId() == R.id.menu_download_set_directory) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                startActivityForResult(intent, REQUEST_CODE_PICK_DIRECTORY);
+                directoryPickerLauncher.launch(null);
                 return true;
             }
 
@@ -309,7 +323,7 @@ public class DownloadFragment extends Fragment implements ClickCallback {
 
     @Override
     public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        MediaManager.startQueue(mediaBrowserListenableFuture, BundleCompat.getParcelableArrayList(bundle, Constants.TRACKS_OBJECT, Child.class), bundle.getInt(Constants.ITEM_POSITION));
         activity.setBottomSheetInPeek(true);
     }
 
@@ -321,22 +335,5 @@ public class DownloadFragment extends Fragment implements ClickCallback {
     @Override
     public void onDownloadGroupLongClick(Bundle bundle) {
         Navigation.findNavController(requireView()).navigate(R.id.downloadBottomSheetDialog, bundle);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_PICK_DIRECTORY && resultCode == Activity.RESULT_OK) {
-            Uri uri = data.getData();
-            if (uri != null) {
-                requireContext().getContentResolver().takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                );
-                Preferences.setDownloadDirectoryUri(uri.toString());
-                ExternalAudioReader.refreshCache();
-                Toast.makeText(requireContext(), "Download directory set", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }

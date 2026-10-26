@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
@@ -39,7 +40,7 @@ public class PodcastEpisodeBottomSheetDialog extends BottomSheetDialogFragment i
         View view = inflater.inflate(R.layout.bottom_sheet_podcast_episode_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (podcastEpisode = args.getParcelable(Constants.PODCAST_OBJECT)) == null) {
+        if (args == null || (podcastEpisode = BundleCompat.getParcelable(args, Constants.PODCAST_OBJECT, PodcastEpisode.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

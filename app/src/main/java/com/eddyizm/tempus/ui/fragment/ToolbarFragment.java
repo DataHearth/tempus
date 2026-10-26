@@ -11,7 +11,9 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UnstableApi
-public class ToolbarFragment extends Fragment {
+public class ToolbarFragment extends Fragment implements MenuProvider {
     private static final String TAG = "ToolbarFragment";
 
     private static final int MUSIC_LIBRARY_MENU_GROUP = 1;
@@ -55,12 +57,11 @@ public class ToolbarFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, this, Lifecycle.State.RESUMED);
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.main_page_menu, menu);
         Flavors.setUpRouteButton(requireContext(), menu);
         // Read on every build. Settings replaces the host screen, whose setSupportActionBar on return rebuilds this menu.
@@ -105,7 +106,7 @@ public class ToolbarFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onMenuItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
             activity.navController.navigate(R.id.searchFragment);
             return true;

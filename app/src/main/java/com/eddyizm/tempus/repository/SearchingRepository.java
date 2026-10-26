@@ -144,7 +144,7 @@ public class SearchingRepository {
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        List<String> newSuggestions = new ArrayList();
+                        List<String> newSuggestions = new ArrayList<>();
 
                         if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getSearchResult3() != null) {
                             if (response.body().getSubsonicResponse().getSearchResult3().getArtists() != null) {

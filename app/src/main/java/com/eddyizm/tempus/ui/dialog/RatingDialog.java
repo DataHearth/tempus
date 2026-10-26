@@ -1,5 +1,8 @@
 package com.eddyizm.tempus.ui.dialog;
 
+import androidx.core.os.BundleCompat;
+import com.eddyizm.tempus.subsonic.models.AlbumID3;
+import com.eddyizm.tempus.subsonic.models.ArtistID3;
 import android.app.Dialog;
 import android.os.Bundle;
 
@@ -9,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.DialogRatingBinding;
+import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.viewmodel.RatingViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -48,12 +52,12 @@ public class RatingDialog extends DialogFragment {
     }
 
     private void setElementInfo() {
-        if (requireArguments().getParcelable(Constants.TRACK_OBJECT) != null) {
-            ratingViewModel.setSong(requireArguments().getParcelable(Constants.TRACK_OBJECT));
-        } else if (requireArguments().getParcelable(Constants.ALBUM_OBJECT) != null) {
-            ratingViewModel.setAlbum(requireArguments().getParcelable(Constants.ALBUM_OBJECT));
-        } else if (requireArguments().getParcelable(Constants.ARTIST_OBJECT) != null) {
-            ratingViewModel.setArtist(requireArguments().getParcelable(Constants.ARTIST_OBJECT));
+        if (BundleCompat.getParcelable(requireArguments(), Constants.TRACK_OBJECT, Child.class) != null) {
+            ratingViewModel.setSong(BundleCompat.getParcelable(requireArguments(), Constants.TRACK_OBJECT, Child.class));
+        } else if (BundleCompat.getParcelable(requireArguments(), Constants.ALBUM_OBJECT, AlbumID3.class) != null) {
+            ratingViewModel.setAlbum(BundleCompat.getParcelable(requireArguments(), Constants.ALBUM_OBJECT, AlbumID3.class));
+        } else if (BundleCompat.getParcelable(requireArguments(), Constants.ARTIST_OBJECT, ArtistID3.class) != null) {
+            ratingViewModel.setArtist(BundleCompat.getParcelable(requireArguments(), Constants.ARTIST_OBJECT, ArtistID3.class));
         }
     }
 

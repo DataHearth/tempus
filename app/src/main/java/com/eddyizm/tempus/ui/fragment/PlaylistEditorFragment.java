@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -50,7 +51,7 @@ public class PlaylistEditorFragment extends Fragment implements PlaylistDialogSo
         playlistEditorViewModel = new ViewModelProvider(this).get(PlaylistEditorViewModel.class);
 
         Bundle args = getArguments();
-        Playlist playlist = args != null ? args.getParcelable(Constants.PLAYLIST_OBJECT) : null;
+        Playlist playlist = args != null ? BundleCompat.getParcelable(args, Constants.PLAYLIST_OBJECT, Playlist.class) : null;
         if (playlist == null) {
             NavHostFragment.findNavController(this).navigateUp();
             return bind.getRoot();

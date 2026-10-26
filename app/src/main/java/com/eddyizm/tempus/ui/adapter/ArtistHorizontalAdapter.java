@@ -55,6 +55,7 @@ public class ArtistHorizontalAdapter extends RecyclerView.Adapter<ArtistHorizont
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             artists = (List<ArtistID3>) results.values;
             notifyDataSetChanged();

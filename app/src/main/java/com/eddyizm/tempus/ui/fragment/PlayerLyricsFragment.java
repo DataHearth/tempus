@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -273,7 +274,7 @@ public class PlayerLyricsFragment extends Fragment {
                 return;
             }
 
-            syncLyricsHandler = new Handler();
+            syncLyricsHandler = new Handler(Looper.getMainLooper());
             syncLyricsRunnable = () -> {
                 if (syncLyricsHandler != null) {
                     if (bind != null) {

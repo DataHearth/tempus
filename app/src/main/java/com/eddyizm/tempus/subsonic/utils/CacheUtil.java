@@ -80,6 +80,7 @@ public class CacheUtil {
 
     // Before Android 10 a VPN can report only TRANSPORT_VPN even while it runs over another network.
     // getActiveNetworkInfo() describes the network under the VPN there, and is null when it has none.
+    @SuppressWarnings("deprecation")
     private static boolean hasNetworkUnderVpn(ConnectivityManager connectivityManager) {
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
         return info != null && info.isConnected();

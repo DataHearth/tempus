@@ -16,6 +16,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
@@ -80,7 +81,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
         View view = inflater.inflate(R.layout.bottom_sheet_song_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (song = args.getParcelable(Constants.TRACK_OBJECT)) == null) {
+        if (args == null || (song = BundleCompat.getParcelable(args, Constants.TRACK_OBJECT, Child.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

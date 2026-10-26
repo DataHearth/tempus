@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.fragment.NavHostFragment;
@@ -53,7 +54,7 @@ public class PlaylistRowBottomSheetDialog extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.bottom_sheet_playlist_row_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (playlist = args.getParcelable(Constants.PLAYLIST_OBJECT)) == null) {
+        if (args == null || (playlist = BundleCompat.getParcelable(args, Constants.PLAYLIST_OBJECT, Playlist.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
@@ -168,7 +169,7 @@ public final class AssetLinkUtil {
                 textView.setTextColor((Integer) original);
             } else {
                 int defaultColor = MaterialColors.getColor(view, com.google.android.material.R.attr.colorOnSurface,
-                        ContextCompat.getColor(view.getContext(), android.R.color.primary_text_light));
+                        Color.BLACK);
                 textView.setTextColor(defaultColor);
             }
         }

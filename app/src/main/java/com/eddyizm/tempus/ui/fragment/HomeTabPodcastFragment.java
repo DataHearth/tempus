@@ -1,5 +1,7 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import android.os.Looper;
+import androidx.core.os.BundleCompat;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.interfaces.PodcastCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
+import com.eddyizm.tempus.subsonic.models.PodcastEpisode;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.PodcastChannelHorizontalAdapter;
 import com.eddyizm.tempus.ui.adapter.PodcastEpisodeAdapter;
@@ -159,7 +162,7 @@ public class HomeTabPodcastFragment extends Fragment implements ClickCallback, P
 
     @Override
     public void onPodcastEpisodeClick(Bundle bundle) {
-        MediaManager.startPodcast(mediaBrowserListenableFuture, bundle.getParcelable(Constants.PODCAST_OBJECT));
+        MediaManager.startPodcast(mediaBrowserListenableFuture, BundleCompat.getParcelable(bundle, Constants.PODCAST_OBJECT, PodcastEpisode.class));
         activity.setBottomSheetInPeek(true);
     }
 
@@ -180,7 +183,7 @@ public class HomeTabPodcastFragment extends Fragment implements ClickCallback, P
 
     @Override
     public void onDismiss() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (podcastViewModel != null) podcastViewModel.refreshPodcastChannels(getViewLifecycleOwner());
             if (podcastViewModel != null) podcastViewModel.refreshNewestPodcastEpisodes(getViewLifecycleOwner());
         }, 1000);

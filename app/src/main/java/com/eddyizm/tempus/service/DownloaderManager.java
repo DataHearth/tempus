@@ -1,6 +1,6 @@
 package com.eddyizm.tempus.service;
 
-import static androidx.media3.common.util.Assertions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import android.content.Context;
 
@@ -51,12 +51,10 @@ public class DownloaderManager {
     }
 
     private DownloadRequest buildDownloadRequest(MediaItem mediaItem) {
-        return DownloadHelper
-                .forMediaItem(
-                        context,
-                        mediaItem,
-                        DownloadUtil.buildRenderersFactory(context, false),
-                        dataSourceFactory)
+        return new DownloadHelper.Factory()
+                .setDataSourceFactory(dataSourceFactory)
+                .setRenderersFactory(DownloadUtil.buildRenderersFactory(context, false))
+                .create(mediaItem)
                 .getDownloadRequest(Util.getUtf8Bytes(checkNotNull(mediaItem.mediaId)))
                 .copyWithId(mediaItem.mediaId);
     }

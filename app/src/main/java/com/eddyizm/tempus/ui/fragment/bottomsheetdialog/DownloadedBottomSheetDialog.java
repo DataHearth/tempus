@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
@@ -49,7 +50,7 @@ public class DownloadedBottomSheetDialog extends BottomSheetDialogFragment imple
         View view = inflater.inflate(R.layout.bottom_sheet_downloaded_dialog, container, false);
 
         Bundle args = getArguments();
-        if (args == null || (songs = args.getParcelableArrayList(Constants.DOWNLOAD_GROUP)) == null) {
+        if (args == null || (songs = BundleCompat.getParcelableArrayList(args, Constants.DOWNLOAD_GROUP, Child.class)) == null) {
             dismissAllowingStateLoss();
             return view;
         }

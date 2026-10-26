@@ -1,5 +1,7 @@
 package com.eddyizm.tempus.ui.fragment;
 
+import android.os.Looper;
+import androidx.core.os.BundleCompat;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +23,7 @@ import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.interfaces.RadioCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
+import com.eddyizm.tempus.subsonic.models.InternetRadioStation;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.InternetRadioStationAdapter;
 import com.eddyizm.tempus.ui.dialog.RadioEditorDialog;
@@ -125,7 +128,7 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
 
     @Override
     public void onInternetRadioStationClick(Bundle bundle) {
-        MediaManager.startRadio(mediaBrowserListenableFuture, bundle.getParcelable(Constants.INTERNET_RADIO_STATION_OBJECT));
+        MediaManager.startRadio(mediaBrowserListenableFuture, BundleCompat.getParcelable(bundle, Constants.INTERNET_RADIO_STATION_OBJECT, InternetRadioStation.class));
         activity.setBottomSheetInPeek(true);
     }
 
@@ -143,7 +146,7 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
 
     @Override
     public void onDismiss() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (radioViewModel != null)
                 radioViewModel.refreshInternetRadioStations(getViewLifecycleOwner());
         }, 1000);
