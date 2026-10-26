@@ -54,6 +54,7 @@
     <string name="album_page_release_dates_label">Released on %1$s, originally %2$s</string>
     <string name="album_page_shuffle_button">Shuffle</string>
     <string name="album_page_tracks_count_and_duration">%1$d songs  •  %2$d minutes</string>
+    <string name="duration_minutes_short">%d min</string>
     <string name="app_name">Tempus</string>
     <string name="artist_adapter_radio_station_starting">Searching…</string>
     <string name="artist_bottom_sheet_instant_mix">Instant mix</string>
@@ -81,8 +82,15 @@
     <string name="artist_page_title_soundtrack_section">Soundtracks</string>
     <string name="artist_page_title_live_section">Lives</string>
     <string name="artist_page_title_remix_section">Remixes</string>
+    <string name="artist_page_title_releases_section">Releases</string>
+    <plurals name="artist_page_album_count">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
     <string name="artist_page_title_appears_on_section">Appears On</string>
     <string name="artist_page_title_biography_more_button">More</string>
+    <string name="artist_page_title_biography_less_button">Less</string>
+    <string name="artist_page_biography_lastfm_button">Last.fm</string>
     <string name="artist_page_title_biography_section">Biography</string>
     <string name="artist_page_title_most_streamed_song_section">Top Songs</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">See all</string>
@@ -259,6 +267,7 @@
     <string name="menu_download_all_button">Download all</string>
     <string name="menu_rate_album">Rate album</string>
     <string name="menu_download_label">Download</string>
+    <string name="menu_album_info">Album info</string>
     <string name="menu_filter_all">All</string>
     <string name="menu_filter_download">Downloaded</string>
     <string name="menu_group_by_album">Album</string>

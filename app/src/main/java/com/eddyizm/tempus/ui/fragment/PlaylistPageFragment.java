@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.os.BundleCompat;
 import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
@@ -77,6 +78,8 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
     private boolean keptStateKnown;
     private List<String> lastSyncedIds;
     private boolean downloadAllWaiting;
+    private boolean pinned;
+    private String toolbarTitle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,8 +110,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         });
 
         searchView.setPadding(-32, 0, 0, 0);
-
-        initMenuOption(menu);
     }
 
     @Override
@@ -130,6 +131,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         init(playlistArg);
         initAppBar();
         initMusicButton();
+        initHeaderActions();
         initBackCover();
         initSongsView();
         initKeepSynced(savedInstanceState == null);
@@ -191,21 +193,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_download_playlist) {
-            if (downloadAllWaiting) return true;
-            downloadAllWaiting = true;
-            LiveData<List<Child>> live = playlistPageViewModel.songs();
-            live.observe(getViewLifecycleOwner(), new Observer<List<Child>>() {
-                @Override
-                public void onChanged(List<Child> songs) {
-                    if (songs == null) return;
-                    live.removeObserver(this);
-                    downloadAllWaiting = false;
-                    downloadMissing(songs);
-                }
-            });
-            return true;
-        } else if (item.getItemId() == R.id.action_keep_synced) {
+        if (item.getItemId() == R.id.action_keep_synced) {
             // If the songs are still loading, the songs observer runs the download when they arrive.
             boolean turnOn = !item.isChecked();
             if (!playlistPageViewModel.setKeptSynced(turnOn)) return true;
@@ -238,9 +226,9 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
                 public void onRenamed(String name) {
                     playlistPageViewModel.getPlaylist().setName(name);
 
+                    toolbarTitle = name;
                     if (bind != null) {
-                        bind.animToolbar.setTitle(name);
-                        bind.playlistNameLabel.setText(name);
+                        bind.playlistHeader.playlistNameLabel.setText(name);
                     }
                 }
             });
@@ -257,14 +245,41 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         playlistPageViewModel.updateLastPlayed(playlist.getId());
     }
 
-    private void initMenuOption(Menu menu) {
-        playlistPageViewModel.isPinned(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), isPinned -> {
-            menu.findItem(R.id.action_unpin_playlist).setVisible(isPinned);
-            menu.findItem(R.id.action_pin_playlist).setVisible(!isPinned);
+    private void downloadAll() {
+        if (downloadAllWaiting) return;
+        downloadAllWaiting = true;
+        LiveData<List<Child>> live = playlistPageViewModel.songs();
+        live.observe(getViewLifecycleOwner(), new Observer<List<Child>>() {
+            @Override
+            public void onChanged(List<Child> songs) {
+                if (songs == null) return;
+                live.removeObserver(this);
+                downloadAllWaiting = false;
+                downloadMissing(songs);
+            }
         });
-        playlistPageViewModel.isKeptSynced().observe(getViewLifecycleOwner(), kept -> {
-            menu.findItem(R.id.action_keep_synced).setChecked(kept);
+    }
+
+    private void initHeaderActions() {
+        bind.playlistHeader.playlistPageDownloadButton.setOnClickListener(v -> downloadAll());
+
+        playlistPageViewModel.isPinned(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), isPinned -> pinned = isPinned);
+        bind.playlistHeader.playlistPageMoreButton.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(requireContext(), v);
+            popup.inflate(R.menu.playlist_page_overflow_menu);
+            Menu menu = popup.getMenu();
+            menu.findItem(R.id.action_unpin_playlist).setVisible(pinned);
+            menu.findItem(R.id.action_pin_playlist).setVisible(!pinned);
+            menu.findItem(R.id.action_keep_synced).setChecked(keptSynced);
+            popup.setOnMenuItemClickListener(this::onMenuItemSelected);
+            popup.show();
         });
+    }
+
+    private void bindMetaLine(int songCount, long durationSeconds) {
+        bind.playlistHeader.playlistMetaLabel.setText(
+                getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount)
+                        + " · " + getString(R.string.duration_minutes_short, (int) (durationSeconds / 60)));
     }
 
     // The view model keeps the song list across reopens of the same playlist, so a kept playlist
@@ -310,11 +325,16 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
             activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        bind.animToolbar.setTitle(playlistPageViewModel.getPlaylist().getName());
+        toolbarTitle = playlistPageViewModel.getPlaylist().getName();
+        bind.animToolbar.setTitle(null);
+        bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, offset) -> {
+            if (bind == null) return;
+            boolean headerGone = appBarLayout.getTotalScrollRange() > 0 && -offset >= appBarLayout.getTotalScrollRange();
+            bind.animToolbar.setTitle(headerGone ? toolbarTitle : null);
+        });
 
-        bind.playlistNameLabel.setText(playlistPageViewModel.getPlaylist().getName());
-        bind.playlistSongCountLabel.setText(getString(R.string.playlist_song_count, playlistPageViewModel.getPlaylist().getSongCount()));
-        bind.playlistDurationLabel.setText(getString(R.string.playlist_duration, MusicUtil.getReadableDurationString(playlistPageViewModel.getPlaylist().getDuration(), false)));
+        bind.playlistHeader.playlistNameLabel.setText(playlistPageViewModel.getPlaylist().getName());
+        bindMetaLine(playlistPageViewModel.getPlaylist().getSongCount(), playlistPageViewModel.getPlaylist().getDuration());
 
         bind.animToolbar.setNavigationOnClickListener(v -> {
             hideKeyboard(v);
@@ -335,18 +355,18 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
                         .observe(getViewLifecycleOwner(), songs -> {
                             if (songs != null) {
 
-                                bind.playlistPagePlayButton.setEnabled(!songs.isEmpty());
-                                bind.playlistPageShuffleButton.setEnabled(!songs.isEmpty());
+                                bind.playlistHeader.playlistPagePlayButton.setEnabled(!songs.isEmpty());
+                                bind.playlistHeader.playlistPageShuffleButton.setEnabled(!songs.isEmpty());
 
                                 if (bind.songRecyclerViewPlaceholder != null) {
                                     bind.songRecyclerViewPlaceholder.setVisibility(View.GONE);
                                 }
 
-                                bind.playlistPagePlayButton.setOnClickListener(v -> {
+                                bind.playlistHeader.playlistPagePlayButton.setOnClickListener(v -> {
                                     MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
                                     activity.setBottomSheetInPeek(true);
                                 });
-                                bind.playlistPageShuffleButton.setOnClickListener(v -> {
+                                bind.playlistHeader.playlistPageShuffleButton.setOnClickListener(v -> {
                                     List<Child> shuffled = new ArrayList<>(songs);
                                     Collections.shuffle(shuffled);
                                     MediaManager.startQueue(mediaBrowserListenableFuture, shuffled, 0);
@@ -371,12 +391,12 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         String playlistCoverId = playlist.getCoverArtId();
 
         if (playlistCoverId != null && !playlistCoverId.trim().isEmpty()) {
-            bind.playlistCoverImageViewSingle.setVisibility(View.VISIBLE);
+            bind.playlistHeader.playlistCoverImageViewSingle.setVisibility(View.VISIBLE);
 
             CustomGlideRequest.Builder
                     .from(requireContext(), playlistCoverId, CustomGlideRequest.ResourceType.Playlist)
                     .build()
-                    .into(bind.playlistCoverImageViewSingle);
+                    .into(bind.playlistHeader.playlistCoverImageViewSingle);
 
         } else {
             playlistPageViewModel.getPlaylistSongLiveList().observe(getViewLifecycleOwner(), songs -> {
@@ -390,28 +410,28 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
                             .from(requireContext(), !randomSongs.isEmpty() ? randomSongs.get(0).getCoverArtId() : null, CustomGlideRequest.ResourceType.Song)
                             .build()
                             .transform(new GranularRoundedCorners(CustomGlideRequest.CORNER_RADIUS, 0, 0, 0))
-                            .into(bind.playlistCoverImageViewTopLeft);
+                            .into(bind.playlistHeader.playlistCoverImageViewTopLeft);
 
                     // Load Top-Right image (round top-right corner only)
                     CustomGlideRequest.Builder
                             .from(requireContext(), randomSongs.size() > 1 ? randomSongs.get(1).getCoverArtId() : null, CustomGlideRequest.ResourceType.Song)
                             .build()
                             .transform(new GranularRoundedCorners(0, CustomGlideRequest.CORNER_RADIUS, 0, 0))
-                            .into(bind.playlistCoverImageViewTopRight);
+                            .into(bind.playlistHeader.playlistCoverImageViewTopRight);
 
                     // Load Bottom-Left image (round bottom-left corner only)
                     CustomGlideRequest.Builder
                             .from(requireContext(), randomSongs.size() > 2 ? randomSongs.get(2).getCoverArtId() : null, CustomGlideRequest.ResourceType.Song)
                             .build()
                             .transform(new GranularRoundedCorners(0, 0, 0, CustomGlideRequest.CORNER_RADIUS))
-                            .into(bind.playlistCoverImageViewBottomLeft);
+                            .into(bind.playlistHeader.playlistCoverImageViewBottomLeft);
 
                     // Load Bottom-Right image (round bottom-right corner only)
                     CustomGlideRequest.Builder
                             .from(requireContext(), randomSongs.size() > 3 ? randomSongs.get(3).getCoverArtId() : null, CustomGlideRequest.ResourceType.Song)
                             .build()
                             .transform(new GranularRoundedCorners(0, 0, CustomGlideRequest.CORNER_RADIUS, 0))
-                            .into(bind.playlistCoverImageViewBottomRight);
+                            .into(bind.playlistHeader.playlistCoverImageViewBottomRight);
                 }
             });
         }
@@ -458,9 +478,8 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
             songHorizontalAdapter.setItems(songs);
             if (songs != null) {
                 bind.emptyPlaylistLabel.setVisibility(songs.isEmpty() ? View.VISIBLE : View.GONE);
-                bind.playlistSongCountLabel.setText(getString(R.string.playlist_song_count, songs.size()));
                 long totalDuration = songs.stream().mapToLong(s -> s.getDuration() != null ? s.getDuration() : 0).sum();
-                bind.playlistDurationLabel.setText(getString(R.string.playlist_duration, MusicUtil.getReadableDurationString(totalDuration, false)));
+                bindMetaLine(songs.size(), totalDuration);
                 if (keptSynced) syncIfChanged(songs);
             }
             reapplyPlayback();

@@ -3,6 +3,7 @@ package com.eddyizm.tempus.ui.fragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,9 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,29 +31,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentArtistPageBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.helper.recyclerview.CustomLinearSnapHelper;
 import com.eddyizm.tempus.helper.recyclerview.GridItemDecoration;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
+import com.eddyizm.tempus.subsonic.models.AlbumID3;
 import com.eddyizm.tempus.subsonic.models.ArtistID3;
 import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.AlbumCarouselAdapter;
-import com.eddyizm.tempus.ui.adapter.AlbumSectionsAdapter;
 import com.eddyizm.tempus.ui.adapter.ArtistCarouselAdapter;
 import com.eddyizm.tempus.ui.adapter.SongHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.MusicUtil;
-import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.util.TileSizeManager;
 import com.eddyizm.tempus.viewmodel.ArtistPageViewModel;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
 import com.eddyizm.tempus.util.FavoriteRegistry;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.color.MaterialColors;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -67,7 +71,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     private PlaybackViewModel playbackViewModel;
 
     private SongHorizontalAdapter songHorizontalAdapter;
-    private AlbumSectionsAdapter allAlbumsAdapter;
+    private AlbumCarouselAdapter releasesAdapter;
     private AlbumCarouselAdapter appearsOnAdapter;
     private ArtistCarouselAdapter similarArtistAdapter;
 
@@ -75,6 +79,13 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
     private int spanCount = 2;
     private int tileSpacing = 20;
+
+    private static final List<String> RELEASE_TYPE_ORDER = List.of(
+            "album", "ep", "single",
+            "compilation", "soundtrack", "live", "remix"
+    );
+    private String selectedReleaseType;
+    private boolean bioExpanded;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,6 +109,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
         init(view, artistArg);
         initAppBar();
+        initHeader();
         initArtistInfo();
         initPlayButtons();
         initTopSongsView();
@@ -132,6 +144,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     public void onDestroyView() {
         super.onDestroyView();
         emptyTopSongsTimerHandler.removeCallbacks(emptyTopSongsTimerRunnable);
+        bioExpanded = false;
         bind = null;
     }
 
@@ -147,38 +160,16 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
             activity.navController.navigate(R.id.action_artistPageFragment_to_songListPageFragment, bundle);
         });
 
-        ToggleButton favoriteToggle = view.findViewById(R.id.button_favorite);
+        MaterialButton favoriteToggle = bind.buttonFavorite;
         favoriteToggle.setChecked(FavoriteRegistry.resolve(FavoriteRegistry.Kind.ARTIST, artistPageViewModel.getArtist().getId(), artistPageViewModel.getArtist().getStarred() != null));
         favoriteToggle.setOnClickListener(v -> artistPageViewModel.setFavorite(requireContext()));
 
-        Button bioToggle = view.findViewById(R.id.button_toggle_bio);
-        bioToggle.setOnClickListener(v ->
-                Toast.makeText(getActivity(), R.string.artist_no_artist_info_toast, Toast.LENGTH_SHORT).show());
-
-        Button moreOptions = view.findViewById(R.id.button_more_options);
-        moreOptions.setOnClickListener(v -> {
+        bind.buttonMoreOptions.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             ArtistID3 artistForNav = artistPageViewModel.getArtist();
             bundle.putParcelable(Constants.ARTIST_OBJECT, artistForNav != null ? artistForNav.strippedForNav() : null);
             Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
         });
-
-        // Prevent top-left buttons from growing in height: remove text if it doesn't fit
-        Button shuffleBtn = view.findViewById(R.id.artist_page_shuffle_button);
-        Button radioBtn = view.findViewById(R.id.artist_page_radio_button);
-        if (shuffleBtn != null && radioBtn != null) {
-            view.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    try {
-                        adjustButtonToFit(shuffleBtn, R.string.artist_page_shuffle_button);
-                        adjustButtonToFit(radioBtn, R.string.artist_page_radio_button);
-                    } finally {
-                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-            });
-        }
 
         bind.artistPageContentLayout.post(() -> {
             if (bind == null) return;
@@ -200,9 +191,41 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         if (activity.getSupportActionBar() != null)
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        bind.collapsingToolbar.setTitle(artistPageViewModel.getArtist().getName());
+        bind.animToolbar.setTitle(null);
         bind.animToolbar.setNavigationOnClickListener(v -> activity.navController.navigateUp());
-        bind.collapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.white, null));
+        bind.fragmentArtistPageNestedScrollView.setOnScrollChangeListener((androidx.core.widget.NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (bind == null) return;
+            boolean nameGone = scrollY >= bind.artistNameLabel.getBottom();
+            bind.animToolbar.setTitle(nameGone ? artistPageViewModel.getArtist().getName() : null);
+        });
+    }
+
+    private void initHeader() {
+        ArtistID3 artist = artistPageViewModel.getArtist();
+        bind.artistNameLabel.setText(artist.getName());
+
+        int surface = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorSurface);
+        CoverTint.load(requireContext(), artistImageId(artist), tint -> {
+            if (bind == null) return;
+            bind.animToolbar.setBackgroundColor(tint.getBand());
+            bind.artistHeader.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface}));
+        });
+
+        bind.bioToggleTextView.setOnClickListener(v -> {
+            bioExpanded = !bioExpanded;
+            applyBioExpansion();
+        });
+    }
+
+    private static String artistImageId(ArtistID3 artist) {
+        return artist.getCoverArtId() != null && !artist.getCoverArtId().trim().isEmpty()
+                ? artist.getCoverArtId()
+                : artist.getId();
+    }
+
+    private void applyBioExpansion() {
+        bind.bioTextView.setMaxLines(bioExpanded ? Integer.MAX_VALUE : 3);
+        bind.bioToggleTextView.setText(bioExpanded ? R.string.artist_page_title_biography_less_button : R.string.artist_page_title_biography_more_button);
     }
 
     private void initArtistInfo() {
@@ -212,9 +235,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
             } else {
                 if (getContext() != null && bind != null) {
                     ArtistID3 currentArtist = artistPageViewModel.getArtist();
-                        String primaryId = currentArtist.getCoverArtId() != null && !currentArtist.getCoverArtId().trim().isEmpty()
-                            ? currentArtist.getCoverArtId()
-                            : currentArtist.getId();
+                    String primaryId = artistImageId(currentArtist);
                     
                     final String fallbackId = (Objects.requireNonNull(primaryId).equals(currentArtist.getCoverArtId()) &&
                                             currentArtist.getId() != null && 
@@ -266,7 +287,15 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
                     if (normalizedBio.isEmpty()) {
                         bind.bioTextView.setVisibility(View.GONE);
                     } else {
+                        bind.bioTextView.setVisibility(View.VISIBLE);
                         bind.bioTextView.setText(normalizedBio);
+                        applyBioExpansion();
+                        bind.bioTextView.post(() -> {
+                            if (bind == null || bind.bioTextView.getLayout() == null) return;
+                            android.text.Layout layout = bind.bioTextView.getLayout();
+                            boolean truncated = layout.getLineCount() > 0 && layout.getEllipsisCount(layout.getLineCount() - 1) > 0;
+                            bind.bioToggleTextView.setVisibility(truncated || bioExpanded ? View.VISIBLE : View.GONE);
+                        });
                     }
 
                     if (lastFmUrl == null) {
@@ -280,21 +309,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
                         bind.bioMoreTextViewClickable.setVisibility(View.VISIBLE);
                     }
 
-                    if (!normalizedBio.isEmpty() || lastFmUrl != null) {
-                        View view = bind.getRoot();
-
-                        Button bioToggle = view.findViewById(R.id.button_toggle_bio);
-                        bioToggle.setOnClickListener(v -> {
-                            if (bind != null) {
-                                boolean displayBio = Preferences.getArtistDisplayBiography();
-                                Preferences.setArtistDisplayBiography(!displayBio);
-                                bind.artistPageBioSector.setVisibility(displayBio ? View.GONE : View.VISIBLE);
-                            }
-                        });
-
-                        boolean displayBio = Preferences.getArtistDisplayBiography();
-                        bind.artistPageBioSector.setVisibility(displayBio ? View.VISIBLE : View.GONE);
-                    }
+                    bind.artistPageBioSector.setVisibility(!normalizedBio.isEmpty() || lastFmUrl != null ? View.VISIBLE : View.GONE);
                 }
             }
         });
@@ -339,6 +354,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         bind.mostStreamedSongRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, true, null);
+        songHorizontalAdapter.setShowRowNumbers(true);
         bind.mostStreamedSongRecyclerView.setAdapter(songHorizontalAdapter);
         setMediaBrowserListenableFuture();
         reapplyPlayback();
@@ -385,17 +401,15 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
     private void initCategorizedAlbumsView() {
 
-        bind.allAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        bind.allAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.allAlbumsRecyclerView.setHasFixedSize(true);
         bind.allAlbumsRecyclerView.setNestedScrollingEnabled(false);
-        allAlbumsAdapter = new AlbumSectionsAdapter(requireContext(), this);
-        bind.allAlbumsRecyclerView.setAdapter(allAlbumsAdapter);
+        releasesAdapter = new AlbumCarouselAdapter(this, false);
+        bind.allAlbumsRecyclerView.setAdapter(releasesAdapter);
         artistPageViewModel.getMapOfAlbums().observe(getViewLifecycleOwner(), albums -> {
             if (bind != null) {
-                bind.allAlbumsRecyclerView.setVisibility(albums != null && !albums.isEmpty() ? View.VISIBLE : View.GONE);
-                if (albums != null) {
-                    allAlbumsAdapter.setItems(albums);
-                }
+                bindArtistMeta(albums);
+                bindReleases(albums != null ? albums : Collections.emptyMap());
             }
         });
 
@@ -415,6 +429,80 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
                 }
             }
         });
+    }
+
+    private void bindArtistMeta(Map<String, List<AlbumID3>> albums) {
+        if (albums == null || albums.isEmpty()) {
+            bind.artistMetaLabel.setVisibility(View.GONE);
+            return;
+        }
+        int albumCount = 0;
+        int songCount = 0;
+        for (List<AlbumID3> releases : albums.values()) {
+            albumCount += releases.size();
+            for (AlbumID3 album : releases) {
+                songCount += album.getSongCount() != null ? album.getSongCount() : 0;
+            }
+        }
+        bind.artistMetaLabel.setText(getResources().getQuantityString(R.plurals.artist_page_album_count, albumCount, albumCount)
+                + " · " + getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount));
+        bind.artistMetaLabel.setVisibility(View.VISIBLE);
+    }
+
+    private void bindReleases(Map<String, List<AlbumID3>> albums) {
+        List<String> types = new ArrayList<>(albums.keySet());
+        types.sort(Comparator.comparing((String type) -> !RELEASE_TYPE_ORDER.contains(type))
+                .thenComparingInt(RELEASE_TYPE_ORDER::indexOf)
+                .thenComparing(Comparator.naturalOrder()));
+
+        bind.artistPageAllAlbumsSectors.setVisibility(types.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!types.contains(selectedReleaseType)) {
+            selectedReleaseType = types.isEmpty() ? null : types.get(0);
+        }
+
+        bind.releaseTypeChipGroup.setOnCheckedStateChangeListener(null);
+        bind.releaseTypeChipGroup.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        for (String type : types) {
+            Chip chip = (Chip) inflater.inflate(R.layout.chip_release_type, bind.releaseTypeChipGroup, false);
+            chip.setId(View.generateViewId());
+            chip.setTag(type);
+            chip.setText(releaseTypeTitle(type));
+            chip.setChecked(type.equals(selectedReleaseType));
+            bind.releaseTypeChipGroup.addView(chip);
+        }
+        bind.releaseTypeChipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            Chip checked = group.findViewById(checkedIds.get(0));
+            selectedReleaseType = (String) checked.getTag();
+            showSelectedReleases(albums);
+        });
+
+        showSelectedReleases(albums);
+    }
+
+    private void showSelectedReleases(Map<String, List<AlbumID3>> albums) {
+        List<AlbumID3> releases = selectedReleaseType != null
+                ? albums.getOrDefault(selectedReleaseType, Collections.emptyList())
+                : Collections.<AlbumID3>emptyList();
+        releasesAdapter.setItems(releases);
+        bind.allAlbumsRecyclerView.scrollToPosition(0);
+        bind.releasesSeeAllTextView.setVisibility(releases.size() > 5 ? View.VISIBLE : View.GONE);
+        bind.releasesSeeAllTextView.setOnClickListener(v -> navigateToAlbumList(releaseTypeTitle(selectedReleaseType), releases));
+    }
+
+    /** Server release types without a string of their own are shown as reported, capitalised. */
+    private String releaseTypeTitle(String type) {
+        switch (type) {
+            case "album": return getString(R.string.artist_page_title_album_section);
+            case "ep": return getString(R.string.artist_page_title_ep_section);
+            case "single": return getString(R.string.artist_page_title_single_section);
+            case "compilation": return getString(R.string.artist_page_title_compilation_section);
+            case "soundtrack": return getString(R.string.artist_page_title_soundtrack_section);
+            case "live": return getString(R.string.artist_page_title_live_section);
+            case "remix": return getString(R.string.artist_page_title_remix_section);
+            default: return Character.toUpperCase(type.charAt(0)) + type.substring(1);
+        }
     }
 
     private void navigateToAlbumList(String title, List<com.eddyizm.tempus.subsonic.models.AlbumID3> albums) {
@@ -524,29 +612,4 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     private void setMediaBrowserListenableFuture() {
         songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
     }
-
-    private void adjustButtonToFit(android.widget.Button btn, int textResId) {
-        if (btn == null) return;
-        String text = btn.getText() != null ? btn.getText().toString() : null;
-        if (text == null || text.isEmpty()) return;
-
-        float textWidth = btn.getPaint().measureText(text);
-        int available = btn.getWidth() - btn.getPaddingLeft() - btn.getPaddingRight() - dpToPx(48); // reserve ~48px for icon+padding
-
-        if (available <= 0 || textWidth > available) {
-            btn.setText("");
-            try {
-                btn.setContentDescription(getString(textResId));
-            } catch (Exception ignored) {}
-        } else {
-            if (btn.getContentDescription() == null || btn.getContentDescription().length() == 0) {
-                try { btn.setContentDescription(getString(textResId)); } catch (Exception ignored) {}
-            }
-        }
-    }
-
-    private int dpToPx(int dp) {
-        return (int) (dp * requireContext().getResources().getDisplayMetrics().density + 0.5f);
-    }
 }
-

@@ -9,6 +9,8 @@
     <dimen name="dots_height">2dp</dimen>
     <dimen name="downloaded_item_padding">12dp</dimen>
     <dimen name="artist_top_songs_height">@dimen/_147sdp</dimen>
+    <dimen name="album_track_number_width">28dp</dimen>
+    <dimen name="album_track_row_content_height">48dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>

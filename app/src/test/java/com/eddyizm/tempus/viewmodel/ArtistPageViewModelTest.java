@@ -29,7 +29,7 @@ public class ArtistPageViewModelTest {
     }
 
     // gonic reports [""] rather than omitting the field. Without the blank check the group
-    // key is "" and AlbumSectionsAdapter reads the first character of it.
+    // key is "" and the artist page reads the first character of it.
     @Test
     public void sectionType_fallsBackToTheSongCountWhenTheReleaseTypeIsBlank() {
         assertEquals("album", ArtistPageViewModel.sectionType(album(10, Arrays.asList(""))));

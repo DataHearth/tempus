@@ -123,4 +123,27 @@
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar.Button</item>
     </style>
+
+    <style name="ShapeAppearance.App.Cover" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="Widget.App.Button.RoundPlay" parent="Widget.Material3.Button">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="icon">@drawable/ic_play</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">32dp</item>
+    </style>
+
+    <style name="Widget.App.Chip.ReleaseType" parent="Widget.Material3.Chip.Filter">
+        <item name="checkedIconVisible">false</item>
+        <item name="chipStrokeColor">@color/release_chip_stroke</item>
+        <item name="chipBackgroundColor">@color/release_chip_background</item>
+    </style>
 </resources>

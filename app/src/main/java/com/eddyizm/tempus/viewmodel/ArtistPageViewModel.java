@@ -89,8 +89,8 @@ public class ArtistPageViewModel extends AndroidViewModel {
     }
 
     /**
-     * The section an album is filed under, never blank: AlbumSectionsAdapter titles a
-     * section outside its own list from the first character of this value.
+     * The release type an album is filed under, never blank: the artist page titles a
+     * type outside its own list from the first character of this value.
      */
     static String sectionType(AlbumID3 album) {
         List<String> releaseTypes = album.getReleaseTypes();

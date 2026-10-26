@@ -21,6 +21,11 @@
         android:title="@string/menu_add_to_queue_button"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_album_info"
+        android:checkable="true"
+        android:title="@string/menu_album_info"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_rate_album"
         android:icon="@drawable/ic_add"
         android:title="@string/menu_rate_album"

@@ -2,8 +2,14 @@ package com.eddyizm.tempus.ui.fragment;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +39,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentAlbumPageBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.model.Download;
 import com.eddyizm.tempus.subsonic.models.AlbumID3;
@@ -55,6 +61,8 @@ import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.AlbumPageViewModel;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
 import com.eddyizm.tempus.util.FavoriteRegistry;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.color.MaterialColors;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
@@ -73,6 +81,8 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
     private LiveData<ArtistID3> pendingArtist;
     private Observer<ArtistID3> pendingArtistObserver;
+    private String tintedCoverId;
+    private String toolbarTitle;
 
     /** @noinspection deprecation*/
     @Override
@@ -84,6 +94,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.album_page_menu, menu);
+        menu.findItem(R.id.action_album_info).setChecked(bind != null && bind.albumHeader.albumDetailView.getVisibility() == View.VISIBLE);
     }
 
     @Override
@@ -114,6 +125,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         initAlbumInfoTextButton();
         initAlbumNotes();
         initMusicButton();
+        initDownloadButton();
         initBackCover();
         initSongsView();
 
@@ -145,6 +157,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     public void onDestroyView() {
         removePendingArtistObserver();
         super.onDestroyView();
+        tintedCoverId = null;
         bind = null;
     }
 
@@ -169,18 +182,13 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
             }
 
         if (item.getItemId() == R.id.action_download_album) {
-            List<Child> songs = albumPageViewModel.getAlbumSongLiveList().getValue();
-            if (songs == null || songs.isEmpty()) {
-                return true;
-            }
-            if (Preferences.getDownloadDirectoryUri() == null) {
-                DownloadUtil.getDownloadTracker(requireContext()).download(
-                    MappingUtil.mapDownloads(songs),
-                    songs.stream().map(Download::new).collect(Collectors.toList())
-                );
-            } else {
-                songs.forEach(child -> ExternalAudioWriter.downloadToUserDirectory(requireContext(), child));
-            }
+            downloadAlbum();
+            return true;
+        }
+        if (item.getItemId() == R.id.action_album_info) {
+            boolean show = bind.albumHeader.albumDetailView.getVisibility() != View.VISIBLE;
+            bind.albumHeader.albumDetailView.setVisibility(show ? View.VISIBLE : View.GONE);
+            item.setChecked(show);
             return true;
         }
         if (item.getItemId() == R.id.action_add_to_playlist) {
@@ -210,9 +218,24 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         return false;
     }
 
+    private void downloadAlbum() {
+        List<Child> songs = albumPageViewModel.getAlbumSongLiveList().getValue();
+        if (songs == null || songs.isEmpty()) {
+            return;
+        }
+        if (Preferences.getDownloadDirectoryUri() == null) {
+            DownloadUtil.getDownloadTracker(requireContext()).download(
+                MappingUtil.mapDownloads(songs),
+                songs.stream().map(Download::new).collect(Collectors.toList())
+            );
+        } else {
+            songs.forEach(child -> ExternalAudioWriter.downloadToUserDirectory(requireContext(), child));
+        }
+    }
+
     private void init(View view, AlbumID3 albumArg) {
         albumPageViewModel.setAlbum(getViewLifecycleOwner(), albumArg);
-        ToggleButton favoriteToggle = view.findViewById(R.id.button_favorite);
+        MaterialButton favoriteToggle = bind.albumHeader.buttonFavorite;
         favoriteToggle.setChecked(FavoriteRegistry.resolve(FavoriteRegistry.Kind.ALBUM, albumArg.getId(), albumArg.getStarred() != null));
 
         favoriteToggle.setOnClickListener(v -> {
@@ -234,15 +257,21 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
 
         }
 
+        bind.animToolbar.setTitle(null);
+        bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, offset) -> {
+            if (bind == null) return;
+            boolean headerGone = appBarLayout.getTotalScrollRange() > 0 && -offset >= appBarLayout.getTotalScrollRange();
+            bind.animToolbar.setTitle(headerGone ? toolbarTitle : null);
+        });
+
         albumPageViewModel.getAlbum().observe(getViewLifecycleOwner(), album -> {
             if (bind != null && album != null) {
-                bind.animToolbar.setTitle(album.getName());
+                toolbarTitle = album.getName();
 
-                bind.albumNameLabel.setText(album.getName());
-                bind.albumArtistLabel.setText(album.getArtist());
-                AssetLinkUtil.applyLinkAppearance(bind.albumArtistLabel);
+                bind.albumHeader.albumNameLabel.setText(album.getName());
+                bind.albumHeader.albumArtistLabel.setText(album.getArtist());
                 AssetLinkUtil.AssetLink artistLink = buildArtistLink(album);
-                bind.albumArtistLabel.setOnLongClickListener(v -> {
+                bind.albumHeader.albumArtistRow.setOnLongClickListener(v -> {
                     if (artistLink != null) {
                         AssetLinkUtil.copyToClipboard(requireContext(), artistLink);
                         Toast.makeText(requireContext(), getString(R.string.asset_link_copied_toast, artistLink.id), Toast.LENGTH_SHORT).show();
@@ -250,52 +279,36 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
                     }
                     return false;
                 });
-                bind.albumReleaseYearLabel.setText(album.getYear() != 0 ? String.valueOf(album.getYear()) : "");
-                if (album.getYear() != 0) {
-                    bind.albumReleaseYearLabel.setVisibility(View.VISIBLE);
-                    AssetLinkUtil.applyLinkAppearance(bind.albumReleaseYearLabel);
-                    bind.albumReleaseYearLabel.setOnClickListener(v -> openYearLink(album.getYear()));
-                    bind.albumReleaseYearLabel.setOnLongClickListener(v -> {
-                        AssetLinkUtil.AssetLink yearLink = buildYearLink(album.getYear());
-                        if (yearLink != null) {
-                            AssetLinkUtil.copyToClipboard(requireContext(), yearLink);
-                            Toast.makeText(requireContext(), getString(R.string.asset_link_copied_toast, yearLink.id), Toast.LENGTH_SHORT).show();
-                        }
-                        return true;
-                    });
-                } else {
-                    bind.albumReleaseYearLabel.setVisibility(View.GONE);
-                    bind.albumReleaseYearLabel.setOnClickListener(null);
-                    bind.albumReleaseYearLabel.setOnLongClickListener(null);
-                    AssetLinkUtil.clearLinkAppearance(bind.albumReleaseYearLabel);
-                }
-                bind.albumSongCountDurationTextview.setText(getString(R.string.album_page_tracks_count_and_duration, album.getSongCount(), album.getDuration() != null ? album.getDuration() / 60 : 0));
+                bindMetaLine(album);
+
                 if (album.getGenre() != null && !album.getGenre().isEmpty()) {
-                    bind.albumGenresTextview.setText(album.getGenre());
-                    bind.albumGenresTextview.setVisibility(View.VISIBLE);
+                    bind.albumHeader.albumGenresTextview.setText(album.getGenre());
+                    bind.albumHeader.albumGenresTextview.setVisibility(View.VISIBLE);
                 }
                 else{
-                    bind.albumGenresTextview.setVisibility(View.GONE);
+                    bind.albumHeader.albumGenresTextview.setVisibility(View.GONE);
                 }
 
                 if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
                     if (album.getReleaseDate().getFormattedDate() != null || album.getOriginalReleaseDate().getFormattedDate() != null)
-                        bind.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
+                        bind.albumHeader.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
                     else
-                        bind.albumReleaseYearsTextview.setVisibility(View.GONE);
+                        bind.albumHeader.albumReleaseYearsTextview.setVisibility(View.GONE);
 
                     if (album.getReleaseDate().getFormattedDate() == null || album.getOriginalReleaseDate().getFormattedDate() == null) {
-                        bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate() != null ? album.getReleaseDate().getFormattedDate() : album.getOriginalReleaseDate().getFormattedDate()));
+                        bind.albumHeader.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate() != null ? album.getReleaseDate().getFormattedDate() : album.getOriginalReleaseDate().getFormattedDate()));
                     }
 
                     if (album.getReleaseDate().getFormattedDate() != null && album.getOriginalReleaseDate().getFormattedDate() != null) {
                         if (Objects.equals(album.getReleaseDate().getYear(), album.getOriginalReleaseDate().getYear()) && Objects.equals(album.getReleaseDate().getMonth(), album.getOriginalReleaseDate().getMonth()) && Objects.equals(album.getReleaseDate().getDay(), album.getOriginalReleaseDate().getDay())) {
-                            bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate().getFormattedDate()));
+                            bind.albumHeader.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate().getFormattedDate()));
                         } else {
-                            bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_dates_label, album.getReleaseDate().getFormattedDate(), album.getOriginalReleaseDate().getFormattedDate()));
+                            bind.albumHeader.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_dates_label, album.getReleaseDate().getFormattedDate(), album.getOriginalReleaseDate().getFormattedDate()));
                         }
                     }
                 }
+
+                applyCoverTint(album.getCoverArtId());
             }
         });
 
@@ -303,23 +316,75 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
 
         Objects.requireNonNull(bind.animToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
 
-        bind.albumOtherInfoButton.setOnClickListener(v -> {
-            if (bind.albumDetailView.getVisibility() == View.GONE) {
-                bind.albumDetailView.setVisibility(View.VISIBLE);
-                bind.albumNameLabel.setMaxLines(Integer.MAX_VALUE);
-            } else if (bind.albumDetailView.getVisibility() == View.VISIBLE) {
-                bind.albumDetailView.setVisibility(View.GONE);
-                bind.albumNameLabel.setMaxLines(2);
-            }
-        });
-
         if(Preferences.showAlbumDetail()){
-            bind.albumDetailView.setVisibility(View.VISIBLE);
+            bind.albumHeader.albumDetailView.setVisibility(View.VISIBLE);
         }
     }
 
+    private void bindMetaLine(AlbumID3 album) {
+        SpannableStringBuilder meta = new SpannableStringBuilder();
+        List<String> releaseTypes = album.getReleaseTypes();
+        if (releaseTypes != null && !releaseTypes.isEmpty() && releaseTypes.get(0) != null && !releaseTypes.get(0).trim().isEmpty()) {
+            String releaseType = releaseTypes.get(0).trim();
+            appendMetaPart(meta, Character.toUpperCase(releaseType.charAt(0)) + releaseType.substring(1));
+        }
+        int year = album.getYear();
+        if (year != 0) {
+            int start = appendMetaPart(meta, String.valueOf(year));
+            int linkColor = MaterialColors.getColor(bind.albumHeader.albumMetaLabel, com.google.android.material.R.attr.colorOnSurface);
+            meta.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    openYearLink(year);
+                }
+
+                @Override
+                public void updateDrawState(@NonNull TextPaint paint) {
+                    paint.setColor(linkColor);
+                    paint.setUnderlineText(false);
+                }
+            }, start, meta.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        int songCount = album.getSongCount() != null ? album.getSongCount() : 0;
+        if (songCount > 0) {
+            appendMetaPart(meta, getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount));
+        }
+        if (album.getDuration() != null && album.getDuration() > 0) {
+            appendMetaPart(meta, getString(R.string.duration_minutes_short, album.getDuration() / 60));
+        }
+
+        bind.albumHeader.albumMetaLabel.setText(meta);
+        bind.albumHeader.albumMetaLabel.setMovementMethod(year != 0 ? LinkMovementMethod.getInstance() : null);
+        bind.albumHeader.albumMetaLabel.setOnLongClickListener(year == 0 ? null : v -> {
+            AssetLinkUtil.AssetLink yearLink = buildYearLink(year);
+            if (yearLink != null) {
+                AssetLinkUtil.copyToClipboard(requireContext(), yearLink);
+                Toast.makeText(requireContext(), getString(R.string.asset_link_copied_toast, yearLink.id), Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
+    }
+
+    private static int appendMetaPart(SpannableStringBuilder meta, String part) {
+        if (meta.length() > 0) meta.append(" · ");
+        int start = meta.length();
+        meta.append(part);
+        return start;
+    }
+
+    private void applyCoverTint(String coverId) {
+        if (Objects.equals(coverId, tintedCoverId)) return;
+        tintedCoverId = coverId;
+        int surface = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorSurface);
+        CoverTint.load(requireContext(), coverId, tint -> {
+            if (bind == null) return;
+            bind.animToolbar.setBackgroundColor(tint.getBand());
+            bind.appBarLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface}));
+        });
+    }
+
     private void initAlbumInfoTextButton() {
-        bind.albumArtistLabel.setOnClickListener(v -> {
+        bind.albumHeader.albumArtistRow.setOnClickListener(v -> {
             removePendingArtistObserver();
             pendingArtist = albumPageViewModel.getArtist();
             pendingArtistObserver = artist -> {
@@ -340,19 +405,19 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     private void initAlbumNotes() {
         albumPageViewModel.getAlbumInfo().observe(getViewLifecycleOwner(), albumInfo -> {
             if (albumInfo != null) {
-                if (bind != null) bind.albumNotesTextview.setVisibility(View.VISIBLE);
+                if (bind != null) bind.albumHeader.albumNotesTextview.setVisibility(View.VISIBLE);
                 if (bind != null)
-                    bind.albumNotesTextview.setText(MusicUtil.forceReadableString(albumInfo.getNotes()));
+                    bind.albumHeader.albumNotesTextview.setText(MusicUtil.forceReadableString(albumInfo.getNotes()));
 
                 if (bind != null && albumInfo.getLastFmUrl() != null && !albumInfo.getLastFmUrl().isEmpty()) {
-                    bind.albumNotesTextview.setOnClickListener(v -> {
+                    bind.albumHeader.albumNotesTextview.setOnClickListener(v -> {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse(albumInfo.getLastFmUrl()));
                         startActivity(intent);
                     });
                 }
             } else {
-                if (bind != null) bind.albumNotesTextview.setVisibility(View.GONE);
+                if (bind != null) bind.albumHeader.albumNotesTextview.setVisibility(View.GONE);
             }
         });
     }
@@ -360,12 +425,12 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     private void initMusicButton() {
         albumPageViewModel.getAlbumSongLiveList().observe(getViewLifecycleOwner(), songs -> {
             if (bind != null && songs != null && !songs.isEmpty()) {
-                bind.albumPagePlayButton.setOnClickListener(v -> {
+                bind.albumHeader.albumPagePlayButton.setOnClickListener(v -> {
                     MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
                     activity.setBottomSheetInPeek(true);
                 });
 
-                bind.albumPageShuffleButton.setOnClickListener(v -> {
+                bind.albumHeader.albumPageShuffleButton.setOnClickListener(v -> {
                     Collections.shuffle(songs);
                     MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
                     activity.setBottomSheetInPeek(true);
@@ -373,16 +438,21 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
             }
 
             if (bind != null && (songs == null || songs.isEmpty())) {
-                bind.albumPagePlayButton.setEnabled(false);
-                bind.albumPageShuffleButton.setEnabled(false);
+                bind.albumHeader.albumPagePlayButton.setEnabled(false);
+                bind.albumHeader.albumPageShuffleButton.setEnabled(false);
             }
         });
+    }
+
+    private void initDownloadButton() {
+        bind.albumHeader.albumPageDownloadButton.setOnClickListener(v -> downloadAlbum());
     }
 
     private void initBackCover() {
         albumPageViewModel.getAlbum().observe(getViewLifecycleOwner(), album -> {
             if (bind != null && album != null) {
-                CustomGlideRequest.Builder.from(requireContext(), album.getCoverArtId(), CustomGlideRequest.ResourceType.Album).build().into(bind.albumCoverImageView);
+                CustomGlideRequest.Builder.from(requireContext(), album.getCoverArtId(), CustomGlideRequest.ResourceType.Album).build().into(bind.albumHeader.albumCoverImageView);
+                CustomGlideRequest.Builder.from(requireContext(), album.getArtistId(), CustomGlideRequest.ResourceType.Artist).build().into(bind.albumHeader.albumArtistImageView);
             }
         });
     }

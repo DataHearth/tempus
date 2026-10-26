@@ -49,6 +49,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private final boolean showCoverArt;
     private final boolean showAlbum;
     private final AlbumID3 album;
+    private boolean showRowNumbers;
 
     private List<Child> songsFull;
     private final AsyncListDiffer<Child> differ = new AsyncListDiffer<>(this, new DiffUtil.ItemCallback<Child>() {
@@ -126,6 +127,13 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemHorizontalTrackBinding view = ItemHorizontalTrackBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        if (!showCoverArt) {
+            ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
+            anchor.width = parent.getResources().getDimensionPixelSize(R.dimen.album_track_number_width);
+            anchor.height = parent.getResources().getDimensionPixelSize(R.dimen.album_track_row_content_height);
+            view.songCoverImageView.setLayoutParams(anchor);
+            view.trackDurationTextView.setVisibility(View.VISIBLE);
+        }
         return new ViewHolder(view);
     }
 
@@ -144,16 +152,26 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         holder.item.searchResultSongTitleTextView.setText(song.getTitle());
 
-        holder.item.searchResultSongSubtitleTextView.setText(
-                holder.itemView.getContext().getString(
-                        R.string.song_subtitle_formatter,
-                        this.showAlbum ?
-                                song.getAlbum() :
-                                song.getArtist(),
-                        MusicUtil.getReadableDurationString(song.getDuration(), false),
-                        MusicUtil.getReadableAudioQualityString(song)
-                )
-        );
+        if (showCoverArt) {
+            holder.item.searchResultSongSubtitleTextView.setText(
+                    holder.itemView.getContext().getString(
+                            R.string.song_subtitle_formatter,
+                            this.showAlbum ?
+                                    song.getAlbum() :
+                                    song.getArtist(),
+                            MusicUtil.getReadableDurationString(song.getDuration(), false),
+                            MusicUtil.getReadableAudioQualityString(song)
+                    )
+            );
+        } else {
+            holder.item.trackDurationTextView.setText(MusicUtil.getReadableDurationString(song.getDuration(), false));
+            String subtitle = albumTrackSubtitle(song);
+            holder.item.searchResultSongSubtitleTextView.setText(subtitle);
+            holder.item.searchResultSongSubtitleTextView.setVisibility(subtitle.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+
+        holder.item.rowNumberTextView.setVisibility(showRowNumbers ? View.VISIBLE : View.GONE);
+        if (showRowNumbers) holder.item.rowNumberTextView.setText(String.valueOf(position + 1));
 
         holder.item.trackNumberTextView.setText(MusicUtil.getReadableTrackNumber(holder.itemView.getContext(), song.getTrack()));
 
@@ -228,6 +246,21 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         }
 
         bindPlaybackState(holder, song);
+    }
+
+    /** Album rows show the duration in their own column, so the subtitle keeps only what the header does not say. */
+    private String albumTrackSubtitle(Child song) {
+        List<String> parts = new ArrayList<>();
+        if (song.getArtist() != null && (album == null || !song.getArtist().equals(album.getArtist()))) {
+            parts.add(song.getArtist());
+        }
+        String quality = MusicUtil.getReadableAudioQualityString(song);
+        if (!quality.isEmpty()) parts.add(quality);
+        return String.join("  •  ", parts);
+    }
+
+    public void setShowRowNumbers(boolean showRowNumbers) {
+        this.showRowNumbers = showRowNumbers;
     }
 
     private void handleExternalAudioRefresh() {
