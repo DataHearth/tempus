@@ -15,13 +15,19 @@ import com.eddyizm.tempus.repository.AutomotiveRepository
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import com.google.common.util.concurrent.SettableFuture
 import com.eddyizm.tempus.R
 import com.eddyizm.tempus.util.ConstantsAA
 import com.eddyizm.tempus.util.Preferences
 import androidx.core.net.toUri
 import androidx.media3.session.SessionError
-import com.eddyizm.tempus.util.Preferences.getServerId
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+private const val LIBRARY_COUNTS_TIMEOUT_SECONDS = 3L
+
+private typealias ChildrenFuture = ListenableFuture<LibraryResult<ImmutableList<MediaItem>>>
 
 @UnstableApi
 object MediaBrowserTree {
@@ -31,6 +37,10 @@ object MediaBrowserTree {
     private var treeNodes: MutableMap<String, MediaItemNode> = mutableMapOf()
 
     private var isInitialized = false
+
+    private val timeoutScheduler by lazy { Executors.newSingleThreadScheduledExecutor() }
+
+    private val mixIds = listOf(ConstantsAA.QUICKMIX_ID, ConstantsAA.MYMIX_ID, ConstantsAA.DISCOVERYMIX_ID)
 
     private fun iconUri(resId: Int): Uri =
         "android.resource://${BuildConfig.APPLICATION_ID}/$resId".toUri()
@@ -121,56 +131,46 @@ object MediaBrowserTree {
         isInitialized = true
     }
 
-    fun buildTree() {
-        val albumView: Boolean = Preferences.isAndroidAutoAlbumViewEnabled()
-        val homeView: Boolean = Preferences.isAndroidAutoHomeViewEnabled()
-        val playlistView: Boolean = Preferences.isAndroidAutoPlaylistViewEnabled()
-        val podcastView: Boolean = Preferences.isAndroidAutoPodcastViewEnabled()
-        val radioView: Boolean = Preferences.isAndroidAutoRadioViewEnabled()
+    private fun addNode(
+        gridView: Boolean,
+        titleRes: Int,
+        mediaId: String,
+        iconRes: Int,
+        mediaType: @MediaMetadata.MediaType Int
+    ) {
+        treeNodes[mediaId] = MediaItemNode(
+            buildMediaItem(
+                gridView = gridView,
+                title = appContext.getString(titleRes),
+                mediaId = mediaId,
+                isPlayable = false,
+                isBrowsable = true,
+                imageUri = iconUri(iconRes),
+                mediaType = mediaType
+            )
+        )
+    }
 
-        // clear before rebuild
+    private fun addMix(id: String, titleRes: Int, descriptionRes: Int, trackCount: Int, iconRes: Int) {
+        val mix = buildMediaItem(
+            gridView = false,
+            title = appContext.getString(titleRes),
+            mediaId = ConstantsAA.MADE_FOR_YOU_SOURCE + "[" + trackCount + "]" + id,
+            isPlayable = true,
+            isBrowsable = false,
+            imageUri = iconUri(iconRes),
+            mediaType = MediaMetadata.MEDIA_TYPE_PLAYLIST
+        )
+        treeNodes[id] = MediaItemNode(AutomotiveRepository.withSubtitle(mix, appContext.getString(descriptionRes)))
+    }
+
+    fun buildTree() {
         treeNodes.clear()
 
-        // This list must be exactly the same as the one in aa_tab_titles
-        val allFunctions = listOf(
-            ConstantsAA.HOME_ID,
-            ConstantsAA.LAST_PLAYED_ID,
-            ConstantsAA.ALBUMS_ID,
-            ConstantsAA.ARTISTS_ID,
-            ConstantsAA.PLAYLIST_ID,
-            ConstantsAA.PODCAST_ID,
-            ConstantsAA.RADIO_ID,
-            ConstantsAA.FOLDER_ID,
-            ConstantsAA.MOST_PLAYED_ID,
-            ConstantsAA.RECENTLY_ADDED_ID,
-            ConstantsAA.MADE_FOR_YOU_ID,
-            ConstantsAA.STARRED_BUNDLE_ID,
-            ConstantsAA.TRACKS_ID,
-            ConstantsAA.GENRES_ID
-        )
-
-        // Prevents index error
-        val indexMax = allFunctions.lastIndex
-
-        fun indexGuard(index: Int, reset: () -> Unit): Int {
-            return if (index in -1..indexMax) index else {
-                reset()
-                -1
-            }
-        }
-
-        val tabIndex = listOf(
-            indexGuard(Preferences.getAndroidAutoFirstTab(), Preferences::resetAndroidAutoFirstTab),
-            indexGuard(Preferences.getAndroidAutoSecondTab(), Preferences::resetAndroidAutoSecondTab),
-            indexGuard(Preferences.getAndroidAutoThirdTab(), Preferences::resetAndroidAutoThirdTab),
-            indexGuard(Preferences.getAndroidAutoFourthTab(), Preferences::resetAndroidAutoFourthTab)
-        )
-
-        // Root level
         treeNodes[ConstantsAA.ROOT_ID] =
             MediaItemNode(
                 buildMediaItem(
-                    gridView = albumView,
+                    gridView = false,
                     title = "Root Folder",
                     mediaId = ConstantsAA.ROOT_ID,
                     isPlayable = false,
@@ -179,403 +179,113 @@ object MediaBrowserTree {
                 )
             )
 
-		// All available functions
-		// if HOME is in first place or no item is selected
-        if (tabIndex.firstOrNull() == 0 || tabIndex.all { it == -1 }){
-			treeNodes[ConstantsAA.HOME_ID] =
-				MediaItemNode(
-					buildMediaItem(
-						gridView = homeView,
-						title = appContext.getString(R.string.aa_home),
-						mediaId = ConstantsAA.HOME_ID,
-						isPlayable = false,
-						isBrowsable = true,
-						imageUri = iconUri(R.drawable.ic_aa_home),
-						mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-					)
-				)
-		}
-		else { // More instead of Home
-			treeNodes[ConstantsAA.HOME_ID] =
-				MediaItemNode(
-					buildMediaItem(
-						gridView = homeView,
-						title = appContext.getString(R.string.aa_more),
-						mediaId = ConstantsAA.HOME_ID,
-						isPlayable = false,
-						isBrowsable = true,
-						imageUri = iconUri(R.drawable.ic_aa_other),
-						mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-					)
-				)
-		}
-		
-        treeNodes[ConstantsAA.LAST_PLAYED_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_recent_albums),
-                    mediaId = ConstantsAA.LAST_PLAYED_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_recent),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-			
-        treeNodes[ConstantsAA.ALBUMS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_albums),
-                    mediaId = ConstantsAA.ALBUMS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_albums),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-			
-        treeNodes[ConstantsAA.ARTISTS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_artists),
-                    mediaId = ConstantsAA.ARTISTS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_artists),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-			
-        treeNodes[ConstantsAA.PLAYLIST_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = playlistView,
-                    title = appContext.getString(R.string.aa_playlists),
-                    mediaId = ConstantsAA.PLAYLIST_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_playlist),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS
-                )
-            )
+        addNode(true, R.string.aa_home, ConstantsAA.HOME_ID, R.drawable.ic_aa_home, MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
+        addNode(false, R.string.aa_library, ConstantsAA.LIBRARY_ID, R.drawable.ic_aa_title, MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
+        addNode(true, R.string.aa_playlists, ConstantsAA.PLAYLIST_ID, R.drawable.ic_aa_playlist, MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
+        addNode(false, R.string.aa_radio_podcasts, ConstantsAA.RADIO_PODCAST_ID, R.drawable.ic_aa_podcasts, MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
 
-        treeNodes[ConstantsAA.PODCAST_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = podcastView,
-                    title = appContext.getString(R.string.aa_podcast),
-                    mediaId = ConstantsAA.PODCAST_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_podcasts),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_PODCASTS
-                )
-            )
+        addNode(true, R.string.aa_artists, ConstantsAA.ARTISTS_ID, R.drawable.ic_aa_artists, MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS)
+        addNode(true, R.string.aa_albums, ConstantsAA.ALBUMS_ID, R.drawable.ic_aa_albums, MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS)
+        addNode(false, R.string.aa_genres, ConstantsAA.GENRES_ID, R.drawable.ic_aa_genres, MediaMetadata.MEDIA_TYPE_FOLDER_GENRES)
+        addNode(false, R.string.aa_music_folder, ConstantsAA.FOLDER_ID, R.drawable.ic_aa_folders, MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
+        addNode(false, R.string.download_title_section, ConstantsAA.DOWNLOADED_ID, R.drawable.ic_aa_downloaded, MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
 
-        treeNodes[ConstantsAA.RADIO_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = radioView,
-                    title = appContext.getString(R.string.aa_radio),
-                    mediaId = ConstantsAA.RADIO_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_radio),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_RADIO_STATIONS
-                )
-            )
-
-        treeNodes[ConstantsAA.MOST_PLAYED_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_album_most_played),
-                    mediaId = ConstantsAA.MOST_PLAYED_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_mostplayed),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-        treeNodes[ConstantsAA.RECENTLY_ADDED_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_album_recently_added),
-                    mediaId = ConstantsAA.RECENTLY_ADDED_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_added_album),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-		
-        treeNodes[ConstantsAA.RECENT_TRACKS_ID] =
+        treeNodes[ConstantsAA.SHUFFLE_SOURCE + ConstantsAA.RANDOM_ID] =
             MediaItemNode(
                 buildMediaItem(
                     gridView = false,
-                    title = appContext.getString(R.string.aa_song_recently_played),
-                    mediaId = ConstantsAA.RECENT_TRACKS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_recent_title),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.TRACKS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = homeView,
-                    title = appContext.getString(R.string.aa_tracks),
-                    mediaId = ConstantsAA.TRACKS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_title),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = homeView,
-                    title = appContext.getString(R.string.aa_made_for_you),
-                    mediaId = ConstantsAA.MADE_FOR_YOU_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_for_you),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS
-                )
-            )
-
-        treeNodes[ConstantsAA.STARRED_TRACKS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_starred_tracks),
-                    mediaId = ConstantsAA.STARRED_TRACKS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_star_title),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.STARRED_BUNDLE_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_starred),
-                    mediaId = ConstantsAA.STARRED_BUNDLE_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_bundle_star),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-
-        treeNodes[ConstantsAA.STARRED_ALBUMS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_starred_albums),
-                    mediaId = ConstantsAA.STARRED_ALBUMS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_star_album),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
-                )
-            )
-
-        treeNodes[ConstantsAA.STARRED_ARTISTS_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = albumView,
-                    title = appContext.getString(R.string.aa_starred_artists),
-                    mediaId = ConstantsAA.STARRED_ARTISTS_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_artists),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
-                )
-            )
-
-        treeNodes[ConstantsAA.FOLDER_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_music_folder),
-                    mediaId = ConstantsAA.FOLDER_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_folders),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.RANDOM_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_random),
-                    mediaId = ConstantsAA.RANDOM_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
+                    title = appContext.getString(R.string.aa_shuffle_all),
+                    mediaId = ConstantsAA.SHUFFLE_SOURCE + ConstantsAA.RANDOM_ID,
+                    isPlayable = true,
+                    isBrowsable = false,
                     imageUri = iconUri(R.drawable.ic_aa_random),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
+                    mediaType = MediaMetadata.MEDIA_TYPE_PLAYLIST
                 )
             )
 
-        treeNodes[ConstantsAA.GENRES_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_genres),
-                    mediaId = ConstantsAA.GENRES_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_genres),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.DOWNLOADED_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.download_title_section),
-                    mediaId = ConstantsAA.DOWNLOADED_ID,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    imageUri = iconUri(R.drawable.ic_aa_downloaded),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.QUICKMIX_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_quick_mix),
-                    artist = "By Tempus",
-                    mediaId = ConstantsAA.MADE_FOR_YOU_SOURCE
-                            + "[" +ConstantsAA.NUMBER_OF_TRACKS_IN_SMALL_MIX + "]"
-                            + ConstantsAA.QUICKMIX_ID,
-                    isPlayable = true,
-                    isBrowsable = false,
-                    imageUri = iconUri(R.drawable.ic_aa_quickmix),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.MYMIX_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_my_mix),
-                    artist = "By Tempus",
-                    mediaId = ConstantsAA.MADE_FOR_YOU_SOURCE
-                            + "[" + ConstantsAA.NUMBER_OF_TRACKS_IN_MEDIUM_MIX + "]"
-                            + ConstantsAA.MYMIX_ID,
-                    isPlayable = true,
-                    isBrowsable = false,
-                    imageUri = iconUri(R.drawable.ic_aa_mymix),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
-
-        treeNodes[ConstantsAA.DISCOVERYMIX_ID] =
-            MediaItemNode(
-                buildMediaItem(
-                    gridView = false,
-                    title = appContext.getString(R.string.aa_discovery_mix),
-                    artist = "By Tempus",
-                    mediaId = ConstantsAA.MADE_FOR_YOU_SOURCE
-                            + "[" + ConstantsAA.NUMBER_OF_TRACKS_IN_LARGE_MIX + "]"
-                            + ConstantsAA.DISCOVERYMIX_ID,
-                    isPlayable = true,
-                    isBrowsable = false,
-                    imageUri = iconUri(R.drawable.ic_aa_discoverymix),
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
-            )
+        addMix(ConstantsAA.QUICKMIX_ID, R.string.aa_quick_mix, R.string.aa_quick_mix_description,
+            ConstantsAA.NUMBER_OF_TRACKS_IN_SMALL_MIX, R.drawable.ic_aa_quickmix)
+        addMix(ConstantsAA.MYMIX_ID, R.string.aa_my_mix, R.string.aa_my_mix_description,
+            ConstantsAA.NUMBER_OF_TRACKS_IN_MEDIUM_MIX, R.drawable.ic_aa_mymix)
+        addMix(ConstantsAA.DISCOVERYMIX_ID, R.string.aa_discovery_mix, R.string.aa_discovery_mix_description,
+            ConstantsAA.NUMBER_OF_TRACKS_IN_LARGE_MIX, R.drawable.ic_aa_discoverymix)
 
         val root = treeNodes[ConstantsAA.ROOT_ID]!!
-        val selectedIds = mutableSetOf<String>()
+        root.addChild(ConstantsAA.HOME_ID)
+        root.addChild(ConstantsAA.LIBRARY_ID)
+        root.addChild(ConstantsAA.PLAYLIST_ID)
+        root.addChild(ConstantsAA.RADIO_PODCAST_ID)
+    }
 
-        // First level
-		// add functions selected by user for the 4 tabs
-        tabIndex
-            .filter { it != -1 }
-            .forEach { index ->
-                allFunctions.getOrNull(index)?.let { function ->
-                    if (selectedIds.add(function)) {
-                        root.addChild(function)
-                    }
-                }
-            }
-		// if no function is selected, add at least HOME_ID
-        if (selectedIds.isEmpty()) {
-            root.addChild(ConstantsAA.HOME_ID)
-            selectedIds.add(ConstantsAA.HOME_ID)
-        }
-
-        // Second level for HOME_ID even there is no HOME_ID displayed
-        // Downloads first: it is the only section that works with no connectivity
-        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.DOWNLOADED_ID)
-
-		// add all functions not previously added
-        allFunctions
-            .filter { it !in selectedIds }
-            .forEach { function ->
-                when (function) {
-                    ConstantsAA.MADE_FOR_YOU_ID -> {
-                        // add Quick Mix, My Mix and Discovery Mix instead of Made For You to Home
-                        treeNodes[ConstantsAA.HOME_ID]!!.addChild(ConstantsAA.QUICKMIX_ID)
-                        treeNodes[ConstantsAA.HOME_ID]!!.addChild(ConstantsAA.MYMIX_ID)
-                        treeNodes[ConstantsAA.HOME_ID]!!.addChild(ConstantsAA.DISCOVERYMIX_ID)
-                    }
-                    ConstantsAA.STARRED_BUNDLE_ID -> {
-                        // add starred function instead of Starred bundle to Home
-                        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.STARRED_ARTISTS_ID)
-                        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.STARRED_ALBUMS_ID)
-                        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.STARRED_TRACKS_ID)
-                    }
-                    ConstantsAA.TRACKS_ID -> {
-                        // add Random and Recent instead of Tracks to Home
-                        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.RANDOM_ID)
-                        treeNodes[ConstantsAA.HOME_ID]?.addChild(ConstantsAA.RECENT_TRACKS_ID)
-                    }
-                    else -> treeNodes[ConstantsAA.HOME_ID]?.addChild(function)
-                }
-            }
-
-        // build Made For You bundle
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.QUICKMIX_ID)
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.MYMIX_ID)
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.DISCOVERYMIX_ID)
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.STARRED_ARTISTS_ID)
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.STARRED_ALBUMS_ID)
-        treeNodes[ConstantsAA.MADE_FOR_YOU_ID]!!.addChild(ConstantsAA.STARRED_TRACKS_ID)
-
-        // create starred bundle
-        treeNodes[ConstantsAA.STARRED_BUNDLE_ID]?.addChild(ConstantsAA.STARRED_ARTISTS_ID)
-        treeNodes[ConstantsAA.STARRED_BUNDLE_ID]?.addChild(ConstantsAA.STARRED_ALBUMS_ID)
-        treeNodes[ConstantsAA.STARRED_BUNDLE_ID]?.addChild(ConstantsAA.STARRED_TRACKS_ID)
-
-        // create tracks bundle
-        treeNodes[ConstantsAA.TRACKS_ID]?.addChild(ConstantsAA.RANDOM_ID)
-        treeNodes[ConstantsAA.TRACKS_ID]?.addChild(ConstantsAA.GENRES_ID)
-        treeNodes[ConstantsAA.TRACKS_ID]?.addChild(ConstantsAA.RECENT_TRACKS_ID)
-        treeNodes[ConstantsAA.TRACKS_ID]?.addChild(ConstantsAA.STARRED_TRACKS_ID)
-	}
-	
     fun getRootItem(): MediaItem {
         return treeNodes[ConstantsAA.ROOT_ID]!!.item
+    }
+
+    // A section that fails to load is left out rather than failing the whole tab
+    private fun sections(vararg sections: Pair<String, ChildrenFuture>): ChildrenFuture =
+        Futures.whenAllComplete(sections.map { it.second }).call({
+            val items = sections.flatMap { (title, future) ->
+                val children = runCatching { Futures.getDone(future).value }.getOrNull() ?: emptyList()
+                children.map { AutomotiveRepository.withGroupTitle(it, title) }
+            }
+            LibraryResult.ofItemList(items, null)
+        }, MoreExecutors.directExecutor())
+
+    private fun getHome(): ChildrenFuture = sections(
+        appContext.getString(R.string.aa_mixes) to
+                Futures.immediateFuture(LibraryResult.ofItemList(mixIds.map { treeNodes[it]!!.item }, null)),
+        appContext.getString(R.string.aa_recently_added) to automotiveRepository.getAlbums(
+            ConstantsAA.ALBUM_ID,
+            "newest",
+            ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS,
+            false),
+        appContext.getString(R.string.aa_starred_albums) to automotiveRepository.getStarredAlbums(ConstantsAA.ALBUM_ID)
+    )
+
+    private fun getLibrary(): ChildrenFuture {
+        // The counts only label the rows: offline, the Downloads row must not wait for the
+        // server requests to time out.
+        val counts = Futures.catching(
+            Futures.withTimeout(
+                automotiveRepository.libraryCounts,
+                LIBRARY_COUNTS_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS,
+                timeoutScheduler),
+            Exception::class.java,
+            { emptyMap() },
+            MoreExecutors.directExecutor())
+
+        return Futures.transform(counts, { counts ->
+            fun row(nodeId: String, countKey: String, pluralRes: Int): MediaItem {
+                val item = treeNodes[nodeId]!!.item
+                val count = counts[countKey] ?: return item
+                return AutomotiveRepository.withSubtitle(item, appContext.resources.getQuantityString(pluralRes, count, count))
+            }
+
+            LibraryResult.ofItemList(listOf(
+                row(ConstantsAA.ARTISTS_ID, ConstantsAA.ARTISTS_ID, R.plurals.aa_artist_count),
+                row(ConstantsAA.ALBUMS_ID, ConstantsAA.ALBUMS_ID, R.plurals.aa_album_count),
+                row(ConstantsAA.GENRES_ID, ConstantsAA.GENRES_ID, R.plurals.aa_genre_count),
+                row(ConstantsAA.FOLDER_ID, ConstantsAA.FOLDER_ID, R.plurals.aa_folder_count),
+                treeNodes[ConstantsAA.DOWNLOADED_ID]!!.item,
+                row(ConstantsAA.SHUFFLE_SOURCE + ConstantsAA.RANDOM_ID, ConstantsAA.RANDOM_ID, R.plurals.player_queue_song_count)
+            ), null)
+        }, MoreExecutors.directExecutor())
+    }
+
+    private fun getRadioAndPodcasts(): ChildrenFuture {
+        val stations = Futures.transform(automotiveRepository.internetRadioStations, { result ->
+            val withHosts = result.value?.map { station ->
+                station.localConfiguration?.uri?.host?.let { AutomotiveRepository.withSubtitle(station, it) } ?: station
+            } ?: return@transform result
+            LibraryResult.ofItemList(withHosts, null)
+        }, MoreExecutors.directExecutor())
+
+        return sections(
+            appContext.getString(R.string.aa_radio_stations) to stations,
+            appContext.getString(R.string.aa_new_episodes) to
+                    automotiveRepository.getNewestPodcastEpisodes(ConstantsAA.NUMBER_OF_DISPLAYED_PODCASTS)
+        )
     }
 
     fun getChildren(
@@ -584,71 +294,21 @@ object MediaBrowserTree {
         return when (id) {
             ConstantsAA.ROOT_ID -> treeNodes[ConstantsAA.ROOT_ID]?.getChildren()!!
 
-            ConstantsAA.HOME_ID -> treeNodes[ConstantsAA.HOME_ID]?.getChildren()!!
-            ConstantsAA.MADE_FOR_YOU_ID -> treeNodes[ConstantsAA.MADE_FOR_YOU_ID]?.getChildren()!!
-            ConstantsAA.STARRED_BUNDLE_ID -> treeNodes[ConstantsAA.STARRED_BUNDLE_ID]?.getChildren()!!
-            ConstantsAA.TRACKS_ID -> treeNodes[ConstantsAA.TRACKS_ID]?.getChildren()!!
+            ConstantsAA.HOME_ID -> getHome()
+            ConstantsAA.LIBRARY_ID -> getLibrary()
+            ConstantsAA.PLAYLIST_ID -> automotiveRepository.getPlaylists(ConstantsAA.PLAYLIST_ID)
+            ConstantsAA.RADIO_PODCAST_ID -> getRadioAndPodcasts()
 
-            ConstantsAA.LAST_PLAYED_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "recent",
-                ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS,
-                false)
             ConstantsAA.ALBUMS_ID -> automotiveRepository.getAlbums(
                 ConstantsAA.ALBUM_ID,
                 "alphabeticalByName",
                 ConstantsAA.MAX_ITEMS,
                 true)
-            ConstantsAA.ARTISTS_ID -> automotiveRepository.getArtists(
-                ConstantsAA.ARTIST_ID,
-                true)
-            ConstantsAA.PLAYLIST_ID -> automotiveRepository.getPlaylists(ConstantsAA.PLAYLIST_ID)
-            ConstantsAA.PODCAST_ID -> automotiveRepository.getNewestPodcastEpisodes(ConstantsAA.NUMBER_OF_DISPLAYED_PODCASTS)
-            ConstantsAA.RADIO_ID -> automotiveRepository.getInternetRadioStations()
+            ConstantsAA.ARTISTS_ID -> automotiveRepository.getArtists(ConstantsAA.ARTIST_ID)
             ConstantsAA.FOLDER_ID -> automotiveRepository.getMusicFolders(ConstantsAA.FOLDER_ID)
-            ConstantsAA.MOST_PLAYED_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "frequent",
-                ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS,
-                false)
-            ConstantsAA.RECENT_TRACKS_ID -> automotiveRepository.getRecentlyPlayedSongs(
-                getServerId(),
-                ConstantsAA.NUMBER_OF_DISPLAYED_RECENT_TRACKS)
-            ConstantsAA.RECENTLY_ADDED_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "newest",
-                ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS,
-                false)
             ConstantsAA.DOWNLOADED_ID -> automotiveRepository.getDownloadedSongs()
-            ConstantsAA.STARRED_TRACKS_ID -> automotiveRepository.getStarredSongs()
-            ConstantsAA.STARRED_ALBUMS_ID -> automotiveRepository.getStarredAlbums(
-                ConstantsAA.ALBUM_ID,
-                true)
-            ConstantsAA.STARRED_ARTISTS_ID -> automotiveRepository.getStarredArtists(
-                ConstantsAA.ARTIST_ID,
-                true)
             ConstantsAA.RANDOM_ID -> automotiveRepository.getRandomSongs(ConstantsAA.MAX_SHUFFLE_ITEMS)
             ConstantsAA.GENRES_ID -> automotiveRepository.getGenres(ConstantsAA.GENRES_ID)
-
-            ConstantsAA.JUMP_TO_ALBUMS_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "alphabeticalByName",
-                ConstantsAA.MAX_ITEMS,
-                false)
-            ConstantsAA.JUMP_TO_STARRED_ALBUMS_ID -> automotiveRepository.getStarredAlbums(
-                ConstantsAA.ALBUM_ID,
-                false)
-            ConstantsAA.JUMP_TO_ARTISTS_ID -> automotiveRepository.getArtists(
-                ConstantsAA.ARTIST_ID,
-                false)
-            ConstantsAA.JUMP_TO_STARRED_ARTISTS_ID -> automotiveRepository.getStarredArtists(
-                ConstantsAA.ARTIST_ID,
-                false)
-            ConstantsAA.ARTISTS_BY_ALBUMS_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "alphabeticalByArtist",
-                ConstantsAA.MAX_ITEMS,
-                false)
 
             else -> {
                 if (id.startsWith(ConstantsAA.GENRES_ID)) {

@@ -319,44 +319,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="aa_tab_titles">
-        <item>No mostrar</item>
-        <item>Inicio</item>
-        <item>Reproducido recientemente</item>
-        <item>Álbumes</item>
-        <item>Artistas</item>
-        <item>Listas de reproducción</item>
-        <item>Podcasts</item>
-        <item>Radios</item>
-        <item>Carpetas</item>
-        <item>Álbumes más reproducidos</item>
-        <item>Álbumes añadidos recientemente</item>
-        <item>Para ti</item>
-        <item>Favoritas</item>
-        <item>Canciones</item>
-        <item>Géneros</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-    </string-array>
-
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>Artistas favoritos</item>
         <item>Álbumes favoritos</item>

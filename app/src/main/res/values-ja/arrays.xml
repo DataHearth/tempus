@@ -319,40 +319,6 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string-array name="aa_tab_titles">
-        <item>表示しない</item>
-        <item>ホーム</item>
-        <item>最近の項目</item>
-        <item>アルバム</item>
-        <item>アーティスト</item>
-        <item>プレイリスト</item>
-        <item>ポッドキャスト</item>
-        <item>ラジオ</item>
-        <item>フォルダー</item>
-        <item>よく再生するアルバム</item>
-        <item>追加されたアルバム</item>
-        <item>あなたへ</item>
-        <item>お気に入り</item>
-        <item>トラック</item>
-        <item>ジャンル</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-    </string-array>
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>アーティストにお気に入り登録</item>
         <item>アルバムにお気に入り登録</item>

@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
-import androidx.lifecycle.Observer;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.util.Log;
@@ -19,9 +18,7 @@ import com.eddyizm.tempus.App;
 import com.eddyizm.tempus.BuildConfig;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.database.AppDatabase;
-import com.eddyizm.tempus.database.dao.ChronologyDao;
 import com.eddyizm.tempus.database.dao.SessionMediaItemDao;
-import com.eddyizm.tempus.model.Chronology;
 import com.eddyizm.tempus.model.Download;
 import com.eddyizm.tempus.model.InternetRadioStationCache;
 import com.eddyizm.tempus.model.SessionMediaItem;
@@ -39,6 +36,7 @@ import com.eddyizm.tempus.subsonic.models.IndexID3;
 import com.eddyizm.tempus.subsonic.models.InternetRadioStation;
 import com.eddyizm.tempus.subsonic.models.MusicFolder;
 import com.eddyizm.tempus.subsonic.models.Playlist;
+import com.eddyizm.tempus.subsonic.models.PlaylistWithSongs;
 import com.eddyizm.tempus.subsonic.models.PodcastEpisode;
 import com.eddyizm.tempus.subsonic.models.SubsonicResponse;
 import com.eddyizm.tempus.subsonic.models.Genre;
@@ -47,16 +45,21 @@ import com.eddyizm.tempus.util.MappingUtil;
 import com.eddyizm.tempus.util.MusicUtil;
 import com.eddyizm.tempus.util.Preferences;
 import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -66,9 +69,11 @@ import retrofit2.Response;
 @UnstableApi
 public class AutomotiveRepository {
     private final SessionMediaItemDao sessionMediaItemDao = AppDatabase.getInstance().sessionMediaItemDao();
-    private final ChronologyDao chronologyDao = AppDatabase.getInstance().chronologyDao();
 
     private static final String TAG = "AutomotiveRepository";
+
+    private static final int MIN_LETTER_GROUP_SIZE = 6;
+    private static final int TARGET_LETTER_GROUPS = 8;
 
     public final InstantMixBuilder instantMixBuilder = new InstantMixBuilder(this);
     public final MadeForYouBuilder madeForYouBuilder = new MadeForYouBuilder(this);
@@ -83,23 +88,184 @@ public class AutomotiveRepository {
         return extras;
     }
 
-    private MediaItem createFunction(String title, String id, boolean isGridView, Uri artworkUri){
-        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
-                .setTitle(title)
-                .setIsBrowsable(true)
-                .setIsPlayable(false)
-                .setArtworkUri(artworkUri)
-                .setExtras(createContentStyleExtras(isGridView))
+    // Media3 hands the car the artist as a row's subtitle unless a display title is set, so the
+    // display title is what lets a row show its own subtitle.
+    public static MediaItem withSubtitle(MediaItem item, String subtitle) {
+        MediaMetadata metadata = item.mediaMetadata.buildUpon()
+                .setDisplayTitle(item.mediaMetadata.title)
+                .setSubtitle(subtitle)
                 .build();
+        return item.buildUpon().setMediaMetadata(metadata).build();
+    }
 
-        return new MediaItem.Builder()
-                .setMediaId(id)
-                .setMediaMetadata(mediaMetadata)
-                .setUri("")
+    public static MediaItem withGroupTitle(MediaItem item, String groupTitle) {
+        Bundle extras = new Bundle();
+        extras.putString(MediaConstants.EXTRAS_KEY_CONTENT_STYLE_GROUP_TITLE, groupTitle);
+        return withExtras(item, extras);
+    }
+
+    private static MediaItem withSingleItemStyle(MediaItem item, boolean gridView) {
+        Bundle extras = new Bundle();
+        extras.putInt(MediaConstants.EXTRAS_KEY_CONTENT_STYLE_SINGLE_ITEM, gridView
+                ? MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_GRID_ITEM
+                : MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM);
+        return withExtras(item, extras);
+    }
+
+    private static MediaItem withExtras(MediaItem item, Bundle added) {
+        Bundle extras = item.mediaMetadata.extras == null ? new Bundle() : new Bundle(item.mediaMetadata.extras);
+        extras.putAll(added);
+        return item.buildUpon()
+                .setMediaMetadata(item.mediaMetadata.buildUpon().setExtras(extras).build())
                 .build();
     }
 
-    private MediaItem createArtist(String artistName, String id, boolean isGridView, String artistCoverArtId){
+    private static String joinSubtitle(String first, String second) {
+        if (first == null || first.isEmpty()) return second;
+        if (second == null || second.isEmpty()) return first;
+        return App.getContext().getString(R.string.aa_subtitle_pair, first, second);
+    }
+
+    private static String songCountAndLength(int songCount, long durationSeconds) {
+        return joinSubtitle(
+                App.getContext().getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount),
+                MusicUtil.getReadablePodcastDurationString(durationSeconds));
+    }
+
+    private static MediaItem createShuffle(String title, String subtitle, String shuffledNodeId) {
+        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+                .setTitle(title)
+                .setIsBrowsable(false)
+                .setIsPlayable(true)
+                .setArtworkUri(Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_random))
+                .build();
+
+        MediaItem item = new MediaItem.Builder()
+                .setMediaId(ConstantsAA.SHUFFLE_SOURCE + shuffledNodeId)
+                .setMediaMetadata(mediaMetadata)
+                .build();
+        return withSubtitle(item, subtitle);
+    }
+
+    private static String titleOf(MediaItem item) {
+        return item.mediaMetadata.title == null ? "" : item.mediaMetadata.title.toString();
+    }
+
+    static String letterKey(String name) {
+        if (name == null || name.isEmpty()) return "#";
+        char first = Character.toUpperCase(Normalizer.normalize(name.substring(0, 1), Normalizer.Form.NFD).charAt(0));
+        return first >= 'A' && first <= 'Z' ? String.valueOf(first) : "#";
+    }
+
+    // Sorts the items and titles them by letter range ("A–F", "G–M", …) so the car's A–Z jump
+    // lands on a section title. Ranges hold whole letters and grow with the library size.
+    static List<MediaItem> groupByLetterRange(List<MediaItem> items) {
+        List<MediaItem> sorted = new ArrayList<>(items);
+        sorted.sort(Comparator.comparing((MediaItem item) -> letterKey(titleOf(item)))
+                .thenComparing(AutomotiveRepository::titleOf, String.CASE_INSENSITIVE_ORDER));
+
+        List<String> titles = letterRangeTitles(sorted.stream().map(AutomotiveRepository::titleOf).collect(Collectors.toList()));
+        for (int i = 0; i < sorted.size(); i++) {
+            sorted.set(i, withGroupTitle(sorted.get(i), titles.get(i)));
+        }
+        return sorted;
+    }
+
+    static List<String> letterRangeTitles(List<String> namesSortedByLetter) {
+        int size = namesSortedByLetter.size();
+        int minPerGroup = Math.max(MIN_LETTER_GROUP_SIZE, (size + TARGET_LETTER_GROUPS - 1) / TARGET_LETTER_GROUPS);
+        List<String> keys = namesSortedByLetter.stream().map(AutomotiveRepository::letterKey).collect(Collectors.toList());
+
+        List<Integer> groupEnds = new ArrayList<>();
+        int start = 0;
+        for (int i = 0; i < size; i++) {
+            boolean lastOfLetter = i + 1 == size || !keys.get(i + 1).equals(keys.get(i));
+            if (lastOfLetter && i + 1 - start >= minPerGroup) {
+                groupEnds.add(i + 1);
+                start = i + 1;
+            }
+        }
+        if (start < size) {
+            if (!groupEnds.isEmpty() && size - start < minPerGroup / 2) {
+                groupEnds.set(groupEnds.size() - 1, size);
+            } else {
+                groupEnds.add(size);
+            }
+        }
+
+        List<String> titles = new ArrayList<>();
+        int from = 0;
+        for (int end : groupEnds) {
+            String first = keys.get(from);
+            String last = keys.get(end - 1);
+            String title = first.equals(last) ? first : first + "–" + last;
+            for (int i = from; i < end; i++) titles.add(title);
+            from = end;
+        }
+        return titles;
+    }
+
+    private static <T> ListenableFuture<T> fetch(Call<ApiResponse> call, Function<SubsonicResponse, T> read) {
+        final SettableFuture<T> future = SettableFuture.create();
+
+        call.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                SubsonicResponse subsonicResponse = getSubsonicResponseOrNull(response);
+                T value = null;
+                if (response.isSuccessful() && subsonicResponse != null) {
+                    try {
+                        value = read.apply(subsonicResponse);
+                    } catch (RuntimeException e) {
+                        // A missing list in the response leaves the value unknown
+                    }
+                }
+                future.set(value);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                future.set(null);
+            }
+        });
+
+        return future;
+    }
+
+    // Counts keyed by the Library row they label; a count the server can't give is left out.
+    public ListenableFuture<Map<String, Integer>> getLibraryCounts() {
+        ListenableFuture<List<ArtistID3>> artists = fetch(
+                App.getSubsonicClientInstance(false).getBrowsingClient().getArtists(),
+                response -> response.getArtists().getIndices().stream()
+                        .filter(index -> index.getArtists() != null)
+                        .flatMap(index -> index.getArtists().stream())
+                        .collect(Collectors.toList()));
+        ListenableFuture<Integer> genres = fetch(
+                App.getSubsonicClientInstance(false).getBrowsingClient().getGenres(),
+                response -> response.getGenres().getGenres().size());
+        ListenableFuture<Integer> folders = fetch(
+                App.getSubsonicClientInstance(false).getBrowsingClient().getMusicFolders(),
+                response -> response.getMusicFolders().getMusicFolders().size());
+        ListenableFuture<Long> songs = fetch(
+                App.getSubsonicClientInstance(false).getMediaLibraryScanningClient().getScanStatus(),
+                response -> response.getScanStatus().getCount());
+
+        return Futures.whenAllComplete(artists, genres, folders, songs).call(() -> {
+            Map<String, Integer> counts = new HashMap<>();
+            List<ArtistID3> artistList = Futures.getDone(artists);
+            if (artistList != null) {
+                counts.put(ConstantsAA.ARTISTS_ID, artistList.size());
+                // Subsonic has no album count; an album shared by several album artists counts once for each
+                counts.put(ConstantsAA.ALBUMS_ID, artistList.stream().mapToInt(ArtistID3::getAlbumCount).sum());
+            }
+            if (Futures.getDone(genres) != null) counts.put(ConstantsAA.GENRES_ID, Futures.getDone(genres));
+            if (Futures.getDone(folders) != null) counts.put(ConstantsAA.FOLDER_ID, Futures.getDone(folders));
+            if (Futures.getDone(songs) != null) counts.put(ConstantsAA.RANDOM_ID, Futures.getDone(songs).intValue());
+            return counts;
+        }, MoreExecutors.directExecutor());
+    }
+
+    private MediaItem createArtist(String artistName, String id, String artistCoverArtId){
         Uri artworkUri = (artistCoverArtId != null && !artistCoverArtId.isEmpty())
                 ? AlbumArtContentProvider.contentUri(artistCoverArtId)
                 : Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_artists);
@@ -110,7 +276,7 @@ public class AutomotiveRepository {
                 .setIsPlayable(false)
                 .setMediaType(MediaMetadata.MEDIA_TYPE_ARTIST)
                 .setArtworkUri(artworkUri)
-                .setExtras(createContentStyleExtras(isGridView))
+                .setExtras(createContentStyleExtras(true))
                 .build();
 
         return new MediaItem.Builder()
@@ -152,7 +318,7 @@ public class AutomotiveRepository {
         }
     }
 
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbums(String prefix, String type, int size, Boolean isRootCall) {
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbums(String prefix, String type, int size, boolean groupByLetter) {
         final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
         if (size > ConstantsAA.MAX_ITEMS) size = ConstantsAA.MAX_ITEMS;
         final int maxSize = size;
@@ -165,14 +331,6 @@ public class AutomotiveRepository {
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getAlbumList2() != null && response.body().getSubsonicResponse().getAlbumList2().getAlbums() != null) {
                             List<AlbumID3> albums = response.body().getSubsonicResponse().getAlbumList2().getAlbums();
-
-                            // Hack for artist view
-                            if("alphabeticalByArtist".equals(type))for(AlbumID3 album : albums){
-                                String artistName = album.getArtist();
-                                String albumName = album.getName();
-                                album.setName(artistName);
-                                album.setArtist(albumName);
-                            }
 
                             List<MediaItem> mediaItems = new ArrayList<>();
 
@@ -188,14 +346,8 @@ public class AutomotiveRepository {
                                 mediaItems.add(mediaItem);
                             }
 
-                            if (isRootCall == true) {
-                                MediaItem jumpTo = createFunction(
-                                        App.getContext().getString(R.string.aa_starred_albums),
-                                        ConstantsAA.JUMP_TO_STARRED_ALBUMS_ID,
-                                        Preferences.isAndroidAutoAlbumViewEnabled(),
-                                        Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_star_album)
-                                );
-                                mediaItems.add(0, jumpTo);
+                            if (groupByLetter) {
+                                mediaItems = groupByLetterRange(mediaItems);
                             }
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
@@ -215,7 +367,7 @@ public class AutomotiveRepository {
         return listenableFuture;
     }
 
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getArtists(String prefix, Boolean isRootCall) {
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getArtists(String prefix) {
         final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
 
         App.getSubsonicClientInstance(false)
@@ -240,35 +392,18 @@ public class AutomotiveRepository {
                                         MediaItem mediaItem = createArtist(
                                                 artist.getName(),
                                                 prefix + artist.getId(),
-                                                Preferences.isAndroidAutoAlbumViewEnabled(),
                                                 artist.getCoverArtId()
                                         );
+                                        String albumCount = App.getContext().getResources().getQuantityString(
+                                                R.plurals.aa_album_count, artist.getAlbumCount(), artist.getAlbumCount());
 
-                                        mediaItems.add(mediaItem);
+                                        mediaItems.add(withSubtitle(mediaItem, albumCount));
                                         count++;
                                     }
                                 }
                             }
 
-                            MediaItem jumpTo = createFunction(
-                                    App.getContext().getString(R.string.aa_view_by_albums),
-                                    ConstantsAA.ARTISTS_BY_ALBUMS_ID,
-                                    Preferences.isAndroidAutoAlbumViewEnabled(),
-                                    Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_albums)
-                            );
-                            mediaItems.add(0, jumpTo);
-
-                            if (isRootCall == true) {
-                                jumpTo = createFunction(
-                                        App.getContext().getString(R.string.aa_starred_artists),
-                                        ConstantsAA.JUMP_TO_STARRED_ARTISTS_ID,
-                                        Preferences.isAndroidAutoAlbumViewEnabled(),
-                                        Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_artists)
-                                );
-                                mediaItems.add(0, jumpTo);
-                            }
-
-                            LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
+                            LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(groupByLetterRange(mediaItems)), null);
 
                             listenableFuture.set(libraryResult);
                         } else {
@@ -281,47 +416,6 @@ public class AutomotiveRepository {
                         listenableFuture.setException(t);
                     }
                 });
-        return listenableFuture;
-    }
-
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getStarredSongs() {
-        final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
-
-        App.getSubsonicClientInstance(false)
-                .getAlbumSongListClient()
-                .getStarred2()
-                .enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getStarred2() != null && response.body().getSubsonicResponse().getStarred2().getSongs() != null) {
-                            List<Child> songs = response.body().getSubsonicResponse().getStarred2().getSongs();
-
-                            setChildrenMetadata(songs);
-
-                            if( !Preferences.isAndroidAutoShuffleStarredTracksEnabled() ) {
-                                songs = songs.subList(0, Math.min(ConstantsAA.MAX_ITEMS, songs.size()));
-                            }
-                            else {
-                                Collections.shuffle(songs);
-                                songs = songs.subList(0, Math.min(ConstantsAA.MAX_SHUFFLE_ITEMS, songs.size()));
-                            }
-
-                            List<MediaItem> mediaItems = MappingUtil.mapMediaItems(songs, ConstantsAA.QUEUE_CACHED_SOURCE);
-
-                            LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
-
-                            listenableFuture.set(libraryResult);
-                        } else {
-                            listenableFuture.set(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-                        listenableFuture.setException(t);
-                    }
-                });
-
         return listenableFuture;
     }
 
@@ -354,33 +448,6 @@ public class AutomotiveRepository {
                         listenableFuture.setException(t);
                     }
                 });
-
-        return listenableFuture;
-    }
-
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getRecentlyPlayedSongs(String server, int count) {
-        final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
-
-        chronologyDao.getLastPlayed(server, count).observeForever(new Observer<List<Chronology>>() {
-            @Override
-            public void onChanged(List<Chronology> chronology) {
-                if (chronology != null && !chronology.isEmpty()) {
-                    List<Child> songs = new ArrayList<>(chronology);
-
-                    setChildrenMetadata(songs);
-
-                    List<MediaItem> mediaItems = MappingUtil.mapMediaItems(songs, ConstantsAA.QUEUE_CACHED_SOURCE);
-
-                    LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
-
-                    listenableFuture.set(libraryResult);
-                } else {
-                    listenableFuture.set(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
-                }
-
-                chronologyDao.getLastPlayed(server, count).removeObserver(this);
-            }
-        });
 
         return listenableFuture;
     }
@@ -421,7 +488,7 @@ public class AutomotiveRepository {
         return listenableFuture;
     }
 
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getStarredAlbums(String prefix, Boolean isRootCall) {
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getStarredAlbums(String prefix) {
 
         final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
 
@@ -449,72 +516,6 @@ public class AutomotiveRepository {
                                 mediaItems.add(mediaItem);
                             }
 
-                            if (isRootCall == true) {
-                                MediaItem jumpTo = createFunction(
-                                        App.getContext().getString(R.string.aa_albums),
-                                        ConstantsAA.JUMP_TO_ALBUMS_ID,
-                                        Preferences.isAndroidAutoAlbumViewEnabled(),
-                                        Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_albums)
-                                );
-                                mediaItems.add(0, jumpTo);
-                            }
-
-                            LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
-
-                            listenableFuture.set(libraryResult);
-                        } else {
-                            listenableFuture.set(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-
-                    }
-                });
-
-        return listenableFuture;
-    }
-
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getStarredArtists(String prefix, Boolean isRootCall) {
-        final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
-
-        App.getSubsonicClientInstance(false)
-                .getAlbumSongListClient()
-                .getStarred2()
-                .enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getStarred2() != null && response.body().getSubsonicResponse().getStarred2().getArtists() != null) {
-                            List<ArtistID3> artists = response.body().getSubsonicResponse().getStarred2().getArtists();
-                            artists = artists.subList(0, Math.min(ConstantsAA.MAX_ITEMS, artists.size()));
-
-                            artists.sort((a1, a2) -> {
-                                String name1 = a1.getName() != null ? a1.getName() : "";
-                                String name2 = a2.getName() != null ? a2.getName() : "";
-                                return name1.compareToIgnoreCase(name2);
-                            });
-
-                            List<MediaItem> mediaItems = new ArrayList<>();
-
-                            for (ArtistID3 artist : artists) {
-                                MediaItem mediaItem = createArtist(
-                                        artist.getName(),
-                                        prefix + artist.getId(),
-                                        Preferences.isAndroidAutoAlbumViewEnabled(),
-                                        artist.getCoverArtId()
-                                );
-                                mediaItems.add(mediaItem);
-                            }
-                            if (isRootCall == true) {
-                                MediaItem jumpTo = createFunction(
-                                        App.getContext().getString(R.string.aa_artists),
-                                        ConstantsAA.JUMP_TO_ARTISTS_ID,
-                                        Preferences.isAndroidAutoAlbumViewEnabled(),
-                                        Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_artists)
-                                );
-                                mediaItems.add(0, jumpTo);
-                            }
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
 
                             listenableFuture.set(libraryResult);
@@ -754,7 +755,7 @@ public class AutomotiveRepository {
                                         .setUri("")
                                         .build();
 
-                                mediaItems.add(mediaItem);
+                                mediaItems.add(withSubtitle(mediaItem, songCountAndLength(playlist.getSongCount(), playlist.getDuration())));
                             }
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
@@ -786,6 +787,9 @@ public class AutomotiveRepository {
                         if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getNewestPodcasts() != null && response.body().getSubsonicResponse().getNewestPodcasts().getEpisodes() != null) {
                             List<PodcastEpisode> episodes = response.body().getSubsonicResponse().getNewestPodcasts().getEpisodes();
 
+                            Map<String, Long> resumePositions = new HashMap<>();
+                            Preferences.getContinueListening().forEach(point -> resumePositions.put(point.getId(), point.getPosition()));
+
                             List<MediaItem> mediaItems = new ArrayList<>();
 
                             for (PodcastEpisode episode : episodes) {
@@ -804,6 +808,20 @@ public class AutomotiveRepository {
                                         .setMediaMetadata(mediaMetadata)
                                         .setUri(MusicUtil.getStreamUri(episode.getStreamId()))
                                         .build();
+
+                                int durationSeconds = episode.getDuration() != null ? episode.getDuration() : 0;
+                                mediaItem = withSubtitle(mediaItem, joinSubtitle(
+                                        episode.getAlbum() != null ? episode.getAlbum() : episode.getArtist(),
+                                        durationSeconds > 0 ? MusicUtil.getReadablePodcastDurationString(durationSeconds) : null));
+
+                                // Only a started episode has a known state: a finished one leaves no resume point behind
+                                Long position = resumePositions.get(episode.getId());
+                                if (position != null && durationSeconds > 0) {
+                                    Bundle completion = new Bundle();
+                                    completion.putInt(MediaConstants.EXTRAS_KEY_COMPLETION_STATUS, MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_PARTIALLY_PLAYED);
+                                    completion.putDouble(MediaConstants.EXTRAS_KEY_COMPLETION_PERCENTAGE, Math.min(1.0, position / (durationSeconds * 1000.0)));
+                                    mediaItem = withExtras(mediaItem, completion);
+                                }
 
                                 mediaItems.add(mediaItem);
                             }
@@ -903,8 +921,19 @@ public class AutomotiveRepository {
                             setChildrenMetadata(tracks);
 
                             List<MediaItem> mediaItems = MappingUtil.mapMediaItems(tracks, ConstantsAA.QUEUE_CACHED_SOURCE);
+                            for (int i = 0; i < mediaItems.size(); i++) {
+                                Child track = tracks.get(i);
+                                mediaItems.set(i, withSubtitle(mediaItems.get(i), joinSubtitle(
+                                        track.getTrack() != null ? String.valueOf(track.getTrack()) : null,
+                                        MusicUtil.getReadableDurationString(track.getDuration(), false))));
+                            }
 
                             setMultiDiscTitleGrouping(App.getContext(), album.getDiscTitles(), mediaItems);
+
+                            mediaItems.add(0, createShuffle(
+                                    App.getContext().getString(R.string.aa_shuffle_album),
+                                    songCountAndLength(tracks.size(), album.getDuration() != null ? album.getDuration() : 0),
+                                    ConstantsAA.ALBUM_ID + id));
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
 
@@ -1022,7 +1051,7 @@ public class AutomotiveRepository {
                                 ArtistID3 artist = response.body().getSubsonicResponse().getArtist();
                                 MediaItem instantMixItem = createAlbum(
                                         App.getContext().getString(R.string.aa_instant_mix),
-                                        "By Tempus",
+                                        null,
                                         "Instant Mix",
                                         ConstantsAA.INSTANTMIX_SOURCE + "[" + numberOfTracks + "]" + id,
                                         true,
@@ -1135,7 +1164,8 @@ public class AutomotiveRepository {
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
                         SubsonicResponse subsonicResponse = getSubsonicResponseOrNull(response);
                         if (response.isSuccessful() && subsonicResponse != null && subsonicResponse.getPlaylist() != null && subsonicResponse.getPlaylist().getEntries() != null) {
-                            List<Child> tracks = response.body().getSubsonicResponse().getPlaylist().getEntries();
+                            PlaylistWithSongs playlist = subsonicResponse.getPlaylist();
+                            List<Child> tracks = playlist.getEntries();
 
                             if( !Preferences.isAndroidAutoShufflePlaylistsEnabled() ) {
                                 tracks = tracks.subList(0, Math.min(ConstantsAA.MAX_ITEMS, tracks.size()));
@@ -1148,6 +1178,17 @@ public class AutomotiveRepository {
                             setChildrenMetadata(tracks);
 
                             List<MediaItem> mediaItems = MappingUtil.mapMediaItems(tracks, ConstantsAA.QUEUE_CACHED_SOURCE);
+                            for (int i = 0; i < mediaItems.size(); i++) {
+                                Child track = tracks.get(i);
+                                mediaItems.set(i, withSubtitle(mediaItems.get(i), joinSubtitle(
+                                        track.getArtist(),
+                                        MusicUtil.getReadableDurationString(track.getDuration(), false))));
+                            }
+
+                            mediaItems.add(0, createShuffle(
+                                    App.getContext().getString(R.string.aa_shuffle_playlist),
+                                    songCountAndLength(playlist.getSongCount(), playlist.getDuration()),
+                                    ConstantsAA.PLAYLIST_ID + id));
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
 
@@ -1296,6 +1337,7 @@ public class AutomotiveRepository {
                         SubsonicResponse subsonicResponse = getSubsonicResponseOrNull(response);
                         if (response.isSuccessful() && subsonicResponse != null && subsonicResponse.getSearchResult3() != null) {
                             List<MediaItem> mediaItems = new ArrayList<>();
+                            Context context = App.getContext();
 
                             if (response.body().getSubsonicResponse().getSearchResult3().getArtists() != null) {
                                 for (ArtistID3 artist : response.body().getSubsonicResponse().getSearchResult3().getArtists()) {
@@ -1303,10 +1345,11 @@ public class AutomotiveRepository {
                                     MediaItem mediaItem = createArtist(
                                             artist.getName(),
                                             artistPrefix + artist.getId(),
-                                            Preferences.isAndroidAutoAlbumViewEnabled(),
                                             artist.getCoverArtId()
                                     );
-                                    mediaItems.add(mediaItem);
+                                    mediaItem = withSubtitle(mediaItem, context.getString(R.string.aa_artist));
+                                    mediaItem = withSingleItemStyle(mediaItem, false);
+                                    mediaItems.add(withGroupTitle(mediaItem, context.getString(R.string.aa_artists)));
                                 }
                             }
 
@@ -1320,14 +1363,20 @@ public class AutomotiveRepository {
                                             false,
                                             album.getCoverArtId()
                                     );
-                                    mediaItems.add(mediaItem);
+                                    mediaItem = withSubtitle(mediaItem, joinSubtitle(album.getArtist(), album.getYear() > 0 ? String.valueOf(album.getYear()) : null));
+                                    mediaItem = withSingleItemStyle(mediaItem, true);
+                                    mediaItems.add(withGroupTitle(mediaItem, context.getString(R.string.aa_albums)));
                                 }
                             }
 
                             if (response.body().getSubsonicResponse().getSearchResult3().getSongs() != null) {
                                 List<Child> tracks = response.body().getSubsonicResponse().getSearchResult3().getSongs();
                                 setChildrenMetadata(tracks);
-                                mediaItems.addAll(MappingUtil.mapMediaItems(tracks));
+                                for (Child track : tracks) {
+                                    MediaItem mediaItem = withSubtitle(MappingUtil.mapMediaItem(track), joinSubtitle(track.getArtist(), track.getAlbum()));
+                                    mediaItem = withSingleItemStyle(mediaItem, false);
+                                    mediaItems.add(withGroupTitle(mediaItem, context.getString(R.string.aa_songs)));
+                                }
                             }
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
@@ -1470,7 +1519,8 @@ public class AutomotiveRepository {
                                         .setUri("")
                                         .build();
 
-                                mediaItems.add(mediaItem);
+                                mediaItems.add(withSubtitle(mediaItem, App.getContext().getResources().getQuantityString(
+                                        R.plurals.player_queue_song_count, genre.getSongCount(), genre.getSongCount())));
                             }
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);

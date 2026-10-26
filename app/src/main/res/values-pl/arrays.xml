@@ -331,43 +331,6 @@
         <item>3</item>
     </string-array>
 	
-    <string-array name="aa_tab_titles">
-        <item>Nie wyświetlaj</item>
-        <item>Strona główna</item>
-        <item>Ostatnie</item>
-        <item>Albumy</item>
-        <item>Wykonawcy</item>
-        <item>Playlisty</item>
-        <item>Podcasty</item>
-        <item>Radio</item>
-        <item>Foldery</item>
-        <item>Najczęściej odtwarzane albumy</item>
-        <item>Dodane albumy</item>
-        <item>Dla ciebie</item>
-        <item>Oznaczone gwiazdką</item>
-        <item>Utwory</item>
-		<item>Gatunki</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-		<item>16</item>
-    </string-array>
 
 	
     <string-array name="custom_commands_titles">

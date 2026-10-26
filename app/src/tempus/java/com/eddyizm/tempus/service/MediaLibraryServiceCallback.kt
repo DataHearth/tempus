@@ -119,6 +119,16 @@ class MediaLibrarySessionCallback(
             .build()
     }
 
+    // A track list also holds its "Shuffle" row, and the subtitle written for a browse row
+    // ("3 · 4:12") would replace the artist on the now-playing screen.
+    private fun queueTracks(items: List<MediaItem>): List<MediaItem> = items
+        .filterNot { it.mediaId.startsWith(ConstantsAA.SHUFFLE_SOURCE) }
+        .map {
+            it.buildUpon()
+                .setMediaMetadata(it.mediaMetadata.buildUpon().setDisplayTitle(null).setSubtitle(null).build())
+                .build()
+        }
+
     override fun onAddMediaItems(
         mediaSession: MediaSession,
         controller: MediaSession.ControllerInfo,
@@ -182,7 +192,16 @@ class MediaLibrarySessionCallback(
             parentId?.startsWith(ConstantsAA.QUEUE_CACHED_SOURCE) == true -> {
                 Log.d(TAG, "Fetching AA list source tracks for $parentId")
                 val cachedItems = queueSourceCache[ConstantsAA.QUEUE_CACHED_SOURCE] ?: emptyList()
-                Futures.immediateFuture(cachedItems)
+                Futures.immediateFuture(queueTracks(cachedItems))
+            }
+
+            firstItem.mediaId.startsWith(ConstantsAA.SHUFFLE_SOURCE) -> {
+                Log.d(TAG, "Shuffling ${firstItem.mediaId}")
+                Futures.transform(
+                    MediaBrowserTree.getChildren(firstItem.mediaId.removePrefix(ConstantsAA.SHUFFLE_SOURCE)),
+                    { queueTracks(it.value ?: emptyList()).shuffled() },
+                    MoreExecutors.directExecutor()
+                )
             }
 
             firstItem.mediaId.startsWith(ConstantsAA.INSTANTMIX_SOURCE) -> {

@@ -1,29 +1,47 @@
 <resources>
     <string name="aa_albums">Albums</string>
-    <string name="aa_album_most_played">Albums most played</string>
-    <string name="aa_album_recently_added">Albums added</string>
     <string name="aa_artists">Artists</string>
     <string name="aa_home">Home</string>
-    <string name="aa_made_for_you">For you</string>
-    <string name="aa_more">More</string>
-    <string name="aa_music_folder">Folder</string>
+    <string name="aa_music_folder">Folders</string>
     <string name="aa_playlists">Playlists</string>
-    <string name="aa_podcast">Podcast</string>
-    <string name="aa_radio">Radio</string>
-    <string name="aa_random">Random</string>
     <string name="aa_genres">Genres</string>
-    <string name="aa_recent_albums">Recent</string>
-    <string name="aa_song_recently_played">Tracks played</string>
-    <string name="aa_starred">Starred</string>
-    <string name="aa_starred_albums">★ Albums</string>
-    <string name="aa_starred_artists">★ Artists</string>
-    <string name="aa_starred_tracks">★ Tracks</string>
+    <string name="aa_starred_albums">Starred albums</string>
     <string name="aa_instant_mix">Instant mix</string>
-    <string name="aa_view_by_albums">View by albums</string>
-    <string name="aa_tracks">Tracks</string>
     <string name="aa_quick_mix">Quick mix</string>
     <string name="aa_my_mix">My mix</string>
     <string name="aa_discovery_mix">Discovery mix</string>
+    <string name="aa_quick_mix_description">Random songs from your recent albums</string>
+    <string name="aa_my_mix_description">Your recent albums and starred music</string>
+    <string name="aa_discovery_mix_description">Similar songs to discover</string>
+    <string name="aa_instant_mix_stop">Stop instant mix</string>
+    <string name="aa_library">Library</string>
+    <string name="aa_radio_podcasts">Radio &amp; podcasts</string>
+    <string name="aa_mixes">Mixes</string>
+    <string name="aa_recently_added">Recently added</string>
+    <string name="aa_radio_stations">Radio stations</string>
+    <string name="aa_new_episodes">New episodes</string>
+    <string name="aa_shuffle_album">Shuffle album</string>
+    <string name="aa_shuffle_playlist">Shuffle playlist</string>
+    <string name="aa_shuffle_all">Shuffle all songs</string>
+    <string name="aa_artist">Artist</string>
+    <string name="aa_songs">Songs</string>
+    <string name="aa_subtitle_pair" translatable="false">%1$s · %2$s</string>
+    <plurals name="aa_artist_count">
+        <item quantity="one">%d artist</item>
+        <item quantity="other">%d artists</item>
+    </plurals>
+    <plurals name="aa_album_count">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="aa_genre_count">
+        <item quantity="one">%d genre</item>
+        <item quantity="other">%d genres</item>
+    </plurals>
+    <plurals name="aa_folder_count">
+        <item quantity="one">%d folder</item>
+        <item quantity="other">%d folders</item>
+    </plurals>
 
     <string name="activity_battery_optimizations_conclusion">If in trouble visit https://dontkillmyapp.com. It provides detailed instructions on how to disable any power-saving features that may affect app\'s performance.</string>
     <string name="activity_battery_optimizations_summary">Please disable battery optimizations for media playback while the screen is off.</string>
@@ -524,17 +542,7 @@
     <string name="settings_podcast_summary">If enabled, show the podcast section. Restart the app for it to take full effect.</string>
     <string name="settings_playlist_sort">Playlist sorting</string>
     <string name="settings_androidauto">Android Auto</string>
-    <string name="settings_androidauto_album_view">Grid view for albums and artists</string>
-    <string name="settings_androidauto_home_view">Grid view for home</string>
-    <string name="settings_androidauto_playlist_view">Grid view for playlists</string>
-    <string name="settings_androidauto_podcast_view">Grid view for podcast</string>
-    <string name="settings_androidauto_radio_view">Grid view for radio</string>
-    <string name="settings_androidauto_first_tab">First tab display</string>
-    <string name="settings_androidauto_second_tab">Second tab display</string>
-    <string name="settings_androidauto_third_tab">Third tab display</string>
-    <string name="settings_androidauto_fourth_tab">Fourth tab display</string>
     <string name="settings_androidauto_shuffle_genre_songs">Shuffle genre songs</string>
-    <string name="settings_androidauto_shuffle_starred_tracks">Shuffle starred tracks</string>
     <string name="settings_androidauto_shuffle_playlists">Shuffle playlists</string>
     <string name="settings_androidauto_shuffle_downloaded_tracks">Shuffle downloaded tracks</string>
     <string name="settings_androidauto_shuffle_genre_songs_summary">Play random songs when selecting a genre</string>

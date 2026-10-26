@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,5 +134,78 @@ public class AutomotiveRepositoryTest {
 
         assertEquals("Disc 1 - Dawn to Dusk", result.get(1));
         assertEquals("Disc 2 - Twilight to Starlight", result.get(2));
+    }
+
+    private static List<String> repeat(String name, int times) {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < times; i++) names.add(name + i);
+        return names;
+    }
+
+    @Test
+    public void letterKeyFoldsAccentsAndPutsNonLettersUnderHash() {
+        assertEquals("E", AutomotiveRepository.letterKey("Édith Piaf"));
+        assertEquals("A", AutomotiveRepository.letterKey("abba"));
+        assertEquals("#", AutomotiveRepository.letterKey("10cc"));
+        assertEquals("#", AutomotiveRepository.letterKey(""));
+        assertEquals("#", AutomotiveRepository.letterKey(null));
+    }
+
+    @Test
+    public void lettersMergeIntoRangesOfAtLeastSixItems() {
+        List<String> names = new ArrayList<>();
+        names.addAll(repeat("A", 2));
+        names.addAll(repeat("B", 2));
+        names.addAll(repeat("C", 3));
+        names.addAll(repeat("D", 6));
+        names.addAll(repeat("G", 4));
+        names.addAll(repeat("M", 3));
+
+        List<String> titles = AutomotiveRepository.letterRangeTitles(names);
+
+        assertEquals(names.size(), titles.size());
+        assertEquals("A–C", titles.get(0));
+        assertEquals("A–C", titles.get(6));
+        assertEquals("D", titles.get(7));
+        assertEquals("G–M", titles.get(13));
+        assertEquals("G–M", titles.get(19));
+    }
+
+    @Test
+    public void smallTrailingRangeJoinsThePreviousOne() {
+        List<String> names = new ArrayList<>();
+        names.addAll(repeat("A", 6));
+        names.addAll(repeat("Z", 2));
+
+        assertEquals(Collections.nCopies(8, "A–Z"), AutomotiveRepository.letterRangeTitles(names));
+    }
+
+    @Test
+    public void rangesGrowWithTheLibrary() {
+        List<String> names = new ArrayList<>();
+        for (char letter = 'A'; letter <= 'Z'; letter++) names.addAll(repeat(String.valueOf(letter), 10));
+
+        long groups = AutomotiveRepository.letterRangeTitles(names).stream().distinct().count();
+
+        assertTrue(groups <= 8);
+        assertTrue(groups >= 6);
+    }
+
+    @Test
+    public void groupByLetterRangeSortsByFoldedLetter() {
+        List<MediaItem> items = Arrays.asList(titled("zed"), titled("Édith"), titled("10cc"), titled("alpha"));
+
+        List<String> titles = AutomotiveRepository.groupByLetterRange(items).stream()
+                .map(item -> item.mediaMetadata.title.toString())
+                .collect(Collectors.toList());
+
+        assertEquals(Arrays.asList("10cc", "alpha", "Édith", "zed"), titles);
+    }
+
+    private static MediaItem titled(String title) {
+        return new MediaItem.Builder()
+                .setMediaId(title)
+                .setMediaMetadata(new MediaMetadata.Builder().setTitle(title).build())
+                .build();
     }
 }

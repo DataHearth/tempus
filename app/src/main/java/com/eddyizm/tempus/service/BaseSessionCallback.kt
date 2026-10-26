@@ -117,7 +117,7 @@ open class BaseSessionCallback(
     @Suppress("DEPRECATION")
     private val customCommandInstantMixOn =
         CommandButton.Builder(CommandButton.ICON_UNDEFINED)
-            .setDisplayName("instantmix on")
+            .setDisplayName(context.getString(R.string.aa_instant_mix))
             .setSessionCommand(SessionCommand(Constants.CUSTOM_COMMAND_INSTANT_MIX_ON, Bundle.EMPTY))
             .setIconResId(R.drawable.ic_instantmix_on)
             .setSlots(CommandButton.SLOT_OVERFLOW)
@@ -126,7 +126,7 @@ open class BaseSessionCallback(
     @Suppress("DEPRECATION")
     private val customCommandInstantMixOff =
         CommandButton.Builder(CommandButton.ICON_UNDEFINED)
-            .setDisplayName("instantmix off")
+            .setDisplayName(context.getString(R.string.aa_instant_mix_stop))
             .setSessionCommand(SessionCommand(Constants.CUSTOM_COMMAND_INSTANT_MIX_OFF, Bundle.EMPTY))
             .setIconResId(R.drawable.media3_icon_minus_circle_unfilled)
             .setSlots(CommandButton.SLOT_OVERFLOW)
@@ -301,9 +301,9 @@ open class BaseSessionCallback(
 
         val allButtons = listOf(
             "[heartID]",
-            "[repeatID]",
+            "[instantMixID]",
             "[shuffleID]",
-            "[instantMixID]")
+            "[repeatID]")
         val tabButton = listOfNotNull(
             Preferences.getCustomCommandFirstButton(),
             Preferences.getCustomCommandSecondButton()

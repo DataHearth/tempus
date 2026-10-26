@@ -341,44 +341,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="aa_tab_titles">
-        <item>Göstərmə</item>
-        <item>Ana səhifə</item>
-        <item>Son</item>
-        <item>Albomlar</item>
-        <item>İfaçılar</item>
-        <item>Pleylistlər</item>
-        <item>Podkast</item>
-        <item>Radio</item>
-        <item>Qovluq</item>
-        <item>Ən çox dinlənilən albomlar</item>
-        <item>Əlavə edilmiş albomlar</item>
-        <item>Sizin üçün</item>
-        <item>Ulduzlu</item>
-        <item>Mahnılar</item>
-        <item>Janrlar</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-    </string-array>
-
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>Ulduzlu ifaçılar</item>
         <item>Ulduzlu albomlar</item>

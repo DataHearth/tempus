@@ -341,44 +341,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="aa_tab_titles">
-        <item>Не отображать</item>
-        <item>Главная</item>
-        <item>Недавнее</item>
-        <item>Альбомы</item>
-        <item>Исполнители</item>
-        <item>Плейлисты</item>
-        <item>Подкасты</item>
-        <item>Радио</item>
-        <item>Папки</item>
-        <item>Часто слушаемые альбомы</item>
-        <item>Недавно добавленные альбомы</item>
-        <item>Для вас</item>
-        <item>Избранное</item>
-        <item>Треки</item>
-        <item>Жанры</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-    </string-array>
-
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>Избранные исполнители</item>
         <item>Избранные альбомы</item>

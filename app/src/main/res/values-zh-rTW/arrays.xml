@@ -341,44 +341,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="aa_tab_titles">
-        <item>不要顯示</item>
-        <item>主頁</item>
-        <item>最近</item>
-        <item>專輯</item>
-        <item>藝人</item>
-        <item>播放清單</item>
-        <item>Podcast</item>
-        <item>電臺</item>
-        <item>資料夾</item>
-        <item>最多播放數的專輯</item>
-        <item>新增的專輯</item>
-        <item>For you</item>
-        <item>Starred</item>
-        <item>曲目</item>
-        <item>流派</item>
-    </string-array>
-    <string-array name="aa_tab_values">
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-    </string-array>
-
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>Star artists</item>
         <item>Star albums</item>

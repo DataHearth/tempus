@@ -2,7 +2,6 @@
 <resources>
     <string name="album_page_tracks_count_and_duration">%1$d pistas  •  %2$d minutos</string>
     <string name="app_name">Tempus</string>
-    <string name="aa_starred_tracks">★ Pistas</string>
     <string name="aa_discovery_mix">Mix de descubrimiento</string>
     <string name="activity_battery_optimizations_conclusion">Si tienes problemas, visita https://dontkillmyapp.com. Ofrece instrucciones detalladas para desactivar características de ahorro de energía que podrían afectar al rendimiento de la app.</string>
     <string name="activity_battery_optimizations_summary">Por favor, desactiva las optimizaciones de batería para continuar la reproducción multimedia mientras la pantalla está apagada.</string>
@@ -358,7 +357,6 @@
     <string name="settings_podcast">Mostrar pódcasts</string>
     <string name="settings_podcast_summary">Si se habilita, se mostrará la sección de pódcasts. Reinicia la aplicación para que los cambios surtan efecto.</string>
     <string name="settings_playlist_sort">Ordenar listas de reproducción</string>
-    <string name="settings_androidauto_fourth_tab">Vista de la cuarta pestaña</string>
     <string name="settings_androidauto_starred_for_made_for_you">Favoritos en el mix \"Para ti\"</string>
     <string name="settings_audio_quality">Mostrar calidad de audio</string>
     <string name="settings_audio_quality_summary">La tasa de bits y el formato de audio se mostrarán para cada pista de audio.</string>
@@ -605,33 +603,14 @@
     <string name="playback_speed_dialog_title">Velocidad de reproducción</string>
     <string name="settings_title_ui_landscape_items_per_row">Elementos por fila en modo horizontal</string>
     <string name="aa_albums">Álbumes</string>
-    <string name="aa_album_most_played">Álbumes más reproducidos</string>
-    <string name="aa_album_recently_added">Álbumes añadidos</string>
     <string name="aa_artists">Artistas</string>
     <string name="aa_home">Inicio</string>
-    <string name="aa_made_for_you">Para ti</string>
-    <string name="aa_more">Más</string>
     <string name="aa_music_folder">Carpeta</string>
     <string name="aa_playlists">Listas de reproducción</string>
-    <string name="aa_podcast">Pódcasts</string>
-    <string name="aa_radio">Radio</string>
-    <string name="aa_random">Aleatorio</string>
     <string name="aa_genres">Géneros</string>
-    <string name="aa_recent_albums">Reciente</string>
-    <string name="aa_song_recently_played">Última canción reproducida</string>
-    <string name="aa_starred">Favoritos</string>
     <string name="aa_starred_albums">★ Álbumes</string>
-    <string name="aa_starred_artists">★ Artistas</string>
     <string name="playlist_chooser_dialog_toast_remove_success">Canción eliminada de la lista</string>
     <string name="settings_androidauto">Android Auto</string>
-    <string name="settings_androidauto_album_view">Vista de cuadrícula para álbumes</string>
-    <string name="settings_androidauto_home_view">Vista de cuadrícula para la página de inicio</string>
-    <string name="settings_androidauto_playlist_view">Vista de cuadrícula para listas de reproducción</string>
-    <string name="settings_androidauto_podcast_view">Vista de cuadrícula para pódcasts</string>
-    <string name="settings_androidauto_radio_view">Vista de cuadrícula para emisoras de radio</string>
-    <string name="settings_androidauto_first_tab">Vista de la primera pestaña</string>
-    <string name="settings_androidauto_second_tab">Vista de la segunda pestaña</string>
-    <string name="settings_androidauto_third_tab">Vista de la tercera pestaña</string>
     <string name="settings_enable_drawer_on_landscape">Habilitar el menú lateral en modo vertical [Experimental]</string>
     <string name="settings_enable_drawer_on_landscape_summary">Desbloquea el menú lateral horizontal en modo vertical. Los cambios se aplicarán al reiniciar la app.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Ocultar la barra de navegación inferior en modo vertical [Experimental]</string>
@@ -640,8 +619,6 @@
     <string name="search_all_songs_play">Reproducir %1$s</string>
     <string name="nav_drawer_index">Índice</string>
     <string name="aa_instant_mix">Mix instantáneo</string>
-    <string name="aa_view_by_albums">Ver por álbumes</string>
-    <string name="aa_tracks">Pistas</string>
     <string name="aa_quick_mix">Mix rápido</string>
     <string name="aa_my_mix">Mi mix</string>
     <string name="artist_page_title_ep_section">EPs</string>
@@ -716,7 +693,6 @@
     <string name="settings_precache_tracks">Precargar las siguientes canciones [Experimental]</string>
     <string name="settings_precache_tracks_summary">Cargar completamente las siguientes canciones de la cola en segundo plano, para que los saltos de canciones se produzcan instantáneamente y la reproducción no se interrumpa ante caídas breves de señal</string>
     <string name="settings_precache_wifi_only">Precargar solo en Wi-Fi</string>
-    <string name="settings_androidauto_shuffle_starred_tracks">Reproducir aleatoriamente tus canciones favoritas</string>
     <string name="settings_androidauto_shuffle_playlists">Listas de reprodución en aleatorio</string>
     <string name="settings_track_number">Mostrar número de pista</string>
     <string name="settings_track_number_summary">Si está activado, mostrará el número de pista de la canción que estás escuchando.</string>

@@ -40,11 +40,10 @@
 - [Android Auto](#android-auto)
     - [Enabling on your head unit](#enabling-on-your-head-unit)
     - [Tabs](#tabs)
-    - [Bundles](#bundles)
-    - [Thumbnails or lists](#thumbnails-or-lists)
-    - [Artists and Instant Mix](#artists-and-instant-mix)
-    - [A-Z and search](#a-z-and-search)
-    - [Shortcuts](#shortcuts)
+    - [Mixes](#mixes)
+    - [Albums, artists and playlists](#albums-artists-and-playlists)
+    - [Search](#search)
+    - [Now playing](#now-playing)
 - [Known Issues](#known-issues)
     - [Airsonic Distorted Playback](#airsonic-distorted-playback)
     - [Support](#support)
@@ -480,135 +479,44 @@ To allow the Tempus app on your car's head unit, "Unknown sources" needs to be e
 
 ### Tabs
 
-The Android Auto interface can be configured by the user to best suit their preferences. The settings are under **Settings → Android Auto**.
+Tempus shows four tabs on the car screen:
 
-<p align="left">
-    <img src="mockup/usage/aa_preferences.png" width=317 style="margin-right:16px;">
-    <img src="mockup/usage/aa_functions.png" width=317>
-</p>
-
-4 tabs can be configured with the following functions:
-
-| Function | What it shows |
+| Tab | What it shows |
 |---|---|
-| Do not display | This tab is not used |
-| Home | Displays all functions not used in other tabs |
-| Recent | The 15 recently listened-to albums |
-| Albums | Albums sorted by name |
-| Artists | Albums sorted by artist or Artists, selected by preference |
-| Playlists | |
-| Podcast | The 100 podcasts recently added |
-| Radio | Your server's stations together with any you added locally in the app. The local ones show even when the server reports no stations of its own |
-| Folder | Navigation through music directories |
-| Albums most played | The 15 most played albums |
-| Tracks played | The 100 last tracks that were completely played |
-| Albums added | The 15 recently added albums |
-| For You bundle | |
-| Starred bundle | |
-| Tracks bundle | |
-| Genres | 500 songs of the chosen genre OR 100 random songs if "shuffle genre songs" is selected |
-| Downloads | the 500 first downloaded tracks OR 100 random downloaded tracks if "shuffle downloaded tracks" is selected. Shown at the top of the Home tab and playable without connectivity |
+| Home | **Mixes** (Quick mix, My mix, Discovery mix) as tiles, then the 15 **Recently added** albums and your **Starred albums** |
+| Library | **Artists**, **Albums**, **Genres** and **Folders** with how many of each your server has, **Downloads**, and **Shuffle all songs** (100 random songs) |
+| Playlists | Your playlists as covers, each with its number of songs and length |
+| Radio & podcasts | Your radio stations, then the 100 newest podcast episodes. An episode you have started shows how far you got |
 
-If all tabs are set to "Do not display", then "Home" tab will be created with all functions inside.
+Downloads plays the 500 first downloaded tracks, or 100 random downloaded tracks if "shuffle downloaded tracks" is selected, and works without connectivity.
 
-If "Home" is selected after another tab, it becomes "More".
+### Mixes
 
-### Bundles
-
-For You bundle includes:
-
-| Item | What it shows |
+| Mix | What it plays |
 |---|---|
-| Quick mix | features 12 tracks chosen randomly from the 15 last played albums |
-| My mix | features 15 tracks chosen randomly from the 15 last played albums, and starred artists or starred albums, following preference |
-| Discovery mix | features 18 tracks, as My mix, with similar songs |
-| Starred artists | |
-| Starred albums | |
-| Starred tracks | the 500 first starred tracks OR 100 random starred tracks if "shuffle starred tracks" is selected |
+| Quick mix | 12 tracks chosen randomly from the 15 last played albums |
+| My mix | 15 tracks chosen randomly from the 15 last played albums, and starred artists or starred albums, following the "Starred for Made For You mix" preference |
+| Discovery mix | 18 tracks, as My mix, with similar songs |
 
-Starred bundle includes:
+### Albums, artists and playlists
 
-| Item | What it shows |
-|---|---|
-| Starred artists | |
-| Starred albums | |
-| Starred tracks | the 500 first starred tracks OR 100 random starred tracks if "shuffle starred tracks" is selected |
+Albums and Artists are sorted by name and grouped under letter ranges such as **A–F** and **G–M**, so the A-Z button lands on a range heading. Names starting with a digit or symbol come first, under **#**. Display of albums and artists is limited to 500.
 
-Tracks bundle includes:
+An album opens on **Shuffle album**, with its number of songs and length, followed by its tracks with their track number and duration. When an album has tracks on more than one disc, its track list is grouped under a heading for each disc, such as **Disc 1**, with the disc's title after the number when your server sends one.
 
-| Item | What it shows |
-|---|---|
-| Random | 100 random songs |
-| Genres | 500 songs of the chosen genre OR 100 random songs if "shuffle genre songs" is selected |
-| Tracks played | The 100 recently listened-to tracks |
-| Starred tracks | the 500 first starred tracks OR 100 random starred tracks if "shuffle starred tracks" is selected |
+A playlist opens on **Shuffle playlist**, followed by its tracks with their artist and duration. A playlist plays its first 500 tracks, or 100 random tracks if "shuffle playlists" is selected.
 
-<p align="left">
-    <img src="mockup/usage/aa_tracks.jpg" width=317 style="margin-right:16px;">
-    <img src="mockup/usage/aa_for_you.jpg" width=317>
-</p>
+A genre plays 500 songs of the chosen genre, or 100 random songs if "shuffle genre songs" is selected.
 
-### Thumbnails or lists
+On an artist's page, if they have at least 2 albums with a minimum of 20 tracks, an **Instant mix** is added at the beginning. It plays 12, 15 or 18 tracks chosen randomly from their discography, depending on its size (more than 20, 30 or 40 tracks).
 
-<p align="left">
-    <img src="mockup/usage/aa_thumbnails.jpg" width=317 style="margin-right:16px;">
-    <img src="mockup/usage/aa_list.jpg" width=317>
-</p>
+### Search
 
-In addition, you can choose to display the following functions as thumbnails or lists:
-- Home, For You bundle, Starred bundle and Tracks bundle
-- Albums (Last played, Most played, Recently added, Artists, Starred albums, Starred artists)
-- Playlists
-- Radio
-- Podcast
+Search results are grouped into **Artists**, **Albums** shown as covers, and **Songs**.
 
-As they displayed tracks, Tracks played, Starred tracks, Random and Genres are always displayed as a list.
+### Now playing
 
-### Artists and Instant Mix
-
-Artists view and View by albums:
-<p align="left">
-    <img src="mockup/usage/aa_artists_view1.jpg" width=317>
-    <img src="mockup/usage/aa_artists_view2.jpg" width=317 style="margin-right:16px;">
-</p>
-
-Starred Artists view:
-<p align="left">
-    <img src="mockup/usage/aa_starred_artists_view.jpg" width=317>
-</p>
-
-On an artist's page, if they have at least 2 albums with a minimum of 20 tracks, an "Instant Mix by Tempus" album is added at the beginning.
-This album features 12, 15 or 18 tracks chosen randomly from their discography and is one click play.
-The number of tracks on the album depends on the size of the artist's discography (>20, >30 or >40)
-
-<p align="left">
-    <img src="mockup/usage/aa_instantMix.jpg" width=317>
-</p>
-
-When an album has tracks on more than one disc, its track list is grouped under a heading for each disc, such as **Disc 1**, with the disc's title after the number when your server sends one.
-
-### A-Z and search
-
-The A-Z button allows you to jump to items starting with the chosen letter.
-
-Search button returns albums or artists, even if they are not displayed by the selected function.
-
-Results of the A-Z jump will always be displayed as a list.
-
-<p align="left">
-    <img src="mockup/usage/aa_AZ.jpg" width=317 style="margin-right:16px;">
-    <img src="mockup/usage/aa_search.jpg" width=317>
-</p>
-
-Display of albums and artists is limited to 500. For large libraries, it's preferable to use star albums or star artists.
-
-### Shortcuts
-
-Shortcuts are displayed only if the function is selected from root level:
-- On albums page: jump to starred albums
-- On starred albums page: jump to albums
-- On artists page: jump to starred artists
-- On starred artists page: jump to artists
+The two buttons next to the playback controls are, by default, **Favorite** and **Instant mix**; **Shuffle** and **Repeat** are in the overflow. The first two can be changed with **First custom command** and **Second custom command** under **Settings → Players**, which also set the buttons of the media notification.
 
 [Back to top](#table-of-contents)
 

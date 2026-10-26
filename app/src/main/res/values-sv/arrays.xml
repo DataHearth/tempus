@@ -144,23 +144,6 @@
         <item>Extern</item>
         <item>Parametric (AutoEq)</item>
     </string-array>
-    <string-array name="aa_tab_titles">
-        <item>Visa inte</item>
-        <item>Hem</item>
-        <item>Senaste</item>
-        <item>Album</item>
-        <item>Artister</item>
-        <item>Spellistor</item>
-        <item>Poddar</item>
-        <item>Radio</item>
-        <item>Mapp</item>
-        <item>Mest spelade album</item>
-        <item>Tillagda album</item>
-        <item>För dig</item>
-        <item>Stjärnmärkta</item>
-        <item>Låtar</item>
-        <item>Genrer</item>
-    </string-array>
     <string-array name="aa_starred_for_made_for_you_titles">
         <item>Stjärnmärkta artister</item>
         <item>Stjärnmärkta album</item>

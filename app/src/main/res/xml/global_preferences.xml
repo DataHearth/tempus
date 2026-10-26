@@ -260,7 +260,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            app:defaultValue="[repeatID]"
+            app:defaultValue="[instantMixID]"
             app:dialogTitle="@string/settings_custom_command_second_button"
             app:entries="@array/custom_commands_titles"
             app:entryValues="@array/custom_commands_values"
@@ -559,76 +559,10 @@
             app:selectable="false"
             app:summary="@string/home_rearrangement_dialog_subtitle" />
 
-        <ListPreference
-            app:defaultValue="0"
-            app:dialogTitle="@string/settings_androidauto_first_tab"
-            app:entries="@array/aa_tab_titles"
-            app:entryValues="@array/aa_tab_values"
-            app:key="androidauto_first_tab"
-            app:title="@string/settings_androidauto_first_tab"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference
-            app:defaultValue="1"
-            app:dialogTitle="@string/settings_androidauto_second_tab"
-            app:entries="@array/aa_tab_titles"
-            app:entryValues="@array/aa_tab_values"
-            app:key="androidauto_second_tab"
-            app:title="@string/settings_androidauto_second_tab"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference
-            app:defaultValue="2"
-            app:dialogTitle="@string/settings_androidauto_third_tab"
-            app:entries="@array/aa_tab_titles"
-            app:entryValues="@array/aa_tab_values"
-            app:key="androidauto_third_tab"
-            app:title="@string/settings_androidauto_third_tab"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference
-            app:defaultValue="3"
-            app:dialogTitle="@string/settings_androidauto_fourth_tab"
-            app:entries="@array/aa_tab_titles"
-            app:entryValues="@array/aa_tab_values"
-            app:key="androidauto_fourth_tab"
-            app:title="@string/settings_androidauto_fourth_tab"
-            app:useSimpleSummaryProvider="true" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_home_view"
-            android:defaultValue="false"
-            android:key="androidauto_home_view" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_album_view"
-            android:defaultValue="true"
-            android:key="androidauto_album_view" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_playlist_view"
-            android:defaultValue="false"
-            android:key="androidauto_playlist_view" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_radio_view"
-            android:defaultValue="false"
-            android:key="androidauto_radio_view" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_podcast_view"
-            android:defaultValue="false"
-            android:key="androidauto_podcast_view" />
-
         <SwitchPreference
             android:title="@string/settings_androidauto_shuffle_genre_songs"
             android:defaultValue="false"
             android:key="androidauto_shuffle_genre_songs" />
-
-        <SwitchPreference
-            android:title="@string/settings_androidauto_shuffle_starred_tracks"
-            android:defaultValue="false"
-            android:key="androidauto_shuffle_starred_tracks" />
 
         <SwitchPreference
             android:title="@string/settings_androidauto_shuffle_playlists"
