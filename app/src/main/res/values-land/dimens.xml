@@ -1,3 +1,7 @@
 <resources>
     <dimen name="activity_horizontal_margin">48dp</dimen>
+    <!-- A phone in landscape has about 267dp above the mini player: this keeps the name, meta and
+         the shuffle and radio buttons in view. -->
+    <dimen name="artist_page_photo">64dp</dimen>
+    <dimen name="artist_page_name_top">8dp</dimen>
 </resources>

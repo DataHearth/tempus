@@ -61,8 +61,8 @@
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/artist_backdrop_image_view"
-                        android:layout_width="168dp"
-                        android:layout_height="168dp"
+                        android:layout_width="@dimen/artist_page_photo"
+                        android:layout_height="@dimen/artist_page_photo"
                         android:elevation="12dp"
                         android:importantForAccessibility="no"
                         android:scaleType="centerCrop"
@@ -77,7 +77,7 @@
                         android:gravity="center"
                         android:letterSpacing="-0.02"
                         android:maxLines="2"
-                        android:paddingTop="16dp"
+                        android:paddingTop="@dimen/artist_page_name_top"
                         android:textColor="?attr/colorOnSurface"
                         android:textFontWeight="800"
                         android:textSize="30sp"

@@ -1,0 +1,5 @@
+<resources>
+    <!-- Tablets have the height in landscape too, so they keep the portrait size over values-land. -->
+    <dimen name="artist_page_photo">168dp</dimen>
+    <dimen name="artist_page_name_top">16dp</dimen>
+</resources>
