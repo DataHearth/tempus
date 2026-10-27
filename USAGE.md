@@ -300,6 +300,8 @@ The spot is also saved as a bookmark on your server, if the server supports book
 - **Library**: Your server's complete music collection
 - **Download**: Locally downloaded files from server 
 
+The bar stays at the bottom in landscape and on tablets too. Album and playlist pages there show the header and the track list side by side.
+
 [Back to top](#table-of-contents)
 
 ## Playing on another device

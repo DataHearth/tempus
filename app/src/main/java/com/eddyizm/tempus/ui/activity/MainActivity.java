@@ -337,7 +337,7 @@ public class MainActivity extends BaseActivity {
         if (bind.playerBottomSheet.getVisibility() == View.VISIBLE && state == BottomSheetBehavior.STATE_COLLAPSED) {
             return bind.playerBottomSheet;
         }
-        if (state != BottomSheetBehavior.STATE_EXPANDED && !isLandscape && bind.bottomNavigation.getVisibility() == View.VISIBLE) {
+        if (state != BottomSheetBehavior.STATE_EXPANDED && bind.bottomNavigation.getVisibility() == View.VISIBLE) {
             return bind.bottomNavigation;
         }
         return null;
@@ -376,17 +376,13 @@ public class MainActivity extends BaseActivity {
                             break;
                         case BottomSheetBehavior.STATE_COLLAPSED:
                             animateBottomSheet(0.0f);
-                            if (!isLandscape) {
-                                animateBottomNavigation(0.0f, navigationHeight);
-                            }
+                            animateBottomNavigation(0.0f, navigationHeight);
                             if (playerBottomSheetFragment != null)
                                 playerBottomSheetFragment.goBackToFirstPage();
                             break;
                         case BottomSheetBehavior.STATE_EXPANDED:
                             animateBottomSheet(1.0f);
-                            if (!isLandscape) {
-                                animateBottomNavigation(1.0f, navigationHeight);
-                            }
+                            animateBottomNavigation(1.0f, navigationHeight);
                             break;
                         case BottomSheetBehavior.STATE_SETTLING:
                         case BottomSheetBehavior.STATE_DRAGGING:
@@ -398,9 +394,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onSlide(@NonNull View view, float slideOffset) {
                     animateBottomSheet(slideOffset);
-                    if (!isLandscape) {
-                         animateBottomNavigation(slideOffset, navigationHeight);
-                    }
+                    animateBottomNavigation(slideOffset, navigationHeight);
                 }
             };
 
@@ -426,25 +420,10 @@ public class MainActivity extends BaseActivity {
 
     public void toggleBottomNavigationBarVisibilityOnOrientationChange() {
         float displayDensity = getResources().getDisplayMetrics().density;
-        // Ignore orientation change, bottom navbar always hidden
-        if (Preferences.getHideBottomNavbarOnPortrait()) {
-            navigationController.setNavbarVisibility(false);
-            bottomSheetController.setPeekHeight(56, displayDensity);
-            navigationController.setSystemBarsVisibility(this, !isLandscape);
-            return;
-        }
-
-        if (!isLandscape) {
-            // Show app navbar + show system bars
-            bottomSheetController.setPeekHeight(136, displayDensity);
-            navigationController.setNavbarVisibility(true);
-            navigationController.setSystemBarsVisibility(this, true);
-        } else {
-            // Hide app navbar + hide system bars
-            bottomSheetController.setPeekHeight(56, displayDensity);
-            navigationController.setNavbarVisibility(false);
-            navigationController.setSystemBarsVisibility(this, false);
-        }
+        boolean showNavbar = !Preferences.getHideBottomNavbarOnPortrait();
+        navigationController.setNavbarVisibility(showNavbar);
+        bottomSheetController.setPeekHeight(showNavbar ? 136 : 56, displayDensity);
+        navigationController.setSystemBarsVisibility(this, !isLandscape);
     }
 
     public void setNavigationDrawerLock(boolean locked) {
