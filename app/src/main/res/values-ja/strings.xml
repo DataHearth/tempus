@@ -73,6 +73,7 @@
     <string name="artist_page_shuffle_button">シャッフル</string>
     <string name="artist_page_switch_layout_button">レイアウトを切り替え</string>
     <string name="artist_page_title_album_more_like_this_button">似たアルバム</string>
+    <string name="artist_page_title_similar_artists_section">似ているアーティスト</string>
     <string name="artist_page_title_album_section">アルバム</string>
     <string name="artist_page_title_ep_section">EP</string>
     <string name="artist_page_title_single_section">シングル</string>
@@ -86,6 +87,7 @@
     <string name="artist_page_title_most_streamed_song_section">よく再生されている曲</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">すべて表示</string>
     <string name="artist_page_title_most_streamed_song_unavailable">人気曲がありません\n\nタップして非表示</string>
+    <string name="artist_page_top_songs_empty">人気曲がありません</string>
     <string name="battery_optimization_negative_button">無視する</string>
     <string name="battery_optimization_neutral_button">今後表示しない</string>
     <string name="battery_optimization_positive_button">無効にする</string>

@@ -43,6 +43,7 @@
     <string name="artist_page_shuffle_button">隨機播放</string>
     <string name="artist_page_switch_layout_button">切換佈局</string>
     <string name="artist_page_title_album_more_like_this_button">更多類似</string>
+    <string name="artist_page_title_similar_artists_section">相似藝人</string>
     <string name="artist_page_title_album_section">專輯</string>
     <string name="artist_page_title_biography_more_button">更多</string>
     <string name="artist_page_title_biography_section">藝術家簡介</string>

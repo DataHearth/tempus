@@ -114,6 +114,8 @@
                 android:letterSpacing="-0.02"
                 android:maxLines="3"
                 android:textColor="?attr/colorOnSurface"
+                android:textFontWeight="800"
+                app:lineHeight="25sp"
                 tools:text="@string/label_placeholder" />
 
             <TextView
@@ -134,28 +136,56 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp">
 
         <Button
             android:id="@+id/playlist_page_play_button"
             style="@style/Widget.Material3.Button.Icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:enabled="false"
+            android:fontFamily="@font/inter"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:minHeight="36dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="18dp"
             android:text="@string/playlist_page_play_button"
             android:textAllCaps="false"
-            app:icon="@drawable/ic_play" />
+            android:textFontWeight="700"
+            android:textSize="13sp"
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_play"
+            app:iconPadding="6dp"
+            app:iconSize="20dp" />
 
         <Button
             android:id="@+id/playlist_page_shuffle_button"
             style="@style/Widget.Material3.Button.TonalButton.Icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_marginStart="8dp"
             android:enabled="false"
+            android:fontFamily="@font/inter"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:minHeight="36dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="16dp"
             android:text="@string/playlist_page_shuffle_button"
             android:textAllCaps="false"
-            app:icon="@drawable/ic_shuffle" />
+            android:textColor="?attr/colorOnSurface"
+            android:textFontWeight="700"
+            android:textSize="13sp"
+            app:backgroundTint="?attr/colorSurfaceContainerHigh"
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_shuffle"
+            app:iconPadding="6dp"
+            app:iconSize="18dp"
+            app:iconTint="?attr/colorOnSurface" />
 
         <Space
             android:layout_width="0dp"
@@ -165,18 +195,18 @@
         <Button
             android:id="@+id/playlist_page_download_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:contentDescription="@string/menu_download_all_button"
-            app:icon="@drawable/ic_file_download" />
-
-        <Button
-            android:id="@+id/playlist_page_more_button"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="-12dp"
-            android:contentDescription="@string/content_description_more_options"
-            app:icon="@drawable/ic_more_vert" />
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="9dp"
+            app:icon="@drawable/ic_file_download"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorOnSurfaceVariant" />
     </LinearLayout>
 </LinearLayout>

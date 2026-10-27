@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,210 +8,121 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            android:clipChildren="false">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
 
-            <!-- Header -->
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/playlist_cover_image_view"
-                android:layout_width="54dp"
-                android:layout_height="54dp"
-                android:layout_margin="2dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                style="@style/BottomSheetHeaderCover" />
 
-            <TextView
-                android:id="@+id/playlist_title_text_view"
-                style="@style/LabelMedium"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:ellipsize="marquee"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:singleLine="true"
-                android:text="@string/label_placeholder"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/playlist_cover_image_view"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/playlist_count_text_view"
-                style="@style/LabelSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/label_placeholder"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/playlist_cover_image_view"
-                app:layout_constraintTop_toBottomOf="@+id/playlist_title_text_view" />
+                <TextView
+                    android:id="@+id/playlist_title_text_view"
+                    style="@style/BottomSheetHeaderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/playlist_count_text_view"
+                    style="@style/BottomSheetHeaderSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/option_linear_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="12dp">
+            style="@style/BottomSheetActionGroups">
 
-            <LinearLayout
-                android:id="@+id/play_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_play" />
+            <LinearLayout style="@style/BottomSheetActionGroup">
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/play_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_play_arrow"
                     android:text="@string/menu_go_to_playlist_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/play_shuffle_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_shuffle" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/play_shuffle_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_shuffle"
                     android:text="@string/menu_play_shuffle_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/play_next_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_skip_next" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/play_next_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_playlist_play"
                     android:text="@string/song_bottom_sheet_play_next" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/add_to_queue_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_queue" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/add_to_queue_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_queue_music"
                     android:text="@string/menu_add_to_queue_button" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/download_all_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_download" />
+            <LinearLayout style="@style/BottomSheetActionGroup">
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/download_all_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_download"
                     android:text="@string/menu_download_all_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/edit_playlist_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_drag_handle" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_playlist_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_reorder"
                     android:text="@string/menu_edit_playlist_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/edit_playlist_details_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_info_stream" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_playlist_details_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_edit"
                     android:text="@string/menu_edit_playlist_details_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/pin_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_favorites_outlined" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/pin_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_keep"
                     android:text="@string/menu_pin_button" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/unpin_row"
-                style="@style/BottomSheetIconRow"
-                android:visibility="gone">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_favorite" />
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/menu_unpin_button" />
+                    android:id="@+id/unpin_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_keep"
+                    android:text="@string/menu_unpin_button"
+                    android:visibility="gone" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/delete_row"
-                style="@style/BottomSheetIconRow">
-
-                <ImageView
-                    style="@style/BottomSheetIconRowIcon"
-                    android:src="@drawable/ic_delete"
-                    app:tint="@color/deleteIconColor" />
+            <LinearLayout style="@style/BottomSheetActionGroup">
 
                 <TextView
-                    style="@style/LabelMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/delete_row"
+                    style="@style/BottomSheetActionRow.Destructive"
+                    android:drawableStart="@drawable/ic_ms_delete"
                     android:text="@string/playlist_editor_dialog_neutral_button" />
             </LinearLayout>
         </LinearLayout>

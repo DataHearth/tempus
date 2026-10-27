@@ -70,6 +70,7 @@
     <string name="artist_page_shuffle_button">Mélanger</string>
     <string name="artist_page_switch_layout_button">Changer la disposition</string>
     <string name="artist_page_title_album_more_like_this_button">Similaire</string>
+    <string name="artist_page_title_similar_artists_section">Artistes similaires</string>
     <string name="artist_page_title_album_section">Albums</string>
     <string name="artist_page_title_ep_section">EPs</string>
     <string name="artist_page_title_single_section">Singles</string>
@@ -83,6 +84,17 @@
     <string name="artist_page_title_most_streamed_song_section">Musiques les plus streamées</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Voir tout</string>
 	<string name="artist_page_title_most_streamed_song_unavailable">Aucun titre disponible parmi les plus streamés\n\nAppuyer pour faire disparaître</string>
+	<string name="artist_page_top_songs_empty">Aucun titre disponible parmi les plus streamés</string>
+    <plurals name="page_song_count">
+        <item quantity="one">%d titre</item>
+        <item quantity="many">%d titres</item>
+        <item quantity="other">%d titres</item>
+    </plurals>
+    <plurals name="artist_page_album_count">
+        <item quantity="one">%d album</item>
+        <item quantity="many">%d albums</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
     <string name="battery_optimization_negative_button">Ignorer</string>
     <string name="battery_optimization_neutral_button">Ne pas me redemander</string>
     <string name="battery_optimization_positive_button">Désactiver</string>

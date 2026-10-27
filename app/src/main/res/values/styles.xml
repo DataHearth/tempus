@@ -47,6 +47,7 @@
         <item name="android:scrollbars">none</item>
 
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
         <item name="snackbarButtonStyle">@style/Widget.App.Snackbar.Button</item>
@@ -82,6 +83,16 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <!-- Material's modal sheet paints the surface colour under an elevation overlay, a lighter grey
+         than the sheet container the rest of the app's sheets are drawn against. -->
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.App.BottomSheet.Modal</item>
+    </style>
+
+    <style name="Widget.App.BottomSheet.Modal" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
+    </style>
+
     <style name="BottomSheetIconRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -115,6 +126,7 @@
         <item name="android:paddingEnd">24dp</item>
         <item name="android:drawablePadding">16dp</item>
         <item name="android:drawableTint">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">15sp</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
@@ -154,6 +166,7 @@
         <item name="android:paddingEnd">4dp</item>
         <item name="android:drawablePadding">6dp</item>
         <item name="android:drawableTint">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textFontWeight" tools:targetApi="28">600</item>
         <item name="android:maxLines">2</item>
@@ -211,6 +224,7 @@
     </style>
 
     <style name="BottomSheetHeaderTitle" parent="LabelMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textFontWeight" tools:targetApi="28">600</item>
     </style>

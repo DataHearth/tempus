@@ -76,6 +76,7 @@
     <string name="artist_page_shuffle_button">Shuffle</string>
     <string name="artist_page_switch_layout_button">Switch layout</string>
     <string name="artist_page_title_album_more_like_this_button">More like this</string>
+    <string name="artist_page_title_similar_artists_section">Similar artists</string>
     <string name="artist_page_title_album_section">Albums</string>
     <string name="artist_page_title_ep_section">EPs</string>
     <string name="artist_page_title_single_section">Singles</string>
@@ -96,6 +97,11 @@
     <string name="artist_page_title_most_streamed_song_section">Top Songs</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">See all</string>
     <string name="artist_page_title_most_streamed_song_unavailable">No top songs available\n\nTap to hide</string>
+    <string name="artist_page_top_songs_empty">No top songs available</string>
+    <plurals name="page_song_count">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
     <string name="battery_optimization_negative_button">Ignore</string>
     <string name="battery_optimization_neutral_button">Don\'t ask again</string>
     <string name="battery_optimization_positive_button">Disable</string>

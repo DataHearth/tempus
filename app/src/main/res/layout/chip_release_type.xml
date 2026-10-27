@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Widget.App.Chip.ReleaseType"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/Browse.ChipText"
+    android:textColor="?attr/colorOnSurface"
+    app:chipCornerRadius="8dp"
+    app:chipEndPadding="0dp"
+    app:chipMinHeight="32dp"
+    app:chipStartPadding="0dp"
+    app:ensureMinTouchTargetSize="false"
+    app:textEndPadding="12dp"
+    app:textStartPadding="12dp" />

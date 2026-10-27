@@ -48,6 +48,7 @@
     <string name="artist_page_shuffle_button">Aleatorio</string>
     <string name="artist_page_switch_layout_button">Cambiar disposición</string>
     <string name="artist_page_title_album_more_like_this_button">Más como esto</string>
+    <string name="artist_page_title_similar_artists_section">Artistas similares</string>
     <string name="artist_page_title_album_section">Álbumes</string>
     <string name="artist_page_title_live_section">Directos</string>
     <string name="artist_page_title_remix_section">Remixes</string>
@@ -808,6 +809,7 @@
     <string name="la_server_switch_cert">Certificado del cliente (mTLS)</string>
     <string name="la_shortcut_label">Introducción</string>
     <string name="artist_page_title_most_streamed_song_unavailable">No hay canciones principales disponibles\nToca para ocultar</string>
+    <string name="artist_page_top_songs_empty">No hay canciones principales disponibles</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">Al activar esto, la lista de reproducción se hace pública. Si lo dejas como está, no cambia la visibilidad de la lista de reproducción.</string>
     <string name="playlist_editor_dialog_action_save_empty">Una lista de reproducción debe tener al menos una pista</string>
     <string name="menu_keep_synced_button">Mantener sincronizada</string>

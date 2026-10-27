@@ -45,6 +45,7 @@
     <string name="artist_page_shuffle_button">Amestecare</string>
     <string name="artist_page_switch_layout_button">Schimbați aspectul</string>
     <string name="artist_page_title_album_more_like_this_button">Mai mult ca aceasta</string>
+    <string name="artist_page_title_similar_artists_section">Artiști similari</string>
     <string name="artist_page_title_album_section">Albume</string>
     <string name="artist_page_title_biography_more_button">Mai mult</string>
     <string name="artist_page_title_biography_section">Biografie</string>

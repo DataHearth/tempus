@@ -74,6 +74,7 @@
     <string name="artist_page_shuffle_button">Blanda</string>
     <string name="artist_page_switch_layout_button">Byt layout</string>
     <string name="artist_page_title_album_more_like_this_button">Mer som detta</string>
+    <string name="artist_page_title_similar_artists_section">Liknande artister</string>
     <string name="artist_page_title_album_section">Album</string>
     <string name="artist_page_title_ep_section">EP-skivor</string>
     <string name="artist_page_title_single_section">Singlar</string>
@@ -87,6 +88,7 @@
     <string name="artist_page_title_most_streamed_song_section">Populära låtar</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Visa alla</string>
     <string name="artist_page_title_most_streamed_song_unavailable">Inga populära låtar tillgängliga\n\nTryck för att dölja</string>
+    <string name="artist_page_top_songs_empty">Inga populära låtar tillgängliga</string>
     <string name="battery_optimization_negative_button">Ignorera</string>
     <string name="battery_optimization_neutral_button">Fråga inte igen</string>
     <string name="battery_optimization_positive_button">Stäng av</string>

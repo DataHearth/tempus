@@ -2,7 +2,6 @@ package com.eddyizm.tempus.ui.fragment;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.os.BundleCompat;
 import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
@@ -39,7 +37,6 @@ import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentPlaylistPageBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
-import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.subsonic.models.Child;
@@ -51,6 +48,7 @@ import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.DownloadUtil;
 import com.eddyizm.tempus.util.MusicUtil;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
+import com.eddyizm.tempus.viewmodel.PlayerBottomSheetViewModel;
 import com.eddyizm.tempus.viewmodel.PlaylistPageViewModel;
 import com.eddyizm.tempus.ui.dialog.PlaylistEditorDialog;
 import com.eddyizm.tempus.interfaces.PlaylistCallback;
@@ -82,8 +80,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
     private List<String> lastSyncedIds;
     private boolean downloadAllWaiting;
     private boolean pinned;
-    private String toolbarTitle;
-    private String tintedCoverId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +90,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.playlist_page_menu, menu);
+        inflater.inflate(R.menu.playlist_page_overflow_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
 
@@ -114,6 +111,16 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    @Override
+    public void onPrepareMenu(@NonNull Menu menu) {
+        MenuItem unpin = menu.findItem(R.id.action_unpin_playlist);
+        MenuItem pin = menu.findItem(R.id.action_pin_playlist);
+        MenuItem keepSynced = menu.findItem(R.id.action_keep_synced);
+        if (unpin != null) unpin.setVisible(pinned);
+        if (pin != null) pin.setVisible(!pinned);
+        if (keepSynced != null) keepSynced.setChecked(keptSynced);
     }
 
     @Override
@@ -192,7 +199,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         // The instance outlives its view on the back stack, and both belong to the view.
         downloadAllWaiting = false;
         lastSyncedIds = null;
-        tintedCoverId = null;
         bind = null;
     }
 
@@ -231,7 +237,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
                 public void onRenamed(String name) {
                     playlistPageViewModel.getPlaylist().setName(name);
 
-                    toolbarTitle = name;
                     if (bind != null) {
                         bind.playlistHeader.playlistNameLabel.setText(name);
                     }
@@ -268,22 +273,15 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
     private void initHeaderActions() {
         bind.playlistHeader.playlistPageDownloadButton.setOnClickListener(v -> downloadAll());
 
-        playlistPageViewModel.isPinned(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), isPinned -> pinned = isPinned);
-        bind.playlistHeader.playlistPageMoreButton.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(requireContext(), v);
-            popup.inflate(R.menu.playlist_page_overflow_menu);
-            Menu menu = popup.getMenu();
-            menu.findItem(R.id.action_unpin_playlist).setVisible(pinned);
-            menu.findItem(R.id.action_pin_playlist).setVisible(!pinned);
-            menu.findItem(R.id.action_keep_synced).setChecked(keptSynced);
-            popup.setOnMenuItemClickListener(this::onMenuItemSelected);
-            popup.show();
+        playlistPageViewModel.isPinned(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), isPinned -> {
+            pinned = isPinned;
+            requireActivity().invalidateMenu();
         });
     }
 
     private void bindMetaLine(int songCount, long durationSeconds) {
         bind.playlistHeader.playlistMetaLabel.setText(
-                getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount)
+                getResources().getQuantityString(R.plurals.page_song_count, songCount, songCount)
                         + " · " + getString(R.string.duration_minutes_short, (int) (durationSeconds / 60)));
     }
 
@@ -294,6 +292,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         keptStateKnown = false;
         playlistPageViewModel.isKeptSynced().observe(getViewLifecycleOwner(), kept -> {
             keptSynced = kept;
+            requireActivity().invalidateMenu();
             if (freshOpen && !keptStateKnown && kept && playlistPageViewModel.songs().getValue() != null) {
                 playlistPageViewModel.refreshSongs();
             }
@@ -330,13 +329,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
             activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbarTitle = playlistPageViewModel.getPlaylist().getName();
         bind.animToolbar.setTitle(null);
-        bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, offset) -> {
-            if (bind == null) return;
-            boolean headerGone = appBarLayout.getTotalScrollRange() > 0 && -offset >= appBarLayout.getTotalScrollRange();
-            bind.animToolbar.setTitle(headerGone ? toolbarTitle : null);
-        });
 
         bind.playlistHeader.playlistNameLabel.setText(playlistPageViewModel.getPlaylist().getName());
         bindMetaLine(playlistPageViewModel.getPlaylist().getSongCount(), playlistPageViewModel.getPlaylist().getDuration());
@@ -346,7 +339,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
             activity.navController.navigateUp();
         });
 
-        Objects.requireNonNull(bind.animToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
+        Objects.requireNonNull(bind.animToolbar.getOverflowIcon()).setTint(MaterialColors.getColor(bind.animToolbar, com.google.android.material.R.attr.colorOnSurface));
     }
 
     private void hideKeyboard(View view) {
@@ -397,7 +390,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
 
         if (playlistCoverId != null && !playlistCoverId.trim().isEmpty()) {
             bind.playlistHeader.playlistCoverImageViewSingle.setVisibility(View.VISIBLE);
-            applyCoverTint(playlistCoverId);
 
             CustomGlideRequest.Builder
                     .from(requireContext(), playlistCoverId, CustomGlideRequest.ResourceType.Playlist)
@@ -406,9 +398,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
 
         } else {
             playlistPageViewModel.getPlaylistSongLiveList().observe(getViewLifecycleOwner(), songs -> {
-                if (bind != null && songs != null) {
-                    applyCoverTint(songs.isEmpty() ? null : songs.get(0).getCoverArtId());
-                }
                 if (bind != null && songs != null && !songs.isEmpty()) {
 
                     List<Child> randomSongs = new ArrayList<>(songs);
@@ -446,17 +435,6 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
         }
     }
 
-    private void applyCoverTint(String coverId) {
-        if (tintedCoverId != null && Objects.equals(coverId, tintedCoverId)) return;
-        tintedCoverId = coverId;
-        int surface = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorSurface);
-        CoverTint.load(requireContext(), coverId, tint -> {
-            if (bind == null) return;
-            bind.animToolbar.setBackgroundColor(tint.getBand());
-            bind.appBarLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface}));
-        });
-    }
-
     private void initSongsView() {
         bind.songRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         bind.songRecyclerView.setHasFixedSize(true);
@@ -491,6 +469,10 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
 
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, false, null);
         songHorizontalAdapter.setDenseRows(true);
+        songHorizontalAdapter.setShowDuration(true);
+        new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class).getCoverTint().observe(getViewLifecycleOwner(), tint -> {
+            if (songHorizontalAdapter != null) songHorizontalAdapter.setAccentColor(tint != null ? tint.getAccent() : null);
+        });
         bind.songRecyclerView.setAdapter(songHorizontalAdapter);
         setMediaBrowserListenableFuture();
         reapplyPlayback();

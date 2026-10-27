@@ -43,6 +43,7 @@
     <string name="artist_page_shuffle_button">Riproduzione casuale</string>
     <string name="artist_page_switch_layout_button">Cambia layout</string>
     <string name="artist_page_title_album_more_like_this_button">Altri simili</string>
+    <string name="artist_page_title_similar_artists_section">Artisti simili</string>
     <string name="artist_page_title_album_section">Album</string>
     <string name="artist_page_title_biography_more_button">Altro</string>
     <string name="artist_page_title_biography_section">Biografia</string>

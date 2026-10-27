@@ -74,6 +74,7 @@
     <string name="artist_page_shuffle_button">Qarışdır</string>
     <string name="artist_page_switch_layout_button">Düzülüşü dəyiş</string>
     <string name="artist_page_title_album_more_like_this_button">Bənzərlərini göstər</string>
+    <string name="artist_page_title_similar_artists_section">Oxşar ifaçılar</string>
     <string name="artist_page_title_album_section">Albomlar</string>
     <string name="artist_page_title_ep_section">Minialbomlar</string>
     <string name="artist_page_title_single_section">Sinqllar</string>
@@ -87,6 +88,7 @@
     <string name="artist_page_title_most_streamed_song_section">Ən populyar mahnılar</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Hamısına bax</string>
     <string name="artist_page_title_most_streamed_song_unavailable">Populyar mahnılar yoxdur\n\nGizlətmək üçün toxunun</string>
+    <string name="artist_page_top_songs_empty">Populyar mahnılar yoxdur</string>
     <string name="battery_optimization_negative_button">Nəzərə alma</string>
     <string name="battery_optimization_neutral_button">Bir daha soruşma</string>
     <string name="battery_optimization_positive_button">Söndür</string>

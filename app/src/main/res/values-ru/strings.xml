@@ -73,6 +73,7 @@
     <string name="artist_page_shuffle_button">Перемешать</string>
     <string name="artist_page_switch_layout_button">Сменить вид</string>
     <string name="artist_page_title_album_more_like_this_button">Похожие</string>
+    <string name="artist_page_title_similar_artists_section">Похожие исполнители</string>
     <string name="artist_page_title_album_section">Альбомы</string>
     <string name="artist_page_title_ep_section">EP</string>
     <string name="artist_page_title_single_section">Синглы</string>
@@ -86,6 +87,7 @@
     <string name="artist_page_title_most_streamed_song_section">Популярные треки</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Все</string>
     <string name="artist_page_title_most_streamed_song_unavailable">Нет популярных треков\n\nНажмите, чтобы скрыть</string>
+    <string name="artist_page_top_songs_empty">Нет популярных треков</string>
     <string name="battery_optimization_negative_button">Игнорировать</string>
     <string name="battery_optimization_neutral_button">Больше не спрашивать</string>
     <string name="battery_optimization_positive_button">Отключить</string>

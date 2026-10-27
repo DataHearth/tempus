@@ -388,7 +388,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
                 : ExternalAudioReader.getUri(song) != null;
         downloadButton.setEnabled(!downloaded);
         downloadButton.setText(downloaded ? R.string.song_bottom_sheet_downloaded : R.string.song_bottom_sheet_download);
-        downloadButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, downloaded ? R.drawable.ic_check_circle : R.drawable.ic_download, 0, 0);
+        downloadButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, downloaded ? R.drawable.ic_check_circle : R.drawable.ic_ms_download, 0, 0);
         removeButton.setVisibility(downloaded ? View.VISIBLE : View.GONE);
 
         if (removeGroup != null && removeFromPlaylistButton != null) {

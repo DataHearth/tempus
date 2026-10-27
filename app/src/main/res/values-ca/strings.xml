@@ -71,6 +71,7 @@
     <string name="artist_page_shuffle_button">Reprodueix aleatòriament</string>
     <string name="artist_page_switch_layout_button">Canvia de disposició</string>
     <string name="artist_page_title_album_more_like_this_button">Més com això</string>
+    <string name="artist_page_title_similar_artists_section">Artistes similars</string>
     <string name="artist_page_title_album_section">Àlbums</string>
     <string name="artist_page_title_ep_section">EP</string>
     <string name="artist_page_title_single_section">Senzills</string>
@@ -84,6 +85,7 @@
     <string name="artist_page_title_most_streamed_song_section">Cançons principals</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Visualitza-ho tot</string>
     <string name="artist_page_title_most_streamed_song_unavailable">No hi ha cançons principals disponibles\n\nToqueu per a ocultar-ho</string>
+    <string name="artist_page_top_songs_empty">No hi ha cançons principals disponibles</string>
     <string name="battery_optimization_negative_button">Ignora</string>
     <string name="battery_optimization_neutral_button">No ho tornis a preguntar</string>
     <string name="battery_optimization_positive_button">Inhabilita</string>

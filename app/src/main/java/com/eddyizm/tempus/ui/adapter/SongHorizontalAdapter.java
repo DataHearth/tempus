@@ -1,6 +1,8 @@
 package com.eddyizm.tempus.ui.adapter;
 
-import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.media3.common.util.UnstableApi;
@@ -33,6 +36,7 @@ import com.eddyizm.tempus.util.MappingUtil;
 import com.eddyizm.tempus.util.MusicUtil;
 import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.util.FavoriteRegistry;
+import com.google.android.material.color.MaterialColors;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
@@ -53,6 +57,10 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private boolean showKind = false;
     private boolean denseRows = false;
     private int itemWidthPx;
+    private boolean showDuration = false;
+    @Nullable
+    private Integer accentColor;
+    private boolean multiDisc;
 
     private List<Child> songsFull;
     private final AsyncListDiffer<Child> differ = new AsyncListDiffer<>(this, new DiffUtil.ItemCallback<Child>() {
@@ -147,26 +155,52 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         this.itemWidthPx = itemWidthPx;
     }
 
+    /**
+     * Gives cover rows a duration column, as album rows have. Call before the adapter is attached.
+     */
+    public void setShowDuration(boolean showDuration) {
+        this.showDuration = showDuration;
+    }
+
+    /**
+     * Colours the playing row's title and bars, normally with the playing cover's accent; null falls back to the theme.
+     */
+    public void setAccentColor(@Nullable Integer accentColor) {
+        if (Objects.equals(this.accentColor, accentColor)) return;
+        this.accentColor = accentColor;
+        for (int pos : currentPlayingPositions) {
+            if (pos >= 0 && pos < differ.getCurrentList().size()) {
+                notifyItemChanged(pos, "payload_playback");
+            }
+        }
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemHorizontalTrackBinding view = ItemHorizontalTrackBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        int denseHeight = parent.getResources().getDimensionPixelSize(R.dimen.track_row_content_height);
         if (itemWidthPx > 0) {
             view.getRoot().getLayoutParams().width = itemWidthPx;
         }
         if (!showCoverArt) {
             ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
             anchor.width = parent.getResources().getDimensionPixelSize(R.dimen.album_track_number_width);
-            anchor.height = denseHeight;
+            anchor.height = parent.getResources().getDimensionPixelSize(R.dimen.track_row_content_height);
             view.songCoverImageView.setLayoutParams(anchor);
+            ViewGroup.LayoutParams gap = view.coverImageSeparator.getLayoutParams();
+            gap.width = parent.getResources().getDimensionPixelSize(R.dimen.album_track_title_gap);
+            view.coverImageSeparator.setLayoutParams(gap);
             view.trackDurationTextView.setVisibility(View.VISIBLE);
         } else if (denseRows) {
+            int cover = parent.getResources().getDimensionPixelSize(R.dimen.track_row_dense_cover);
             ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
-            anchor.width = denseHeight;
-            anchor.height = denseHeight;
+            anchor.width = cover;
+            anchor.height = cover;
             view.songCoverImageView.setLayoutParams(anchor);
+            int padding = parent.getResources().getDimensionPixelSize(R.dimen.track_row_dense_padding);
+            view.getRoot().setPadding(view.getRoot().getPaddingLeft(), padding, view.getRoot().getPaddingRight(), padding);
         }
+        if (showCoverArt && showDuration) view.trackDurationTextView.setVisibility(View.VISIBLE);
         return new ViewHolder(view);
     }
 
@@ -188,6 +222,9 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         if (showKind) {
             holder.item.searchResultSongSubtitleTextView.setText(
                     holder.itemView.getContext().getString(R.string.search_result_song, song.getArtist()));
+        } else if (showCoverArt && denseRows) {
+            holder.item.searchResultSongSubtitleTextView.setText(showAlbum ? song.getAlbum() : song.getArtist());
+            if (showDuration) holder.item.trackDurationTextView.setText(MusicUtil.getReadableDurationString(song.getDuration(), false));
         } else if (showCoverArt) {
             holder.item.searchResultSongSubtitleTextView.setText(
                     holder.itemView.getContext().getString(
@@ -233,7 +270,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         holder.item.trackNumberTextView.setVisibility(showCoverArt ? View.INVISIBLE : View.VISIBLE);
         holder.item.songCoverImageView.setVisibility(showCoverArt ? View.VISIBLE : View.INVISIBLE);
 
-        if (!showCoverArt &&
+        if (!showCoverArt && multiDisc &&
                 (position == 0 ||
                         (position > 0 && differ.getCurrentList().get(position - 1) != null &&
                                 differ.getCurrentList().get(position - 1).getDiscNumber() != null &&
@@ -305,28 +342,33 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         }
     }
 
+    /**
+     * The playing row takes the accent on its title. Album rows swap the track number for moving bars,
+     * cover rows dim the cover under white bars, and numbered rows keep both their number and cover.
+     */
     private void bindPlaybackState(@NonNull ViewHolder holder, @NonNull Child song) {
         boolean isCurrent = currentPlayingId != null && currentPlayingId.equals(song.getId());
+        View itemView = holder.itemView;
+        int titleColor = MaterialColors.getColor(itemView, com.google.android.material.R.attr.colorOnSurface);
+        int accent = accentColor != null ? accentColor : MaterialColors.getColor(itemView, androidx.appcompat.R.attr.colorPrimary);
+        holder.item.searchResultSongTitleTextView.setTextColor(isCurrent ? accent : titleColor);
 
-        if (isCurrent) {
+        boolean showBars = isCurrent && !showRowNumbers;
+        if (showBars) {
+            Drawable bars = AppCompatResources.getDrawable(itemView.getContext(),
+                    isPlaying ? R.drawable.avd_now_playing_bars : R.drawable.ic_now_playing_bars);
+            holder.item.playPauseIcon.setImageDrawable(bars);
+            holder.item.playPauseIcon.setImageTintList(ColorStateList.valueOf(showCoverArt ? 0xFFFFFFFF : accent));
             holder.item.playPauseIcon.setVisibility(View.VISIBLE);
-            if (isPlaying) {
-                holder.item.playPauseIcon.setImageResource(R.drawable.ic_pause);
-            } else {
-                holder.item.playPauseIcon.setImageResource(R.drawable.ic_play);
-            }
-            if (!showCoverArt) {
-                holder.item.trackNumberTextView.setVisibility(View.INVISIBLE);
-            } else {
-                holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
-            }
+            if (bars instanceof Animatable) ((Animatable) bars).start();
         } else {
+            holder.item.playPauseIcon.setImageDrawable(null);
             holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
-            if (!showCoverArt) {
-                holder.item.trackNumberTextView.setVisibility(View.VISIBLE);
-            } else {
-                holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
-            }
+        }
+        if (!showCoverArt) {
+            holder.item.trackNumberTextView.setVisibility(showBars ? View.INVISIBLE : View.VISIBLE);
+        } else {
+            holder.item.coverArtOverlay.setVisibility(showBars ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -344,6 +386,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
     public void setItems(List<Child> songs) {
         this.songsFull = songs != null ? songs : Collections.emptyList();
+        multiDisc = songsFull.stream().map(Child::getDiscNumber).filter(Objects::nonNull).distinct().count() > 1;
         filtering.filter(currentFilter);
     }
 
@@ -408,9 +451,6 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
             super(item.getRoot());
 
             this.item = item;
-
-            item.searchResultSongTitleTextView.setSelected(true);
-            item.searchResultSongSubtitleTextView.setSelected(true);
 
             itemView.setOnClickListener(v -> onClick());
             itemView.setOnLongClickListener(v -> onLongClick());

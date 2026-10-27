@@ -73,6 +73,7 @@
     <string name="artist_page_shuffle_button">Odtwarzanie losowe</string>
     <string name="artist_page_switch_layout_button">Zmień układ</string>
     <string name="artist_page_title_album_more_like_this_button">Więcej podobnych</string>
+    <string name="artist_page_title_similar_artists_section">Podobni wykonawcy</string>
     <string name="artist_page_title_album_section">Albumy</string>
 	<string name="artist_page_title_ep_section">EP-ki</string>
     <string name="artist_page_title_single_section">Single</string>
@@ -86,6 +87,7 @@
     <string name="artist_page_title_most_streamed_song_section">Top piosenki</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Zobacz wszystkie</string>
 	<string name="artist_page_title_most_streamed_song_unavailable">Brak top piosenek\n\nNaciśnij aby ukryć</string>
+	<string name="artist_page_top_songs_empty">Brak top piosenek</string>
     <string name="battery_optimization_negative_button">Ignoruj</string>
     <string name="battery_optimization_neutral_button">Nie pytaj ponownie</string>
     <string name="battery_optimization_positive_button">Wyłącz</string>

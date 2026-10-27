@@ -70,6 +70,7 @@
     <string name="artist_page_shuffle_button">Nahastu</string>
     <string name="artist_page_switch_layout_button">Diseinua aldatu</string>
     <string name="artist_page_title_album_more_like_this_button">Antzeko gehiago</string>
+    <string name="artist_page_title_similar_artists_section">Antzeko artistak</string>
     <string name="artist_page_title_album_section">Diskak</string>
     <string name="artist_page_title_ep_section">EPak</string>
     <string name="artist_page_title_single_section">Singleak</string>
@@ -83,6 +84,7 @@
     <string name="artist_page_title_most_streamed_song_section">Abesti gehien entzunak</string>
     <string name="artist_page_title_most_streamed_song_see_all_button">Denak ikusi</string>
     <string name="artist_page_title_most_streamed_song_unavailable">Ez dago abesti gehien entzunik erabilgarri\n\nSakatu ezkutatzeko</string>
+    <string name="artist_page_top_songs_empty">Ez dago abesti gehien entzunik erabilgarri</string>
     <string name="battery_optimization_negative_button">Ez ikusi</string>
     <string name="battery_optimization_neutral_button">Ez galdetu berriro</string>
     <string name="battery_optimization_positive_button">Desgaitu</string>

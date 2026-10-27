@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/anim_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurfaceContainer"
-        app:navigationIcon="@drawable/ic_arrow_back" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/fragment_artist_page_nested_scroll_view"
         android:layout_width="match_parent"
@@ -34,92 +27,148 @@
                 android:background="?attr/colorSurfaceContainer"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="4dp"
                 android:paddingBottom="4dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/artist_backdrop_image_view"
-                    android:layout_width="168dp"
-                    android:layout_height="168dp"
-                    android:elevation="12dp"
-                    android:importantForAccessibility="no"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/CircleShapeAppearance" />
-
-                <TextView
-                    android:id="@+id/artist_name_label"
-                    style="@style/HeadlineLarge"
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/anim_toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:letterSpacing="-0.02"
-                    android:maxLines="2"
-                    android:paddingTop="16dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="30sp"
-                    tools:text="@string/label_placeholder" />
-
-                <TextView
-                    android:id="@+id/artist_meta_label"
-                    style="@style/LabelSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingTop="4dp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textSize="13sp"
-                    android:visibility="gone"
-                    tools:text="14 albums · 168 songs"
-                    tools:visibility="visible" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="12dp">
-
-                    <Button
-                        android:id="@+id/artist_page_shuffle_button"
-                        style="@style/Widget.Material3.Button.Icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/artist_page_shuffle_button"
-                        android:textAllCaps="false"
-                        app:icon="@drawable/ic_shuffle" />
-
-                    <Button
-                        android:id="@+id/artist_page_radio_button"
-                        style="@style/Widget.Material3.Button.TonalButton.Icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/artist_page_radio_button"
-                        android:textAllCaps="false"
-                        app:icon="@drawable/ic_feed" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/button_favorite"
-                        style="@style/Widget.Material3.Button.IconButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:checkable="true"
-                        android:contentDescription="@string/favorite_icon_description"
-                        app:icon="@drawable/button_favorite_selector"
-                        app:iconTint="?attr/colorOnSurface" />
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@android:color/transparent"
+                    app:navigationIcon="@drawable/ic_arrow_back"
+                    app:navigationIconTint="?attr/colorOnSurface">
 
                     <Button
                         android:id="@+id/button_more_options"
                         style="@style/Widget.Material3.Button.IconButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="4dp"
                         android:contentDescription="@string/content_description_more_options"
-                        app:icon="@drawable/ic_more_vert" />
+                        app:icon="@drawable/ic_more_vert"
+                        app:iconTint="?attr/colorOnSurface" />
+                </com.google.android.material.appbar.MaterialToolbar>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/artist_backdrop_image_view"
+                        android:layout_width="168dp"
+                        android:layout_height="168dp"
+                        android:elevation="12dp"
+                        android:importantForAccessibility="no"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/CircleShapeAppearance" />
+
+                    <TextView
+                        android:id="@+id/artist_name_label"
+                        style="@style/HeadlineLarge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:letterSpacing="-0.02"
+                        android:maxLines="2"
+                        android:paddingTop="16dp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textFontWeight="800"
+                        android:textSize="30sp"
+                        tools:text="@string/label_placeholder" />
+
+                    <TextView
+                        android:id="@+id/artist_meta_label"
+                        style="@style/LabelSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="4dp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        tools:text="Metal · 14 albums · 168 songs"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingTop="16dp">
+
+                        <Button
+                            android:id="@+id/artist_page_shuffle_button"
+                            style="@style/Widget.Material3.Button.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:fontFamily="@font/inter"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:letterSpacing="0"
+                            android:minHeight="40dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="20dp"
+                            android:text="@string/artist_page_shuffle_button"
+                            android:textAllCaps="false"
+                            android:textFontWeight="600"
+                            android:textSize="14sp"
+                            app:cornerRadius="20dp"
+                            app:icon="@drawable/ic_shuffle"
+                            app:iconPadding="8dp"
+                            app:iconSize="20dp" />
+
+                        <Button
+                            android:id="@+id/artist_page_radio_button"
+                            style="@style/Widget.Material3.Button.TonalButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/inter"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:letterSpacing="0"
+                            android:minHeight="40dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="20dp"
+                            android:text="@string/artist_page_radio_button"
+                            android:textAllCaps="false"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textFontWeight="600"
+                            android:textSize="14sp"
+                            app:backgroundTint="?attr/colorSurfaceContainerHigh"
+                            app:cornerRadius="20dp"
+                            app:icon="@drawable/ic_ms_sensors"
+                            app:iconPadding="8dp"
+                            app:iconSize="20dp"
+                            app:iconTint="?attr/colorOnSurface" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_favorite"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="8dp"
+                            android:checkable="true"
+                            android:contentDescription="@string/favorite_icon_description"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:padding="8dp"
+                            app:backgroundTint="@android:color/transparent"
+                            app:icon="@drawable/button_favorite_selector"
+                            app:iconSize="24dp"
+                            app:iconTint="@color/page_favorite_icon_tint" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
@@ -129,7 +178,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
-                android:paddingTop="16dp"
+                android:paddingTop="20dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -139,9 +188,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:lineSpacingMultiplier="1.3"
                     android:maxLines="3"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:lineHeight="21sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -154,7 +204,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
-                        android:paddingVertical="8dp"
+                        android:paddingTop="4dp"
                         android:paddingEnd="8dp"
                         android:text="@string/artist_page_title_biography_more_button"
                         android:textColor="?attr/colorOnSurface"
@@ -173,10 +223,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
-                        android:paddingVertical="8dp"
                         android:paddingStart="8dp"
+                        android:paddingTop="4dp"
                         android:text="@string/artist_page_biography_lastfm_button"
                         android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textFontWeight="600"
                         android:visibility="gone"
                         tools:visibility="visible" />
                 </LinearLayout>
@@ -187,44 +238,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="12dp"
                 android:visibility="visible">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="44dp"
+                    android:paddingBottom="4dp">
 
                     <TextView
-                        style="@style/TitleLarge"
+                        style="@style/Browse.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="8dp"
+                        android:letterSpacing="-0.01"
                         android:text="@string/artist_page_title_most_streamed_song_section" />
 
                     <TextView
                         android:id="@+id/most_streamed_song_text_view_clickable"
-                        style="@style/TitleMedium"
+                        style="@style/Browse.SeeAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="16dp"
+                        android:minHeight="40dp"
                         android:text="@string/artist_page_title_most_streamed_song_see_all_button"
                         android:visibility="gone"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
                 </LinearLayout>
 
-                <!-- Top Songs Placeholder View -->
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/most_streamed_song_recycler_placeholder"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/artist_top_songs_height"
-                    android:paddingTop="@dimen/_6sdp"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp" >
+                    android:paddingTop="@dimen/_6sdp"
+                    android:paddingEnd="16dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -232,47 +278,47 @@
                         android:orientation="vertical">
 
                         <include
-                            layout="@layout/item_song_placeholder"
-                            android:id="@+id/item_song_placeholder_1" />
+                            android:id="@+id/item_song_placeholder_1"
+                            layout="@layout/item_song_placeholder" />
 
                         <include
-                            layout="@layout/item_song_placeholder"
-                            android:id="@+id/item_song_placeholder_2" />
+                            android:id="@+id/item_song_placeholder_2"
+                            layout="@layout/item_song_placeholder" />
 
                         <include
-                            layout="@layout/item_song_placeholder"
-                            android:id="@+id/item_song_placeholder_3" />
+                            android:id="@+id/item_song_placeholder_3"
+                            layout="@layout/item_song_placeholder" />
 
                     </LinearLayout>
 
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
-                <!-- Top Songs Empty View -->
                 <TextView
                     android:id="@+id/most_streamed_song_recycler_empty"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/artist_top_songs_height"
-                    android:paddingTop="@dimen/_8sdp"
-                    android:text="@string/artist_page_title_most_streamed_song_unavailable"
-                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/artist_page_top_songs_empty"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
                     android:visibility="gone"
-                    tools:visibility="visible"/>
+                    tools:visibility="visible" />
 
-                <!-- Top Songs Recycler View -->
                 <LinearLayout
                     android:id="@+id/most_streamed_song_recycler_container"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/artist_top_songs_height" >
+                    android:layout_height="wrap_content">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/most_streamed_song_recycler_view"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:nestedScrollingEnabled="false"
+                        android:layout_height="wrap_content"
                         android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
                         android:visibility="gone"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -281,31 +327,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="0dp">
 
                     <TextView
-                        style="@style/TitleLarge"
+                        style="@style/Browse.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/artist_page_title_releases_section" />
+                        android:letterSpacing="-0.01"
+                        android:text="@string/artist_page_title_album_section" />
 
                     <TextView
                         android:id="@+id/releases_see_all_text_view"
-                        style="@style/TitleMedium"
+                        style="@style/Browse.SeeAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="16dp"
+                        android:minHeight="40dp"
                         android:text="@string/artist_page_title_most_streamed_song_see_all_button"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -315,6 +357,7 @@
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:paddingHorizontal="16dp"
+                    android:paddingTop="10dp"
                     android:scrollbars="none">
 
                     <com.google.android.material.chip.ChipGroup
@@ -331,10 +374,11 @@
                     android:id="@+id/all_albums_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
+                    android:paddingTop="12dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="4dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -342,31 +386,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="0dp">
 
                     <TextView
-                        style="@style/TitleLarge"
+                        style="@style/Browse.SectionTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="8dp"
+                        android:letterSpacing="-0.01"
                         android:text="@string/artist_page_title_appears_on_section" />
 
                     <TextView
                         android:id="@+id/appears_on_see_all_text_view"
-                        style="@style/TitleMedium"
+                        style="@style/Browse.SeeAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="16dp"
+                        android:minHeight="40dp"
                         android:text="@string/artist_page_title_most_streamed_song_see_all_button"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -375,10 +415,11 @@
                     android:id="@+id/appears_on_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
+                    android:paddingTop="12dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="4dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -386,26 +427,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <TextView
-                    style="@style/TitleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/artist_page_title_album_more_like_this_button" />
+                <LinearLayout
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="0dp">
+
+                    <TextView
+                        style="@style/Browse.SectionTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:letterSpacing="-0.01"
+                        android:text="@string/artist_page_title_similar_artists_section" />
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/similar_artists_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
+                    android:paddingTop="12dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="4dp" />
 
             </LinearLayout>
         </LinearLayout>

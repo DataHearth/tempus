@@ -14,7 +14,6 @@ import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.subsonic.models.AlbumID3;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.Preferences;
-import com.eddyizm.tempus.util.TileSizeManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,6 @@ public class AlbumCarouselAdapter extends RecyclerView.Adapter<AlbumCarouselAdap
     private final ClickCallback click;
     private List<AlbumID3> albums;
     private boolean showArtist;
-    private int sizePx = 400;
 
     public AlbumCarouselAdapter(ClickCallback click, boolean showArtist) {
         this.click = click;
@@ -35,30 +33,23 @@ public class AlbumCarouselAdapter extends RecyclerView.Adapter<AlbumCarouselAdap
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemAlbumCarouselBinding view = ItemAlbumCarouselBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        TileSizeManager.getInstance().calculateTileSize(parent.getContext());
-        sizePx = TileSizeManager.getInstance().getTileSizePx(parent.getContext());
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        ViewGroup.LayoutParams lp = holder.item.albumCoverImageView.getLayoutParams();
-        lp.width = sizePx;
-        lp.height = sizePx;
-        holder.item.albumCoverImageView.setLayoutParams(lp);
-
         AlbumID3 album = albums.get(position);
 
-        if (Preferences.getAlbumYearVisible()) {
-            String albumName = album.getName() + " (" + album.getYear() + ")";
-            holder.item.albumNameLabel.setText(albumName);
+        // Releases already carry the year as their subtitle; only "Appears on" tiles add it to the name.
+        if (showArtist && Preferences.getAlbumYearVisible() && album.getYear() != 0) {
+            holder.item.albumNameLabel.setText(album.getName() + " (" + album.getYear() + ")");
         } else {
             holder.item.albumNameLabel.setText(album.getName());
         }
 
-        holder.item.artistNameLabel.setText(album.getArtist());
-        holder.item.artistNameLabel.setVisibility(showArtist ? View.VISIBLE : View.GONE);
+        String subtitle = showArtist ? album.getArtist() : album.getYear() != 0 ? String.valueOf(album.getYear()) : null;
+        holder.item.artistNameLabel.setText(subtitle);
+        holder.item.artistNameLabel.setVisibility(subtitle != null && !subtitle.isEmpty() ? View.VISIBLE : View.GONE);
 
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), album.getCoverArtId(), CustomGlideRequest.ResourceType.Album)
@@ -95,9 +86,6 @@ public class AlbumCarouselAdapter extends RecyclerView.Adapter<AlbumCarouselAdap
                 click.onAlbumLongClick(bundle);
                 return true;
             });
-
-            item.albumNameLabel.setSelected(true);
-            item.artistNameLabel.setSelected(true);
         }
     }
 }

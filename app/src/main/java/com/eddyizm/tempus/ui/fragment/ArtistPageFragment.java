@@ -25,15 +25,12 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentArtistPageBinding;
 import com.eddyizm.tempus.glide.CustomGlideRequest;
 import com.eddyizm.tempus.helper.CoverTint;
-import com.eddyizm.tempus.helper.recyclerview.CustomLinearSnapHelper;
-import com.eddyizm.tempus.helper.recyclerview.GridItemDecoration;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.service.MediaService;
@@ -46,9 +43,9 @@ import com.eddyizm.tempus.ui.adapter.ArtistCarouselAdapter;
 import com.eddyizm.tempus.ui.adapter.SongHorizontalAdapter;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.MusicUtil;
-import com.eddyizm.tempus.util.TileSizeManager;
 import com.eddyizm.tempus.viewmodel.ArtistPageViewModel;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
+import com.eddyizm.tempus.viewmodel.PlayerBottomSheetViewModel;
 import com.eddyizm.tempus.util.FavoriteRegistry;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
@@ -58,6 +55,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -76,9 +74,6 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     private ArtistCarouselAdapter similarArtistAdapter;
 
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
-
-    private int spanCount = 2;
-    private int tileSpacing = 20;
 
     private static final List<String> RELEASE_TYPE_ORDER = List.of(
             "album", "ep", "single",
@@ -102,10 +97,6 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
             if (activity != null && activity.navController != null) activity.navController.navigateUp();
             return view;
         }
-
-        TileSizeManager.getInstance().calculateTileSize( requireContext() );
-        spanCount = TileSizeManager.getInstance().getTileSpanCount( requireContext() );
-        tileSpacing = TileSizeManager.getInstance().getTileSpacing( requireContext() );
 
         init(view, artistArg);
         initAppBar();
@@ -193,11 +184,6 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
         bind.animToolbar.setTitle(null);
         bind.animToolbar.setNavigationOnClickListener(v -> activity.navController.navigateUp());
-        bind.fragmentArtistPageNestedScrollView.setOnScrollChangeListener((androidx.core.widget.NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            if (bind == null) return;
-            boolean nameGone = scrollY >= bind.artistNameLabel.getBottom();
-            bind.animToolbar.setTitle(nameGone ? artistPageViewModel.getArtist().getName() : null);
-        });
     }
 
     private void initHeader() {
@@ -207,7 +193,6 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         int surface = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorSurface);
         CoverTint.load(requireContext(), artistImageId(artist), tint -> {
             if (bind == null) return;
-            bind.animToolbar.setBackgroundColor(tint.getBand());
             bind.artistHeader.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface}));
         });
 
@@ -340,6 +325,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     }
 
     private static final long TOP_SONGS_TIMEOUT = 3000;
+    private static final int TOP_SONGS_SHOWN = 5;
     private final Handler emptyTopSongsTimerHandler = new Handler(Looper.getMainLooper());
     private final Runnable emptyTopSongsTimerRunnable = () -> {
         bind.artistPageTopSongsSector.setVisibility(View.VISIBLE);
@@ -356,6 +342,9 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, true, null);
         songHorizontalAdapter.setShowRowNumbers(true);
         songHorizontalAdapter.setDenseRows(true);
+        new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class).getCoverTint().observe(getViewLifecycleOwner(), tint -> {
+            if (songHorizontalAdapter != null) songHorizontalAdapter.setAccentColor(tint != null ? tint.getAccent() : null);
+        });
         bind.mostStreamedSongRecyclerView.setAdapter(songHorizontalAdapter);
         setMediaBrowserListenableFuture();
         reapplyPlayback();
@@ -385,19 +374,13 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
                     bind.mostStreamedSongRecyclerPlaceholder.setVisibility(View.GONE);
                     bind.mostStreamedSongRecyclerEmpty.setVisibility(View.GONE);
                     bind.mostStreamedSongTextViewClickable.setVisibility(
-                            songs.size() > 3 ? View.VISIBLE : View.GONE);
+                            songs.size() > TOP_SONGS_SHOWN ? View.VISIBLE : View.GONE);
 
                     songHorizontalAdapter.setItems(
-                            songs.stream().limit(3).collect(Collectors.toList()));
+                            songs.stream().limit(TOP_SONGS_SHOWN).collect(Collectors.toList()));
                     reapplyPlayback();
 
                 });
-
-        bind.mostStreamedSongRecyclerEmpty.setOnClickListener( v -> {
-            bind.artistPageTopSongsSector.setVisibility(View.GONE);
-        }
-
-        );
     }
 
     private void initCategorizedAlbumsView() {
@@ -439,14 +422,21 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         }
         int albumCount = 0;
         int songCount = 0;
+        Map<String, Integer> genres = new HashMap<>();
         for (List<AlbumID3> releases : albums.values()) {
             albumCount += releases.size();
             for (AlbumID3 album : releases) {
                 songCount += album.getSongCount() != null ? album.getSongCount() : 0;
+                if (album.getGenre() != null && !album.getGenre().trim().isEmpty()) {
+                    genres.merge(album.getGenre().trim(), 1, Integer::sum);
+                }
             }
         }
-        bind.artistMetaLabel.setText(getResources().getQuantityString(R.plurals.artist_page_album_count, albumCount, albumCount)
-                + " · " + getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount));
+        List<String> parts = new ArrayList<>();
+        genres.entrySet().stream().max(Map.Entry.comparingByValue()).ifPresent(genre -> parts.add(genre.getKey()));
+        parts.add(getResources().getQuantityString(R.plurals.artist_page_album_count, albumCount, albumCount));
+        parts.add(getResources().getQuantityString(R.plurals.page_song_count, songCount, songCount));
+        bind.artistMetaLabel.setText(String.join(" · ", parts));
         bind.artistMetaLabel.setVisibility(View.VISIBLE);
     }
 
@@ -520,9 +510,9 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     }
 
     private void initSimilarArtistsView() {
-        bind.similarArtistsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), spanCount));
-        bind.similarArtistsRecyclerView.addItemDecoration(new GridItemDecoration(spanCount, tileSpacing, false));
+        bind.similarArtistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.similarArtistsRecyclerView.setHasFixedSize(true);
+        bind.similarArtistsRecyclerView.setNestedScrollingEnabled(false);
 
         similarArtistAdapter = new ArtistCarouselAdapter(this);
         bind.similarArtistsRecyclerView.setAdapter(similarArtistAdapter);
@@ -544,8 +534,6 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
             }
         });
 
-        CustomLinearSnapHelper similarArtistSnapHelper = new CustomLinearSnapHelper();
-        similarArtistSnapHelper.attachToRecyclerView(bind.similarArtistsRecyclerView);
     }
 
     private void initializeMediaBrowser() {

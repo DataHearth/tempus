@@ -2,7 +2,9 @@ package com.eddyizm.tempus.ui.fragment;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -11,6 +13,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +63,7 @@ import com.eddyizm.tempus.util.ExternalAudioWriter;
 import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.AlbumPageViewModel;
 import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
+import com.eddyizm.tempus.viewmodel.PlayerBottomSheetViewModel;
 import com.eddyizm.tempus.util.FavoriteRegistry;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
@@ -82,7 +86,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     private LiveData<ArtistID3> pendingArtist;
     private Observer<ArtistID3> pendingArtistObserver;
     private String tintedCoverId;
-    private String toolbarTitle;
+    private LiveData<CoverTint> playingAccent;
 
     /** @noinspection deprecation*/
     @Override
@@ -258,16 +262,9 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         }
 
         bind.animToolbar.setTitle(null);
-        bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, offset) -> {
-            if (bind == null) return;
-            boolean headerGone = appBarLayout.getTotalScrollRange() > 0 && -offset >= appBarLayout.getTotalScrollRange();
-            bind.animToolbar.setTitle(headerGone ? toolbarTitle : null);
-        });
 
         albumPageViewModel.getAlbum().observe(getViewLifecycleOwner(), album -> {
             if (bind != null && album != null) {
-                toolbarTitle = album.getName();
-
                 bind.albumHeader.albumNameLabel.setText(album.getName());
                 bind.albumHeader.albumArtistLabel.setText(album.getArtist());
                 AssetLinkUtil.AssetLink artistLink = buildArtistLink(album);
@@ -314,7 +311,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
 
         bind.animToolbar.setNavigationOnClickListener(v -> activity.navController.navigateUp());
 
-        Objects.requireNonNull(bind.animToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
+        Objects.requireNonNull(bind.animToolbar.getOverflowIcon()).setTint(MaterialColors.getColor(bind.animToolbar, com.google.android.material.R.attr.colorOnSurface));
 
         if(Preferences.showAlbumDetail()){
             bind.albumHeader.albumDetailView.setVisibility(View.VISIBLE);
@@ -323,15 +320,11 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
 
     private void bindMetaLine(AlbumID3 album) {
         SpannableStringBuilder meta = new SpannableStringBuilder();
-        List<String> releaseTypes = album.getReleaseTypes();
-        if (releaseTypes != null && !releaseTypes.isEmpty() && releaseTypes.get(0) != null && !releaseTypes.get(0).trim().isEmpty()) {
-            String releaseType = releaseTypes.get(0).trim();
-            appendMetaPart(meta, Character.toUpperCase(releaseType.charAt(0)) + releaseType.substring(1));
-        }
+        appendMetaPart(meta, releaseTypeLabel(album.getReleaseTypes()));
         int year = album.getYear();
         if (year != 0) {
             int start = appendMetaPart(meta, String.valueOf(year));
-            int linkColor = MaterialColors.getColor(bind.albumHeader.albumMetaLabel, com.google.android.material.R.attr.colorOnSurface);
+            int linkColor = MaterialColors.getColor(bind.albumHeader.albumMetaLabel, com.google.android.material.R.attr.colorOnSurfaceVariant);
             meta.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(@NonNull View widget) {
@@ -347,7 +340,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         }
         int songCount = album.getSongCount() != null ? album.getSongCount() : 0;
         if (songCount > 0) {
-            appendMetaPart(meta, getResources().getQuantityString(R.plurals.player_queue_song_count, songCount, songCount));
+            appendMetaPart(meta, getResources().getQuantityString(R.plurals.page_song_count, songCount, songCount));
         }
         if (album.getDuration() != null && album.getDuration() > 0) {
             appendMetaPart(meta, getString(R.string.duration_minutes_short, album.getDuration() / 60));
@@ -365,6 +358,16 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         });
     }
 
+    /** Servers without release types still get the "Album" lead the meta line always opens with. */
+    private String releaseTypeLabel(@Nullable List<String> releaseTypes) {
+        String releaseType = releaseTypes != null && !releaseTypes.isEmpty() && releaseTypes.get(0) != null
+                ? releaseTypes.get(0).trim() : "";
+        if (releaseType.isEmpty() || releaseType.equalsIgnoreCase("album")) {
+            return getString(R.string.track_info_album);
+        }
+        return Character.toUpperCase(releaseType.charAt(0)) + releaseType.substring(1);
+    }
+
     private static int appendMetaPart(SpannableStringBuilder meta, String part) {
         if (meta.length() > 0) meta.append(" · ");
         int start = meta.length();
@@ -376,10 +379,16 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         if (Objects.equals(coverId, tintedCoverId)) return;
         tintedCoverId = coverId;
         int surface = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorSurface);
+        int tintHeight = getResources().getDimensionPixelSize(R.dimen.page_header_tint_height);
         CoverTint.load(requireContext(), coverId, tint -> {
             if (bind == null) return;
-            bind.animToolbar.setBackgroundColor(tint.getBand());
-            bind.appBarLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface}));
+            // The tint stays put behind the toolbar and the list while the header scrolls away.
+            LayerDrawable background = new LayerDrawable(new Drawable[]{
+                    new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{tint.getBand(), surface})
+            });
+            background.setLayerGravity(0, Gravity.TOP | Gravity.FILL_HORIZONTAL);
+            background.setLayerHeight(0, tintHeight);
+            bind.getRoot().setBackground(background);
         });
     }
 
@@ -458,6 +467,10 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
     }
 
     private void initSongsView() {
+        playingAccent = new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class).getCoverTint();
+        playingAccent.observe(getViewLifecycleOwner(), tint -> {
+            if (songHorizontalAdapter != null) songHorizontalAdapter.setAccentColor(tint != null ? tint.getAccent() : null);
+        });
         bind.songRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         bind.songRecyclerView.setHasFixedSize(true);
 
@@ -492,6 +505,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
         albumPageViewModel.getAlbum().observe(getViewLifecycleOwner(), album -> {
             if (bind != null && album != null) {
                 songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, false, false, album);
+                songHorizontalAdapter.setAccentColor(playingAccent.getValue() != null ? playingAccent.getValue().getAccent() : null);
                 bind.songRecyclerView.setAdapter(songHorizontalAdapter);
                 setMediaBrowserListenableFuture();
                 reapplyPlayback();

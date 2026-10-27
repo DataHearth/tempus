@@ -9,9 +9,10 @@
         android:id="@+id/anim_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurfaceContainer"
+        android:background="@android:color/transparent"
         app:layout_collapseMode="pin"
-        app:navigationIcon="@drawable/ic_arrow_back" />
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/colorOnSurface" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -21,7 +22,9 @@
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:elevation="0dp">
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
+            app:liftOnScroll="false">
 
             <include
                 android:id="@+id/playlist_header"
@@ -36,11 +39,14 @@
             <TextView
                 android:id="@+id/empty_playlist_label"
                 style="@style/LabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
+                android:paddingHorizontal="32dp"
+                android:paddingTop="64dp"
+                android:paddingBottom="64dp"
                 android:text="@string/playlist_page_empty"
                 android:visibility="gone" />
         </com.google.android.material.appbar.AppBarLayout>

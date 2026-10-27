@@ -43,6 +43,7 @@
     <string name="artist_page_shuffle_button">Karıştır</string>
     <string name="artist_page_switch_layout_button">Düzeni değiştir</string>
     <string name="artist_page_title_album_more_like_this_button">Buna benzer daha fazla</string>
+    <string name="artist_page_title_similar_artists_section">Benzer sanatçılar</string>
     <string name="artist_page_title_album_section">Albümler</string>
     <string name="artist_page_title_biography_more_button">Daha fazla</string>
     <string name="artist_page_title_biography_section">Biyografi</string>
