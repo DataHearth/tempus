@@ -2,6 +2,12 @@ package com.eddyizm.tempus.ui.queue
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +24,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -129,7 +137,9 @@ fun PlayerQueueItem(
                 currentOnRemove(currentIndex, currentItem)
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = if (isCurrent) 4.dp else 0.dp),
         backgroundContent = {
             if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart ||
                 dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
@@ -168,7 +178,7 @@ fun PlayerQueueItem(
                         .heightIn(min = 56.dp)
                         .padding(
                             start = 8.dp,
-                            end = 0.dp,
+                            end = if (isCurrent) 4.dp else 0.dp,
                             top = if (isCurrent) 8.dp else 0.dp,
                             bottom = if (isCurrent) 8.dp else 0.dp
                         ),
@@ -184,15 +194,10 @@ fun PlayerQueueItem(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(Color(0x80000000)),
+                                        .background(Color(0x66000000)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        painter = painterResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play),
-                                        contentDescription = stringResource(if (isPlaying) R.string.player_queue_pause else R.string.player_queue_play),
-                                        tint = Color.White,
-                                        modifier = Modifier.size(26.dp)
-                                    )
+                                    EqualizerBars(playing = isPlaying, color = Color.White)
                                 }
                             }
                         } else null
@@ -210,7 +215,8 @@ fun PlayerQueueItem(
                             text = item.song.title ?: "",
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontSize = if (isCurrent) 15.sp else 14.sp,
-                                fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Medium
+                                fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Medium,
+                                letterSpacing = 0.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = textAlpha),
                             maxLines = 1,
@@ -222,8 +228,12 @@ fun PlayerQueueItem(
 
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = textAlpha),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, letterSpacing = 0.sp),
+                            color = if (isCurrent) {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = textAlpha)
+                            },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -266,25 +276,76 @@ fun PlayerQueueItem(
                             )
                         }
 
-                        // Trailing Reorder Handle (48dp minimum touch target)
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .then(dragHandleModifier),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_drag_handle),
-                                contentDescription = stringResource(R.string.player_queue_reorder),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                modifier = Modifier.size(24.dp)
-                            )
+                        if (isCurrent) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .clickable { onClick(index, item.song) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play),
+                                    contentDescription = stringResource(if (isPlaying) R.string.player_queue_pause else R.string.player_queue_play),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .then(dragHandleModifier),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_drag_handle),
+                                    contentDescription = stringResource(R.string.player_queue_reorder),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = QUEUE_MUTED_ALPHA),
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     )
+}
+
+private val EQ_BAR_PERIODS_MS = intArrayOf(900, 700, 1100)
+private val EQ_BAR_OFFSETS_MS = intArrayOf(200, 500, 100)
+private val EQ_BAR_PAUSED_HEIGHTS = floatArrayOf(0.6f, 0.9f, 0.45f)
+
+@Composable
+private fun EqualizerBars(playing: Boolean, color: Color) {
+    val transition = rememberInfiniteTransition(label = "queueEq")
+    Row(
+        modifier = Modifier.size(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        for (bar in EQ_BAR_PERIODS_MS.indices) {
+            val animated by transition.animateFloat(
+                initialValue = 0.25f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(EQ_BAR_PERIODS_MS[bar] / 2),
+                    repeatMode = RepeatMode.Reverse,
+                    initialStartOffset = StartOffset(EQ_BAR_OFFSETS_MS[bar])
+                ),
+                label = "queueEqBar$bar"
+            )
+            val fraction = if (playing) animated else EQ_BAR_PAUSED_HEIGHTS[bar]
+            Box(
+                modifier = Modifier
+                    .width(3.dp)
+                    .fillMaxHeight(fraction)
+                    .clip(RoundedCornerShape(1.5.dp))
+                    .background(color)
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

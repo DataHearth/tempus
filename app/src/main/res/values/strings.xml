@@ -330,7 +330,7 @@
     <string name="player_queue_save_queue_success">Saved play queue</string>
     <string name="player_queue_save_to_playlist">Save Queue to Playlist</string>
     <string name="player_queue_load_queue">Load Queue</string>
-    <string name="player_queue_playing_next">Playing Next</string>
+    <string name="player_queue_playing_next">Playing next</string>
     <string name="player_queue_clear">Clear</string>
     <string name="player_queue_shuffle_upcoming">Shuffle upcoming</string>
     <string name="player_queue_download_all">Download all</string>
@@ -365,6 +365,10 @@
     <string name="player_action_timer">Timer</string>
     <string name="player_action_lyrics">Lyrics</string>
     <string name="player_action_queue">Queue</string>
+    <string name="player_collapse">Collapse player</string>
+    <string name="player_queue_duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="player_queue_duration_hours_short">%d h</string>
+    <string name="player_queue_duration_seconds_short">%d s</string>
     <string name="player_lyrics_download_content_description">Download lyrics for offline playback</string>
     <string name="player_lyrics_downloaded_content_description">Lyrics downloaded for offline playback</string>
     <string name="player_lyrics_download_success">Lyrics saved for offline playback.</string>

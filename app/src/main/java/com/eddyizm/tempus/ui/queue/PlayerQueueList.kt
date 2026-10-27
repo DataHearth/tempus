@@ -109,7 +109,7 @@ fun PlayerQueueList(
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(start = 8.dp, end = 4.dp),
             state = lazyListState,
             contentPadding = PaddingValues(
                 top = 4.dp,
@@ -160,7 +160,10 @@ fun PlayerQueueList(
                     queueRow(index, item)
                 }
                 item(key = NOW_PLAYING_HEADER_KEY) {
-                    QueueSubheader(stringResource(R.string.player_queue_now_playing))
+                    QueueSubheader(
+                        stringResource(R.string.player_queue_now_playing),
+                        Modifier.padding(top = 8.dp, bottom = 6.dp)
+                    )
                 }
                 item(key = items[currentIndex].stableId) {
                     queueRow(currentIndex, items[currentIndex])
@@ -169,7 +172,7 @@ fun PlayerQueueList(
                     item(key = NEXT_UP_HEADER_KEY) {
                         QueueSubheader(
                             stringResource(R.string.player_queue_next_up),
-                            Modifier.padding(top = 12.dp)
+                            Modifier.padding(top = 16.dp, bottom = 4.dp)
                         )
                     }
                     itemsIndexed(
@@ -184,6 +187,9 @@ fun PlayerQueueList(
     }
 }
 
+// onSurfaceVariant at this alpha stands in for the design's third text tone (handles, drag icons).
+internal const val QUEUE_MUTED_ALPHA = 0.7f
+
 private const val NOW_PLAYING_HEADER_KEY = "queue_header_now_playing"
 private const val NEXT_UP_HEADER_KEY = "queue_header_next_up"
 
@@ -191,8 +197,8 @@ private const val NEXT_UP_HEADER_KEY = "queue_header_next_up"
 private fun QueueSubheader(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold),
+        style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(start = 8.dp, top = 8.dp, bottom = 2.dp)
+        modifier = modifier.padding(start = 8.dp)
     )
 }

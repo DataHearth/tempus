@@ -23,17 +23,32 @@
         app:layout_constraintStart_toEndOf="@+id/vertical_guideline"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageButton
+            android:id="@+id/player_collapse_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:padding="9dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/player_collapse"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_expand_more"
+            app:tint="?attr/colorOnSurface" />
+
         <Button
             android:id="@+id/player_playback_speed_button"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="4dp"
             android:minWidth="48dp"
             android:textSize="13sp"
             android:textColor="?attr/colorOnSurface"
+            android:visibility="gone"
             app:cornerRadius="24dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/player_info_track"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -52,25 +67,16 @@
 
             <TextView
                 android:id="@+id/player_media_extension"
+                style="@style/Widget.Tempus.PlayerQualityText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/player_unknown_format"
-                android:textColor="?attr/colorOnSurface"
-                android:textFontWeight="600"
-                android:textSize="12sp" />
+                android:text="@string/player_unknown_format" />
 
             <TextView
                 android:id="@+id/player_media_bitrate"
+                style="@style/Widget.Tempus.PlayerQualityText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:drawablePadding="6dp"
-                android:maxLines="1"
-                android:textColor="?attr/colorOnSurface"
-                android:textFontWeight="600"
-                android:textSize="12sp"
-                app:drawableStartCompat="@drawable/ic_quality_separator" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -216,7 +222,7 @@
         app:layout_constraintTop_toBottomOf="@+id/player_artist_name_label"
         app:layout_constraintBottom_toTopOf="@+id/player_play_pause_placeholder_view" />
 
-    <TextView
+    <com.eddyizm.tempus.ui.components.PlayerTimeTextView
         android:id="@+id/exo_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -228,7 +234,7 @@
         app:layout_constraintStart_toEndOf="@+id/vertical_guideline"
         app:layout_constraintTop_toBottomOf="@+id/exo_progress" />
 
-    <TextView
+    <com.eddyizm.tempus.ui.components.PlayerTimeTextView
         android:id="@+id/exo_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -418,7 +424,7 @@
             style="@style/Widget.Tempus.PlayerAction"
             android:layout_width="wrap_content"
             android:text="@string/player_action_timer"
-            app:icon="@drawable/ic_timer" />
+            app:icon="@drawable/ic_bedtime" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_open_lyrics_button"
@@ -426,7 +432,7 @@
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/player_action_lyrics"
-            app:icon="@drawable/ic_lyrics" />
+            app:icon="@drawable/ic_lyrics_note" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_open_queue_button"

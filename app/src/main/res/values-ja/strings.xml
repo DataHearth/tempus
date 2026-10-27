@@ -327,6 +327,9 @@
     <plurals name="player_queue_duration_hours">
         <item quantity="other">%d 時間</item>
     </plurals>
+    <string name="player_queue_duration_hours_minutes">%1$d時間%2$d分</string>
+    <string name="player_queue_duration_hours_short">%d時間</string>
+    <string name="player_queue_duration_seconds_short">%d秒</string>
     <string name="player_queue_starred">お気に入り</string>
     <string name="player_queue_downloaded">ダウンロード済み</string>
     <string name="player_queue_play">再生</string>

@@ -223,13 +223,13 @@ Below the playback controls is a row of three buttons.
 - **Lyrics** slides over to the lyrics. Tap it again or swipe back to return.
 - **Queue** opens the queue.
 
-Long press the format label above the artwork, "flac" for example, to hide this row, and long press it again to bring it back. A short tap on the label shows or hides the bitrate.
+The arrow at the top left closes the player. Long press the format label above the artwork, "FLAC" for example, to hide this row, and long press it again to bring it back. A short tap on the label shows or hides the bitrate.
 
 Tap the title to open its album, or the artist to open the artist. Long press either one to copy it.
 
 To show the track number in front of the title, turn on **Show track number** under **Settings → UI**.
 
-The ⋮ menu next to the heart has **Play on…** and **Add to playlist**, plus **Built-in equalizer** when Built-in is picked under Settings → Sound. Tablets do not have this menu.
+The ⋮ menu next to the heart has **Play on…**, **Playback Speed** and **Add to playlist**, plus **Built-in equalizer** when Built-in is picked under Settings → Sound. Tablets do not have this menu, so they keep the speed button at the top right. Podcasts show the speed button at the top right on every device.
 
 **Format and bitrate**
 

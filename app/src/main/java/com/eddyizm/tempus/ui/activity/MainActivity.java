@@ -47,6 +47,7 @@ import com.eddyizm.tempus.github.utils.UpdateUtil;
 import com.eddyizm.tempus.helper.ThemeHelper;
 import com.eddyizm.tempus.navigation.NavigationController;
 import com.eddyizm.tempus.navigation.NavigationHelper;
+import com.eddyizm.tempus.navigation.StatusBarBackdrop;
 import com.eddyizm.tempus.service.MediaManager;
 import com.eddyizm.tempus.subsonic.models.SubsonicResponse;
 import com.eddyizm.tempus.ui.activity.base.BaseActivity;
@@ -162,6 +163,7 @@ public class MainActivity extends BaseActivity {
         bind = ActivityMainBinding.inflate(getLayoutInflater());
         View view = bind.getRoot();
         setContentView(view);
+        new StatusBarBackdrop(getWindow(), findViewById(android.R.id.content), view).attach();
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         assetLinkNavigator = new AssetLinkNavigator(this);
@@ -422,7 +424,7 @@ public class MainActivity extends BaseActivity {
         float displayDensity = getResources().getDisplayMetrics().density;
         boolean showNavbar = !Preferences.getHideBottomNavbarOnPortrait();
         navigationController.setNavbarVisibility(showNavbar);
-        bottomSheetController.setPeekHeight(showNavbar ? 136 : 56, displayDensity);
+        bottomSheetController.setPeekHeight(showNavbar ? 144 : 64, displayDensity);
         navigationController.setSystemBarsVisibility(this, !isLandscape);
     }
 

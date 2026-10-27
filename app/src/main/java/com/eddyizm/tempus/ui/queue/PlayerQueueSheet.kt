@@ -4,12 +4,16 @@ import android.os.Build
 import androidx.annotation.AttrRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
@@ -187,7 +191,7 @@ fun PlayerQueueSheet(
         }
     }
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LaunchedEffect(sheetState) {
         onSheetReady { sheetState.hide() }
     }
@@ -242,59 +246,74 @@ fun PlayerQueueSheet(
             sheetState = sheetState,
             containerColor = containerColor,
             contentColor = colorScheme.onSurface,
-            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            scrimColor = Color.Black.copy(alpha = if (isDark) 0.55f else 0.32f),
             dragHandle = null,
+            contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
             modifier = modifier
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                PlayerQueueHeader(
-                    songCount = currentSongs.size,
-                    totalDurationSeconds = totalDurationSeconds,
-                    upcomingSongsCount = upcomingCount,
-                    isSyncEnabled = Preferences.isSyncronizationEnabled(),
-                    onClearUpcoming = { onClearUpcoming(currentRawSongs, effectiveCurrentIndex) },
-                    onShuffleUpcoming = { onShuffleUpcoming(currentRawSongs, effectiveCurrentIndex) },
-                    onSaveToPlaylist = { onSaveToPlaylist(currentSongs.map { it.song }) },
-                    onDownloadAll = { onDownloadAll(currentSongs.map { it.song }) },
-                    onLoadSavedQueue = onLoadSavedQueue
-                )
+            // The sheet stops under the player's top bar, leaving the collapse button and quality chip in view.
+            val topGap = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + QUEUE_SHEET_TOP_GAP
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(
+                            if (constraints.hasBoundedHeight) Modifier.height((maxHeight - topGap).coerceAtLeast(0.dp))
+                            else Modifier.fillMaxHeight()
+                        )
+                ) {
+                    PlayerQueueHeader(
+                        songCount = currentSongs.size,
+                        totalDurationSeconds = totalDurationSeconds,
+                        upcomingSongsCount = upcomingCount,
+                        isSyncEnabled = Preferences.isSyncronizationEnabled(),
+                        onClearUpcoming = { onClearUpcoming(currentRawSongs, effectiveCurrentIndex) },
+                        onShuffleUpcoming = { onShuffleUpcoming(currentRawSongs, effectiveCurrentIndex) },
+                        onSaveToPlaylist = { onSaveToPlaylist(currentSongs.map { it.song }) },
+                        onDownloadAll = { onDownloadAll(currentSongs.map { it.song }) },
+                        onLoadSavedQueue = onLoadSavedQueue
+                    )
 
-                PlayerQueueList(
-                    items = currentSongs,
-                    currentIndex = effectiveCurrentIndex,
-                    isPlaying = isPlaying,
-                    lazyListState = lazyListState,
-                    reorderableState = reorderableState,
-                    itemContainerColor = containerColor,
-                    currentItemColor = animateColorAsState(
-                        targetValue = currentItemColor ?: colorScheme.surfaceContainerHighest,
-                        label = "queueCurrentItemColor"
-                    ).value,
-                    downloadedIds = downloadedIds,
-                    externalRefreshTrigger = externalRefreshTrigger,
-                    onDragStarted = {
-                        dragStartIndex = null
-                        dragEndIndex = null
-                    },
-                    onDragStopped = {
-                        val initialIndex = dragStartIndex
-                        val finalIndex = dragEndIndex
-                        dragStartIndex = null
-                        dragEndIndex = null
-                        reorderedChildList = null
-                        if (initialIndex != null && finalIndex != null && initialIndex != finalIndex) {
-                            onSwapTracks(initialIndex, finalIndex)
+                    PlayerQueueList(
+                        items = currentSongs,
+                        currentIndex = effectiveCurrentIndex,
+                        isPlaying = isPlaying,
+                        lazyListState = lazyListState,
+                        reorderableState = reorderableState,
+                        itemContainerColor = containerColor,
+                        currentItemColor = animateColorAsState(
+                            targetValue = currentItemColor ?: colorScheme.surfaceContainerHighest,
+                            label = "queueCurrentItemColor"
+                        ).value,
+                        downloadedIds = downloadedIds,
+                        externalRefreshTrigger = externalRefreshTrigger,
+                        onDragStarted = {
+                            dragStartIndex = null
+                            dragEndIndex = null
+                        },
+                        onDragStopped = {
+                            val initialIndex = dragStartIndex
+                            val finalIndex = dragEndIndex
+                            dragStartIndex = null
+                            dragEndIndex = null
+                            reorderedChildList = null
+                            if (initialIndex != null && finalIndex != null && initialIndex != finalIndex) {
+                                onSwapTracks(initialIndex, finalIndex)
+                            }
+                        },
+                        onTrackClick = { clickedIdx, clickedChild ->
+                            onTrackClick(clickedIdx, clickedChild, currentRawSongs)
+                        },
+                        onRemoveTrack = { removeIndex, _ ->
+                            reorderedChildList = null
+                            onRemoveTrack(removeIndex)
                         }
-                    },
-                    onTrackClick = { clickedIdx, clickedChild ->
-                        onTrackClick(clickedIdx, clickedChild, currentRawSongs)
-                    },
-                    onRemoveTrack = { removeIndex, _ ->
-                        reorderedChildList = null
-                        onRemoveTrack(removeIndex)
-                    }
-                )
+                    )
+                }
             }
         }
     }
 }
+
+private val QUEUE_SHEET_TOP_GAP = 64.dp

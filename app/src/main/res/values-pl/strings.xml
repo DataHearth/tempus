@@ -351,6 +351,9 @@
         <item quantity="many">%d godzin</item>
         <item quantity="other">%d godziny</item>
     </plurals>
+    <string name="player_queue_duration_hours_minutes">%1$d godz. %2$d min</string>
+    <string name="player_queue_duration_hours_short">%d godz.</string>
+    <string name="player_queue_duration_seconds_short">%d s</string>
     <string name="player_queue_starred">Oznaczone gwiazdką</string>
     <string name="player_queue_downloaded">Pobrane</string>
     <string name="player_queue_play">Odtwarzaj</string>

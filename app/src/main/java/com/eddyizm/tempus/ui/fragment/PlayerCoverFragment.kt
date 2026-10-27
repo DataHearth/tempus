@@ -1,6 +1,7 @@
 package com.eddyizm.tempus.ui.fragment
 
 import android.content.ComponentName
+import android.graphics.Outline
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -10,12 +11,14 @@ import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.doOnAttach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
@@ -24,6 +27,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
+import com.eddyizm.tempus.R
 import com.eddyizm.tempus.databinding.InnerFragmentPlayerCoverBinding
 import com.eddyizm.tempus.model.Download
 import com.eddyizm.tempus.service.MediaManager
@@ -99,11 +103,47 @@ class PlayerCoverFragment : Fragment() {
             }
         }
 
+        binding.nowPlayingArtworkPager.doOnAttach { liftArtwork(it) }
+
         initOverlay()
         initInnerButton()
         observeQueue()
 
         return binding.root
+    }
+
+    private fun liftArtwork(art: View) {
+        val controller = generateSequence(art.parent as? View) { it.parent as? View }
+            .firstOrNull { it.id == R.id.now_playing_media_controller_layout } ?: return
+        // Only the portrait phone layout has room under the art; elsewhere the pager would
+        // clip the shadow, and unclipped pages would slide over the controls beside it.
+        if (controller.findViewById<View>(R.id.player_title_row) == null) return
+        var parent = art.parent
+        while (parent is ViewGroup) {
+            parent.clipChildren = false
+            parent.clipToPadding = false
+            if (parent === controller) break
+            parent = parent.parent
+        }
+        val radius = resources.getDimension(R.dimen.player_artwork_radius)
+        art.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                // The pager can be wider than tall; the art is a centred square inside it.
+                val size = minOf(view.width, view.height)
+                val left = (view.width - size) / 2
+                val top = (view.height - size) / 2
+                outline.setRoundRect(left, top, left + size, top + size, radius)
+            }
+        }
+        art.elevation = resources.getDimension(R.dimen.player_artwork_elevation)
+        // Siblings below the art's elevation draw under it, which hid the tap hint and the cover
+        // buttons. Same height keeps them on top by child order; no outline, so no second shadow.
+        bind?.let { binding ->
+            for (view in listOf(binding.nowPlayingTapButton, binding.nowPlayingSongCoverButtonGroup)) {
+                view.outlineProvider = null
+                view.elevation = art.elevation
+            }
+        }
     }
 
     override fun onStart() {

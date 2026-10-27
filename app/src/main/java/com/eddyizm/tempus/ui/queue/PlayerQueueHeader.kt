@@ -55,28 +55,27 @@ fun PlayerQueueHeader(
     }
     val countText = pluralStringResource(R.plurals.player_queue_song_count, songCount, songCount)
     val durationText = when {
-        hours > 0 && minutes > 0 -> "${pluralStringResource(R.plurals.player_queue_duration_hours, hours.toInt(), hours.toInt())} ${pluralStringResource(R.plurals.player_queue_duration_minutes, minutes.toInt(), minutes.toInt())}"
-        hours > 0 -> pluralStringResource(R.plurals.player_queue_duration_hours, hours.toInt(), hours.toInt())
-        minutes > 0 -> pluralStringResource(R.plurals.player_queue_duration_minutes, minutes.toInt(), minutes.toInt())
-        else -> pluralStringResource(R.plurals.player_queue_duration_seconds, seconds.toInt(), seconds.toInt())
+        hours > 0 && minutes > 0 -> stringResource(R.string.player_queue_duration_hours_minutes, hours.toInt(), minutes.toInt())
+        hours > 0 -> stringResource(R.string.player_queue_duration_hours_short, hours.toInt())
+        minutes > 0 -> stringResource(R.string.duration_minutes_short, minutes.toInt())
+        else -> stringResource(R.string.player_queue_duration_seconds_short, seconds.toInt())
     }
     val subtitle = if (songCount > 0) {
-        "$countText • $durationText"
+        "$countText · $durationText"
     } else {
         stringResource(R.string.player_queue_empty)
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        // Centered pill drag handle
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 6.dp),
+                .padding(top = 12.dp, bottom = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Surface(
-                modifier = Modifier.size(width = 36.dp, height = 4.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                modifier = Modifier.size(width = 32.dp, height = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = QUEUE_MUTED_ALPHA),
                 shape = RoundedCornerShape(2.dp)
             ) {}
         }
@@ -94,17 +93,22 @@ fun PlayerQueueHeader(
             ) {
                 Text(
                     text = stringResource(R.string.player_queue_playing_next),
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.2).sp
+                    ),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, letterSpacing = 0.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
 

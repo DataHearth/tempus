@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -80,6 +81,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @UnstableApi
@@ -113,6 +115,7 @@ public class PlayerControllerFragment extends Fragment {
     private Chip playerSongLinkChip;
     private Chip playerAlbumLinkChip;
     private Chip playerArtistLinkChip;
+    private Integer coverAccent;
 
     private MainActivity activity;
     private PlayerBottomSheetViewModel playerBottomSheetViewModel;
@@ -144,6 +147,10 @@ public class PlayerControllerFragment extends Fragment {
         initMediaListenable();
         initMediaLabelButton();
         initArtistLabelButton();
+        playerBottomSheetViewModel.getCoverTint().observe(getViewLifecycleOwner(), tint -> {
+            coverAccent = tint != null ? tint.getAccent() : null;
+            updateModeTints();
+        });
 
         // Sync UI immediately in case a timer survived a rotation.
         updateSleepTimerUI();
@@ -190,7 +197,7 @@ public class PlayerControllerFragment extends Fragment {
             bind.nowPlayingMediaControllerView.setShowFastForwardButton(false);
             bind.nowPlayingMediaControllerView.setShowPreviousButton(true);
             bind.nowPlayingMediaControllerView.setShowNextButton(true);
-            playbackSpeedButton.setVisibility(View.VISIBLE);
+            playbackSpeedButton.setVisibility(musicSpeedButtonVisibility());
             skipSilenceToggleButton.setVisibility(View.GONE);
             buttonFavorite.setVisibility(View.VISIBLE);
             var displayedSong = playerBottomSheetViewModel.getLiveMedia().getValue();
@@ -203,6 +210,7 @@ public class PlayerControllerFragment extends Fragment {
                 playbackSpeedButton.setText(getString(R.string.player_playback_speed, state.getSpeed()));
                 updateSleepTimerUI();
             } finally { renderingRemote = false; }
+            updateModeTints();
         } else {
             bind.playerRemoteToggle.setText(R.string.lan_play_on);
             bind.playerRemoteToggle.setContentDescription(getString(R.string.lan_play_on));
@@ -239,6 +247,8 @@ public class PlayerControllerFragment extends Fragment {
         playerAlbumLinkChip = bind.getRoot().findViewById(R.id.asset_link_album_chip);
         playerArtistLinkChip = bind.getRoot().findViewById(R.id.asset_link_artist_chip);
         sleepTimerButton = bind.getRoot().findViewById(R.id.player_sleep_timer_button);
+        View collapseButton = bind.getRoot().findViewById(R.id.player_collapse_button);
+        if (collapseButton != null) collapseButton.setOnClickListener(v -> activity.collapseBottomSheetDelayed());
         checkAndSetRatingContainerVisibility();
         styleTimeBar();
     }
@@ -257,10 +267,17 @@ public class PlayerControllerFragment extends Fragment {
                 if (!com.eddyizm.tempus.lan.LanDevicePicker.isOffered()) {
                     popup.getMenu().removeItem(R.id.action_lan_playback);
                 }
+                if (playbackSpeedButton.getVisibility() == View.VISIBLE) {
+                    popup.getMenu().removeItem(R.id.action_playback_speed);
+                }
 
                 popup.setOnMenuItemClickListener(item -> {
                     if (item.getItemId() == R.id.action_lan_playback) {
                         com.eddyizm.tempus.lan.LanDevicePicker.toggle(requireActivity());
+                        return true;
+                    }
+                    if (item.getItemId() == R.id.action_playback_speed) {
+                        playbackSpeedButton.performClick();
                         return true;
                     }
                     if (item.getItemId() == R.id.action_open_equalizer) {
@@ -332,6 +349,7 @@ public class PlayerControllerFragment extends Fragment {
         setMediaControllerUI(mediaBrowser);
         setMetadata(mediaBrowser.getMediaMetadata());
         setMediaInfo(mediaBrowser.getMediaMetadata());
+        updateModeTints();
 
         mediaBrowser.addListener(new Player.Listener() {
             @Override
@@ -356,11 +374,13 @@ public class PlayerControllerFragment extends Fragment {
             @Override
             public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
                 Preferences.setShuffleModeEnabled(shuffleModeEnabled);
+                updateModeTints();
             }
 
             @Override
             public void onRepeatModeChanged(int repeatMode) {
                 Preferences.setRepeatMode(repeatMode);
+                updateModeTints();
             }
         });
     }
@@ -450,12 +470,13 @@ public class PlayerControllerFragment extends Fragment {
         boolean isLocal = !com.eddyizm.tempus.lan.LanRemoteSession.isActive() && MusicUtil.isCurrentTrackLocal(getBrowser());
 
         if (mediaMetadata.extras != null) {
-            String extension = mediaMetadata.extras.getString("suffix", getString(R.string.player_unknown_format));
+            String suffix = mediaMetadata.extras.getString("suffix");
+            String extension = suffix != null ? suffix.toUpperCase(Locale.ROOT) : getString(R.string.player_unknown_format);
             int rawBitrate = mediaMetadata.extras.getInt("bitrate", 0);
-            String bitrate = rawBitrate != 0 ? rawBitrate + "kbps" : "Original";
+            String bitrate = rawBitrate != 0 ? kbps(rawBitrate) : "Original";
             String samplingRate = mediaMetadata.extras.getInt("samplingRate", 0) != 0
                     ? new java.text.DecimalFormat("0.#").format(mediaMetadata.extras.getInt("samplingRate", 0) / 1000.0)
-                            + "kHz"
+                            + " kHz"
                     : "";
             String bitDepth = mediaMetadata.extras.getInt("bitDepth", 0) != 0
                     ? mediaMetadata.extras.getInt("bitDepth", 0) + "b"
@@ -476,7 +497,7 @@ public class PlayerControllerFragment extends Fragment {
                 String mediaQuality = TextUtils.join(" · ", items);
 
                 playerMediaBitrate.setVisibility(Preferences.getBitrateVisible() ? View.VISIBLE : View.GONE);
-                playerMediaBitrate.setText(isLocal ? mediaQuality : mediaQuality);
+                playerMediaBitrate.setText(qualityTail(mediaQuality));
             }
         }
 
@@ -530,29 +551,59 @@ public class PlayerControllerFragment extends Fragment {
         boolean transcoded = MusicUtil.isTranscodedFormat(actual, original);
 
         if (actual != null && !actual.isEmpty()) {
+            String label = actual.toUpperCase(Locale.ROOT);
             playerMediaExtension.setText(transcoded
-                    ? actual + " (" + getString(R.string.player_transcoding) + ")"
-                    : actual);
+                    ? label + " (" + getString(R.string.player_transcoding) + ")"
+                    : label);
         }
 
         if (Objects.equals(browser.getMediaMetadata().extras.getString("type"), Constants.MEDIA_TYPE_RADIO)) {
-            playerMediaBitrate.setText((format.bitrate / 1000) + "kbps");
+            playerMediaBitrate.setText(qualityTail(kbps(format.bitrate / 1000)));
             playerMediaBitrate.setVisibility(Preferences.getBitrateVisible() ? View.VISIBLE : View.GONE);
         } else if (format.bitrate != Format.NO_VALUE && format.bitrate > 0) {
             if (transcoded) {
-                playerMediaBitrate.setText((format.bitrate / 1000) + "kbps");
+                playerMediaBitrate.setText(qualityTail(kbps(format.bitrate / 1000)));
                 playerMediaBitrate.setVisibility(Preferences.getBitrateVisible() ? View.VISIBLE : View.GONE);
             }
         } else if (transcoded) {
             String targetBitrate = MusicUtil.getBitratePreference();
             if (!targetBitrate.equals("0")) {
-                playerMediaBitrate.setText(targetBitrate + "kbps");
+                playerMediaBitrate.setText(qualityTail(targetBitrate + " kbps"));
                 playerMediaBitrate.setVisibility(Preferences.getBitrateVisible() ? View.VISIBLE : View.GONE);
             } else {
                 playerMediaBitrate.setVisibility(View.GONE);
             }
         }
 
+    }
+
+    // Music reaches playback speed from the overflow menu; layouts without one (sw600dp) keep the button.
+    private int musicSpeedButtonVisibility() {
+        return playerOverflowButton != null ? View.GONE : View.VISIBLE;
+    }
+
+    private static String kbps(int bitrate) {
+        return bitrate + " kbps";
+    }
+
+    // The bitrate view carries the separator so hiding it also hides the dot after the format.
+    private static String qualityTail(String quality) {
+        return " · " + quality;
+    }
+
+    private void updateModeTints() {
+        if (bind == null) return;
+        Player player = bind.nowPlayingMediaControllerView.getPlayer();
+        int off = MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorOnSurfaceVariant);
+        int on = coverAccent != null
+                ? coverAccent
+                : MaterialColors.getColor(bind.getRoot(), com.google.android.material.R.attr.colorOnSurface);
+        boolean shuffleOn = player != null && player.getShuffleModeEnabled();
+        boolean repeatOn = player != null && player.getRepeatMode() != Player.REPEAT_MODE_OFF;
+        ImageView shuffle = bind.getRoot().findViewById(R.id.exo_shuffle);
+        ImageView repeat = bind.getRoot().findViewById(R.id.exo_repeat_toggle);
+        if (shuffle != null) shuffle.setImageTintList(ColorStateList.valueOf(shuffleOn ? on : off));
+        if (repeat != null) repeat.setImageTintList(ColorStateList.valueOf(repeatOn ? on : off));
     }
 
     private void toggleBitrateVisibility() {
@@ -736,7 +787,7 @@ public class PlayerControllerFragment extends Fragment {
                     bind.nowPlayingMediaControllerView.setShowFastForwardButton(false);
                     bind.nowPlayingMediaControllerView.setRepeatToggleModes(
                             RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL | RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE);
-                    bind.getRoot().findViewById(R.id.player_playback_speed_button).setVisibility(View.VISIBLE);
+                    playbackSpeedButton.setVisibility(musicSpeedButtonVisibility());
                     bind.getRoot().findViewById(R.id.player_skip_silence_toggle_button).setVisibility(View.GONE);
                     bind.getRoot().findViewById(R.id.button_favorite).setVisibility(View.VISIBLE);
                     setPlaybackParameters(mediaBrowser);
@@ -882,8 +933,9 @@ public class PlayerControllerFragment extends Fragment {
         int onSurface = MaterialColors.getColor(timeBar, com.google.android.material.R.attr.colorOnSurface);
         timeBar.setPlayedColor(onSurface);
         timeBar.setScrubberColor(onSurface);
-        timeBar.setBufferedColor(ColorUtils.setAlphaComponent(onSurface, 0x5C));
-        timeBar.setUnplayedColor(ColorUtils.setAlphaComponent(onSurface, 0x38));
+        int track = ColorUtils.setAlphaComponent(onSurface, 0x38);
+        timeBar.setBufferedColor(track);
+        timeBar.setUnplayedColor(track);
     }
 
     private void initMediaListenable() {

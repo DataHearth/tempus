@@ -14,19 +14,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/player_playback_speed_button"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/player_collapse_button"
+            android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="4dp"
-            android:minWidth="48dp"
-            android:textSize="13sp"
-            android:textColor="?attr/colorOnSurface"
-            app:cornerRadius="24dp"
+            android:padding="9dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/player_collapse"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:srcCompat="@drawable/ic_expand_more"
+            app:tint="?attr/colorOnSurface" />
 
         <LinearLayout
             android:id="@+id/player_media_quality_sector_center"
@@ -43,27 +44,32 @@
 
             <TextView
                 android:id="@+id/player_media_extension"
+                style="@style/Widget.Tempus.PlayerQualityText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/player_unknown_format"
-                android:textColor="?attr/colorOnSurface"
-                android:textFontWeight="600"
-                android:textSize="12sp" />
+                android:text="@string/player_unknown_format" />
 
             <TextView
                 android:id="@+id/player_media_bitrate"
+                style="@style/Widget.Tempus.PlayerQualityText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:drawablePadding="6dp"
-                android:maxLines="1"
-                android:textColor="?attr/colorOnSurface"
-                android:textFontWeight="600"
-                android:textSize="12sp"
-                app:drawableStartCompat="@drawable/ic_quality_separator" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/player_playback_speed_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:minWidth="48dp"
+            android:textSize="13sp"
+            android:textColor="?attr/colorOnSurface"
+            android:visibility="gone"
+            app:cornerRadius="24dp"
+            app:layout_constraintEnd_toStartOf="@+id/player_info_track"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageButton
             android:id="@+id/player_info_track"
@@ -92,23 +98,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/player_media_quality_sector" />
 
+    <!-- The cover page pads the art by 24dp a side, so 412:340 gives the 340dp square of a
+         412dp-wide phone and shrinks it on narrower ones. -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/player_media_cover_view_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintDimensionRatio="H,412:340"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="340dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player_asset_link_row" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.56" />
 
     <LinearLayout
         android:id="@+id/rating_container"
@@ -118,9 +120,11 @@
         android:gravity="center"
         android:scaleX="0.8"
         android:scaleY="0.8"
+        app:layout_constraintBottom_toTopOf="@+id/player_title_row"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline">
+        app:layout_constraintTop_toBottomOf="@+id/player_media_cover_view_pager"
+        app:layout_constraintVertical_chainStyle="spread">
 
         <RatingBar
             android:id="@+id/song_rating_bar"
@@ -142,121 +146,125 @@
             android:text=""/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/player_media_title_label"
-        style="@style/HeadlineLarge"
+    <LinearLayout
+        android:id="@+id/player_title_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="4dp"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="@string/label_placeholder"
-        android:textColor="?attr/colorOnSurface"
-        android:textFontWeight="700"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/button_favorite"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rating_container" />
-
-    <TextView
-        android:id="@+id/player_artist_name_label"
-        style="@style/TitleMedium"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="4dp"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="@string/label_placeholder"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textFontWeight="500"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/button_favorite"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_media_title_label" />
-
-    <androidx.appcompat.widget.AppCompatToggleButton
-        android:id="@+id/button_favorite"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/button_favorite_player"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:checked="false"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:text=""
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="@+id/player_artist_name_label"
-        app:layout_constraintEnd_toStartOf="@id/player_overflow_button"
-        app:layout_constraintTop_toTopOf="@+id/player_media_title_label" />
-
-    <ImageButton
-        android:id="@+id/player_overflow_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
         android:layout_marginEnd="12dp"
-        android:padding="12dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/content_description_more_options"
-        android:src="@drawable/ic_more_vert"
-        app:layout_constraintBottom_toBottomOf="@+id/button_favorite"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/player_progress_block"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button_favorite"
-        app:tint="?attr/colorOnSurfaceVariant" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rating_container">
 
-    <androidx.media3.ui.DefaultTimeBar
-        android:id="@id/exo_progress"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/player_media_title_label"
+                style="@style/Widget.Tempus.PlayerTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_placeholder" />
+
+            <TextView
+                android:id="@+id/player_artist_name_label"
+                style="@style/Widget.Tempus.PlayerArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/label_placeholder" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/button_favorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/button_favorite_player"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:checked="false"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
+
+        <ImageButton
+            android:id="@+id/player_overflow_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_description_more_options"
+            android:src="@drawable/ic_more_vert"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/player_progress_block"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:bar_height="4dp"
-        app:scrubber_enabled_size="16dp"
-        app:scrubber_dragged_size="20dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/player_transport_row"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_artist_name_label" />
+        app:layout_constraintTop_toBottomOf="@+id/player_title_row">
 
-    <TextView
-        android:id="@+id/exo_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:text="@string/label_placeholder"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textFontWeight="500"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exo_progress" />
+        <!-- DefaultTimeBar insets its bar by half the largest scrubber (10dp), so the bar runs at 24dp. -->
+        <androidx.media3.ui.DefaultTimeBar
+            android:id="@id/exo_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
+            app:bar_height="4dp"
+            app:scrubber_enabled_size="16dp"
+            app:scrubber_dragged_size="20dp" />
 
-    <TextView
-        android:id="@+id/exo_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:text="@string/label_placeholder"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textFontWeight="500"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exo_progress" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="1dp">
+
+            <com.eddyizm.tempus.ui.components.PlayerTimeTextView
+                android:id="@+id/exo_position"
+                style="@style/Widget.Tempus.PlayerTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="@string/label_placeholder" />
+
+            <com.eddyizm.tempus.ui.components.PlayerTimeTextView
+                android:id="@+id/exo_duration"
+                style="@style/Widget.Tempus.PlayerTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/label_placeholder" />
+
+        </FrameLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/player_transport_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginHorizontal="24dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/player_quick_action_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exo_position">
+        app:layout_constraintTop_toBottomOf="@+id/player_progress_block">
 
         <ImageButton
             android:id="@+id/exo_shuffle"
@@ -266,7 +274,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/ic_shuffle"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <Space
             android:layout_width="0dp"
@@ -364,7 +372,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_repeat"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurfaceVariant" />
 
             <ToggleButton
                 android:id="@+id/player_skip_silence_toggle_button"
@@ -384,18 +392,18 @@
         android:id="@+id/player_quick_action_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_transport_row">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_sleep_timer_button"
             style="@style/Widget.Tempus.PlayerAction"
             android:layout_width="wrap_content"
             android:text="@string/player_action_timer"
-            app:icon="@drawable/ic_timer" />
+            app:icon="@drawable/ic_bedtime" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_open_lyrics_button"
@@ -403,7 +411,7 @@
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/player_action_lyrics"
-            app:icon="@drawable/ic_lyrics" />
+            app:icon="@drawable/ic_lyrics_note" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_open_queue_button"
