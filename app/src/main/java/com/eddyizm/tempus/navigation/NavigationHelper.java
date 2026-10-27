@@ -1,6 +1,5 @@
 package com.eddyizm.tempus.navigation;
 
-import android.content.res.Configuration;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
@@ -8,7 +7,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,7 +20,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.util.Preferences;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
@@ -115,36 +112,8 @@ public class NavigationHelper {
         return drawerLayout.getDrawerLockMode(navigationView) != DrawerLayout.LOCK_MODE_UNLOCKED;
     }
 
-    @OptIn(markerClass = UnstableApi.class)
-    public void toggleNavigationDrawerLockOnOrientationChange(
-            AppCompatActivity activity) {
-
-        int orientation = activity.getResources().getConfiguration().orientation;
-        boolean isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
-
-        if (Preferences.getEnableDrawerOnPortrait()) {
-            setNavigationDrawerLock(false);
-            return;
-        }
-        setNavigationDrawerLock(!isLandscape);
-    }
-
-    public void sethamburgerMenuIconOnToolbar(AppCompatActivity activity, MaterialToolbar toolbar) {
-
-        int orientation = activity.getResources().getConfiguration().orientation;
-        boolean isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
-
-        if (isLandscape) {
-            ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                    activity,
-                    drawerLayout,
-                    toolbar,
-                    R.string.toolbar_navigation_drawer_open,
-                    R.string.toolbar_navigation_drawer_closed
-            );
-            drawerLayout.addDrawerListener(drawerToggle);
-            drawerToggle.syncState();
-        }
+    public void toggleNavigationDrawerLockOnOrientationChange(AppCompatActivity activity) {
+        setNavigationDrawerLock(!Preferences.getEnableDrawerOnPortrait());
     }
 
     /*

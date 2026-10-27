@@ -72,7 +72,6 @@ public class HomeFragment extends Fragment {
         materialToolbar = bind.getRoot().findViewById(R.id.toolbar);
 
         activity.setSupportActionBar(materialToolbar);
-        navigationController.setHamburgerMenuForLandscape(activity, materialToolbar);
 
         Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
 

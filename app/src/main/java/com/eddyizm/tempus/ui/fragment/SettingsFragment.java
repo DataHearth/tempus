@@ -85,9 +85,7 @@ public class SettingsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         activity.setBottomSheetVisibility(true);
-        if (isLandscape) {
-            activity.setNavigationDrawerLock(false);
-        } else if (Preferences.getEnableDrawerOnPortrait()) {
+        if (Preferences.getEnableDrawerOnPortrait()) {
             activity.setNavigationDrawerLock(false);
         }
     }
