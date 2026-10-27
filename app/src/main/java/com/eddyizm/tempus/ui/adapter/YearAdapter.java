@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.ItemHomeYearBinding;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.util.Constants;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class YearAdapter extends RecyclerView.Adapter<YearAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         int year = years.get(position);
 
-        holder.item.yearLabel.setText(Integer.toString(year));
+        holder.item.yearLabel.setText(holder.itemView.getContext().getString(R.string.home_flashback_decade, year));
         holder.item.yearArt.setBackground(decadeArt(year));
     }
 
@@ -93,7 +95,9 @@ public class YearAdapter extends RecyclerView.Adapter<YearAdapter.ViewHolder> {
     }
 
     public void setItems(List<Integer> years) {
-        this.years = years;
+        List<Integer> newestFirst = new ArrayList<>(years);
+        Collections.reverse(newestFirst);
+        this.years = newestFirst;
         notifyDataSetChanged();
     }
 

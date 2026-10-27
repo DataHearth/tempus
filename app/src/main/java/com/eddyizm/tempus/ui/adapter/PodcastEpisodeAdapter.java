@@ -65,9 +65,12 @@ public class PodcastEpisodeAdapter extends RecyclerView.Adapter<PodcastEpisodeAd
                 dateStr,
                 durationStr
         );
+        String dateAndDuration = context.getString(R.string.browse_meta_formatter, dateStr, durationStr);
 
         holder.item.podcastTitleLabel.setText(podcastEpisode.getTitle());
-        holder.item.podcastSubtitleLabel.setText(podcastEpisode.getArtist());
+        holder.item.podcastSubtitleLabel.setText(podcastEpisode.getArtist() != null
+                ? context.getString(R.string.browse_meta_formatter, podcastEpisode.getArtist(), dateAndDuration)
+                : dateAndDuration);
         holder.item.podcastReleasesAndDurationLabel.setText(releasesAndDurationLabel);
         holder.item.podcastDescriptionText.setText(MusicUtil.getReadableString(podcastEpisode.getDescription()));
 
@@ -77,7 +80,6 @@ public class PodcastEpisodeAdapter extends RecyclerView.Adapter<PodcastEpisodeAd
                 .into(holder.item.podcastCoverImageView);
 
         holder.item.podcastPlayButton.setEnabled(podcastEpisode.getStatus().equals("completed"));
-        holder.item.podcastMoreButton.setVisibility(podcastEpisode.getStatus().equals("completed") ? View.VISIBLE : View.GONE);
         holder.item.podcastDownloadRequestButton.setVisibility(podcastEpisode.getStatus().equals("completed") ? View.GONE : View.VISIBLE);
     }
 

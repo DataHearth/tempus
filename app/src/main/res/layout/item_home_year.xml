@@ -27,11 +27,14 @@
             android:id="@+id/year_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/inter_bold"
             android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            android:paddingHorizontal="8dp"
             android:text="@string/label_placeholder"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="20sp" />
 
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

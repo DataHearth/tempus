@@ -7,6 +7,8 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Browse" />
@@ -16,7 +18,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:minHeight">48dp</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingEnd">4dp</item>
@@ -28,6 +30,8 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Browse.SectionCount" parent="InterFontFamily">
@@ -35,12 +39,14 @@
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">6dp</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Browse.SectionSupporting" parent="InterFontFamily">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:layout_marginTop">2dp</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Browse.Subheader" parent="InterFontFamily">
@@ -55,13 +61,14 @@
 
     <style name="Browse.SeeAll" parent="InterFontFamily">
         <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:minHeight">48dp</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">12dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:drawableEnd">@drawable/ic_navigate_next</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:drawableEnd">@drawable/ic_chevron_right_small</item>
         <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:maxLines">1</item>
@@ -93,6 +100,12 @@
         <item name="checkedIconVisible">false</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Browse.Pill</item>
         <item name="android:textAppearance">@style/Browse.ChipText</item>
+        <item name="chipStartPadding">0dp</item>
+        <item name="chipEndPadding">0dp</item>
+        <item name="textStartPadding">14dp</item>
+        <item name="textEndPadding">14dp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
     </style>
 
     <style name="Browse.FilterChip" parent="Widget.Material3.Chip.Filter">
@@ -115,8 +128,9 @@
 
     <style name="Browse.ChipText" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:textSize">13sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/inter_semi_bold</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
     </style>
 
     <style name="ShapeAppearance.Browse.Pill" parent="">
@@ -140,6 +154,7 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="Browse.RowSubtitle" parent="InterFontFamily">
@@ -148,5 +163,74 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_marginTop">2dp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- The header action of Discovery, Channels and Radio: a 36dp pill, unlike the 48dp
+         ActionButton that Downloads keeps. -->
+    <style name="Browse.HeaderAction" parent="Browse.ActionButton">
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">14dp</item>
+    </style>
+
+    <style name="Browse.TonalPill" parent="Widget.Material3.Button.TonalButton.Icon">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="backgroundTint">?attr/colorSurfaceContainer</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">8dp</item>
+    </style>
+
+    <style name="Browse.EmptyTitle" parent="InterFontFamily">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Browse.EmptySubtitle" parent="InterFontFamily">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="Browse.EmptyAction" parent="InterFontFamily">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:background">@drawable/bg_browse_empty_action</item>
+    </style>
+
+    <style name="Browse.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="Browse.NavLabel.Active">
+        <item name="fontFamily">@font/inter_bold</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
     </style>
 </resources>

@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
-        app:contentInsetStart="16dp"
-        app:layout_scrollFlags="scroll|enterAlways|snap">
+        android:paddingEnd="4dp"
+        app:contentInsetStart="16dp">
 
         <!--
             A minimum height on this container, not a fixed one. Without a minimum the app name
@@ -57,13 +57,14 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:duplicateParentState="true"
-                    android:drawablePadding="2dp"
+                    android:drawablePadding="0dp"
+                    android:drawableTint="?attr/colorOnSurfaceVariant"
                     android:ellipsize="end"
-                    android:fontFamily="@font/inter"
+                    android:fontFamily="@font/inter_medium"
+                    android:includeFontPadding="false"
                     android:singleLine="true"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp"
-                    android:textStyle="bold"
                     android:visibility="gone"
                     tools:visibility="visible" />
             </LinearLayout>

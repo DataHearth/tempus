@@ -193,7 +193,7 @@
     <string name="home_rearrangement_dialog_title">Rearrange home</string>
     <string name="home_rearrangement_dialog_subtitle">Please note that in order for the changes made to take effect, it is necessary to restart the application.</string>
     <string name="home_section_music">Music</string>
-    <string name="home_section_podcast">Podcast</string>
+    <string name="home_section_podcast">Podcasts</string>
     <string name="home_section_radio">Radio</string>
     <string name="home_subtitle_best_of">Top songs of your favorite artists</string>
     <string name="home_subtitle_made_for_you">Start mix from a song you liked</string>
@@ -219,6 +219,7 @@
     <string name="home_continue_listening_resume_at">Resume at %1$s</string>
     <string name="home_title_discovery_shuffle_all_button">Shuffle all</string>
     <string name="home_title_flashback">Flashback</string>
+    <string name="home_flashback_decade">%1$ds</string>
     <string name="home_title_internet_radio_station">Internet radio stations</string>
     <string name="home_title_last_played">Last played</string>
     <string name="home_title_last_played_see_all_button">See all</string>
@@ -237,11 +238,11 @@
     <string name="home_title_recently_added">Recently added</string>
     <string name="home_title_recently_added_see_all_button">See all</string>
     <string name="home_title_shares">Shares</string>
-    <string name="home_title_starred_albums">★ Starred albums</string>
+    <string name="home_title_starred_albums">Starred albums</string>
     <string name="home_title_starred_albums_see_all_button">See all</string>
-    <string name="home_title_starred_artists">★ Starred artists</string>
+    <string name="home_title_starred_artists">Starred artists</string>
     <string name="home_title_starred_artists_see_all_button">See all</string>
-    <string name="home_title_starred_tracks">★ Starred tracks</string>
+    <string name="home_title_starred_tracks">Starred tracks</string>
     <string name="home_title_starred_tracks_see_all_button">See all</string>
     <string name="home_title_top_songs">Your top songs</string>
     <string name="home_option_reorganize">Reorganize</string>
@@ -449,7 +450,7 @@
     <string name="radio_editor_source_server">Server</string>
     <string name="radio_editor_source_local">Local</string>
     <string name="radio_editor_dialog_hint_cover_art_url">Cover Art URL (optional)</string>
-    <string name="radio_local_badge">LOCAL</string>
+    <string name="radio_local_badge">Local</string>
     <string name="radio_search_dialog_title">Search Radio Directory</string>
     <string name="radio_search_hint">Station name</string>
     <string name="radio_search_button">Search</string>

@@ -9,6 +9,8 @@
         android:id="@+id/internet_radio_station_header"
         style="@style/Browse.SectionHeader"
         android:layout_width="0dp"
+        android:minHeight="36dp"
+        android:paddingBottom="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,10 +25,10 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/internet_radio_station_pre_text_view"
-            style="@style/Browse.ActionButton"
+            style="@style/Browse.HeaderAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
             android:text="@string/home_action_add_station"
             app:icon="@drawable/ic_add" />
     </LinearLayout>
@@ -39,7 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
         android:paddingBottom="@dimen/global_padding_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,6 +53,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="vertical"
+        android:paddingHorizontal="16dp"
         android:paddingBottom="@dimen/global_padding_bottom"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -59,46 +61,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/internet_radio_station_header">
 
-        <ImageView
-            android:id="@+id/empty_description_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="240dp"
-            android:maxHeight="240dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ui_empty_radio_station" />
-
         <TextView
             android:id="@+id/title_empty_description_label"
-            style="@style/LabelMedium"
+            style="@style/Browse.EmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="12dp"
             android:text="@string/radio_station_info_empty_title" />
 
         <TextView
             android:id="@+id/subtitle_empty_description_label"
-            style="@style/LabelSmall"
-            android:layout_width="wrap_content"
+            style="@style/Browse.EmptySubtitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="56dp"
-            android:paddingEnd="56dp"
             android:text="@string/radio_station_info_empty_subtitle" />
-
-        <View
-            style="@style/Divider"
-            android:layout_width="64dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp" />
 
         <TextView
             android:id="@+id/hide_section_button"
-            style="@style/LabelMedium"
-            android:layout_width="match_parent"
+            style="@style/Browse.EmptyAction"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center"
             android:text="@string/radio_station_info_empty_button" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

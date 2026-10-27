@@ -35,10 +35,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
             android:elevation="0dp"
             android:background="@drawable/bg_bottom_navigation_tinted"
+            app:activeIndicatorLabelPadding="0dp"
+            app:itemPaddingTop="15dp"
+            app:itemTextAppearanceActiveBoldEnabled="false"
+            app:itemTextAppearanceActive="@style/Browse.NavLabel.Active"
+            app:itemTextAppearanceInactive="@style/Browse.NavLabel"
             app:menu="@menu/bottom_nav_menu" />
 
         <TextView

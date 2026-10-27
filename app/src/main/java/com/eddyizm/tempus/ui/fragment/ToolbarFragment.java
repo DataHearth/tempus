@@ -213,7 +213,7 @@ public class ToolbarFragment extends Fragment implements MenuProvider {
         bind.toolbarTitleContainer.setClickable(visible);
         bind.toolbarMusicLibraryTextView.setVisibility(visible || showServerName ? View.VISIBLE : View.GONE);
         bind.toolbarMusicLibraryTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                0, 0, visible ? R.drawable.ic_expand_more_small : 0, 0);
+                0, 0, visible ? R.drawable.ic_arrow_drop_down_small : 0, 0);
 
         if (showServerName) {
             bind.toolbarMusicLibraryTextView.setText(serverName);

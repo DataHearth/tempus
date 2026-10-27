@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.adapter;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class InternetRadioStationAdapter extends RecyclerView.Adapter<InternetRa
         InternetRadioStation internetRadioStation = internetRadioStations.get(position);
 
         holder.item.internetRadioStationTitleTextView.setText(internetRadioStation.getName());
-        holder.item.internetRadioStationSubtitleTextView.setText(internetRadioStation.getStreamUrl());
+        holder.item.internetRadioStationSubtitleTextView.setText(streamHost(internetRadioStation.getStreamUrl()));
 
         if (internetRadioStation.getId() != null && internetRadioStation.getId().startsWith("local_")) {
             holder.item.internetRadioStationLocalBadge.setVisibility(android.view.View.VISIBLE);
@@ -55,6 +56,12 @@ public class InternetRadioStationAdapter extends RecyclerView.Adapter<InternetRa
         }
 
         loadCoverArt(holder, internetRadioStation);
+    }
+
+    private static String streamHost(String streamUrl) {
+        if (streamUrl == null) return null;
+        String host = Uri.parse(streamUrl).getHost();
+        return host != null ? host : streamUrl;
     }
 
     private void loadCoverArt(ViewHolder holder, InternetRadioStation station) {
@@ -118,10 +125,8 @@ public class InternetRadioStationAdapter extends RecyclerView.Adapter<InternetRa
 
             this.item = item;
 
-            item.internetRadioStationTitleTextView.setSelected(true);
-            item.internetRadioStationSubtitleTextView.setSelected(true);
-
             itemView.setOnClickListener(v -> onClick());
+            item.internetRadioStationPlayButton.setOnClickListener(v -> onClick());
             itemView.setOnLongClickListener(v -> onLongClick());
 
             item.internetRadioStationMoreButton.setOnClickListener(v -> onLongClick());

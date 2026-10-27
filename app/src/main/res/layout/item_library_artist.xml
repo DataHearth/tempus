@@ -21,7 +21,7 @@
         style="@style/Browse.RowTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="marquee"
+        android:ellipsize="end"
         android:gravity="center_horizontal"
         android:paddingTop="8dp"
         android:singleLine="true"

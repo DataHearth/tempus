@@ -32,7 +32,6 @@ import com.eddyizm.tempus.ui.adapter.PodcastEpisodeAdapter;
 import com.eddyizm.tempus.ui.dialog.PodcastChannelEditorDialog;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.Preferences;
-import com.eddyizm.tempus.util.UIUtil;
 import com.eddyizm.tempus.viewmodel.PodcastViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -118,7 +117,7 @@ public class HomeTabPodcastFragment extends Fragment implements ClickCallback, P
     }
 
     private void initPodcastChannelsView() {
-        bind.podcastChannelsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        bind.podcastChannelsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
         podcastChannelHorizontalAdapter = new PodcastChannelHorizontalAdapter(this);
         bind.podcastChannelsRecyclerView.setAdapter(podcastChannelHorizontalAdapter);
@@ -138,7 +137,6 @@ public class HomeTabPodcastFragment extends Fragment implements ClickCallback, P
 
     private void initNewestPodcastsView() {
         bind.newestPodcastsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        bind.newestPodcastsRecyclerView.addItemDecoration(UIUtil.getDividerItemDecoration(requireContext()));
 
         podcastEpisodeAdapter = new PodcastEpisodeAdapter(this);
         bind.newestPodcastsRecyclerView.setAdapter(podcastEpisodeAdapter);

@@ -52,6 +52,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private boolean showRowNumbers;
     private boolean showKind = false;
     private boolean denseRows = false;
+    private int itemWidthPx;
 
     private List<Child> songsFull;
     private final AsyncListDiffer<Child> differ = new AsyncListDiffer<>(this, new DiffUtil.ItemCallback<Child>() {
@@ -139,11 +140,21 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         this.denseRows = denseRows;
     }
 
+    /**
+     * Fixes each row's width, so a horizontal grid shows the start of its next column.
+     */
+    public void setItemWidth(int itemWidthPx) {
+        this.itemWidthPx = itemWidthPx;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemHorizontalTrackBinding view = ItemHorizontalTrackBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         int denseHeight = parent.getResources().getDimensionPixelSize(R.dimen.track_row_content_height);
+        if (itemWidthPx > 0) {
+            view.getRoot().getLayoutParams().width = itemWidthPx;
+        }
         if (!showCoverArt) {
             ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
             anchor.width = parent.getResources().getDimensionPixelSize(R.dimen.album_track_number_width);

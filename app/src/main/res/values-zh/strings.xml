@@ -175,6 +175,7 @@
     <string name="home_continue_listening_resume_at">从 %1$s 继续</string>
     <string name="home_title_discovery_shuffle_all_button">随机播放全部</string>
     <string name="home_title_flashback">重温旧曲</string>
+    <string name="home_flashback_decade">%1$d年代</string>
     <string name="home_title_internet_radio_station">网络广播电台</string>
     <string name="home_title_last_month">上月</string>
     <string name="home_title_last_played">最近播放</string>
@@ -188,16 +189,18 @@
     <string name="home_title_newest_podcasts">最新播客</string>
     <string name="home_title_pinned_playlists">播放列表</string>
     <string name="home_title_podcast_channels">频道</string>
+    <string name="home_action_add_channel">添加频道</string>
+    <string name="home_action_add_station">添加</string>
     <string name="home_title_podcast_channels_see_all_button">查看全部</string>
     <string name="home_title_radio_station">广播电台</string>
     <string name="home_title_recently_added">最近添加</string>
     <string name="home_title_recently_added_see_all_button">查看全部</string>
     <string name="home_title_shares">分享</string>
-    <string name="home_title_starred_albums">★ 收藏的专辑</string>
+    <string name="home_title_starred_albums">收藏的专辑</string>
     <string name="home_title_starred_albums_see_all_button">查看全部</string>
-    <string name="home_title_starred_artists">★ 收藏的艺术家</string>
+    <string name="home_title_starred_artists">收藏的艺术家</string>
     <string name="home_title_starred_artists_see_all_button">查看全部</string>
-    <string name="home_title_starred_tracks">★ 收藏的歌曲</string>
+    <string name="home_title_starred_tracks">收藏的歌曲</string>
     <string name="home_title_starred_tracks_see_all_button">查看全部</string>
     <string name="home_title_top_songs">你最喜欢的歌曲</string>
     <string name="label_dot_separator" translatable="false">•</string>

@@ -33,7 +33,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentHomeTabMusicBinding;
 import com.eddyizm.tempus.helper.recyclerview.CustomLinearSnapHelper;
-import com.eddyizm.tempus.helper.recyclerview.DotsIndicatorDecoration;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.model.Download;
 import com.eddyizm.tempus.model.HomeSector;
@@ -48,9 +47,7 @@ import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.subsonic.models.Share;
 import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.adapter.AlbumAdapter;
-import com.eddyizm.tempus.ui.adapter.AlbumHorizontalAdapter;
 import com.eddyizm.tempus.ui.adapter.ArtistAdapter;
-import com.eddyizm.tempus.ui.adapter.ArtistHorizontalAdapter;
 import com.eddyizm.tempus.ui.adapter.DiscoverSongAdapter;
 import com.eddyizm.tempus.ui.adapter.ContinueListeningAdapter;
 import com.eddyizm.tempus.ui.adapter.PlaylistHorizontalAdapter;
@@ -94,12 +91,12 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     private ArtistAdapter bestOfArtistAdapter;
     private SongHorizontalAdapter starredSongAdapter;
     private SongHorizontalAdapter topSongAdapter;
-    private AlbumHorizontalAdapter starredAlbumAdapter;
-    private ArtistHorizontalAdapter starredArtistAdapter;
+    private AlbumAdapter starredAlbumAdapter;
+    private ArtistAdapter starredArtistAdapter;
     private AlbumAdapter recentlyAddedAlbumAdapter;
     private AlbumAdapter recentlyPlayedAlbumAdapter;
     private AlbumAdapter mostPlayedAlbumAdapter;
-    private AlbumHorizontalAdapter newReleasesAlbumAdapter;
+    private AlbumAdapter newReleasesAlbumAdapter;
     private YearAdapter yearAdapter;
     private PlaylistHorizontalAdapter playlistHorizontalAdapter;
     private ShareHorizontalAdapter shareHorizontalAdapter;
@@ -826,6 +823,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         bind.topSongsRecyclerView.setHasFixedSize(true);
 
         topSongAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, false, null);
+        topSongAdapter.setItemWidth(getResources().getDimensionPixelSize(R.dimen.home_grid_column_width));
         bind.topSongsRecyclerView.setAdapter(topSongAdapter);
         setTopSongsMediaBrowserListenableFuture();
         reapplyTopSongsPlayback();
@@ -835,7 +833,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             } else {
                 if (bind != null) bind.homeGridTracksSector.setVisibility(View.VISIBLE);
                 if (bind != null)
-                    bind.topSongsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(chronologies.size(), 5), GridLayoutManager.HORIZONTAL, false));
+                    bind.topSongsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(chronologies.size(), 3), GridLayoutManager.HORIZONTAL, false));
 
                 List<Child> topSongs = chronologies.stream()
                         .map(cronologia -> (Child) cronologia)
@@ -846,17 +844,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             }
         });
 
-        SnapHelper topTrackSnapHelper = new PagerSnapHelper();
+        CustomLinearSnapHelper topTrackSnapHelper = new CustomLinearSnapHelper();
         topTrackSnapHelper.attachToRecyclerView(bind.topSongsRecyclerView);
-
-        bind.topSongsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredTracksView() {
@@ -865,6 +854,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         bind.starredTracksRecyclerView.setHasFixedSize(true);
 
         starredSongAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, false, null);
+        starredSongAdapter.setItemWidth(getResources().getDimensionPixelSize(R.dimen.home_grid_column_width));
         bind.starredTracksRecyclerView.setAdapter(starredSongAdapter);
         setStarredSongsMediaBrowserListenableFuture();
         reapplyStarredSongsPlayback();
@@ -875,32 +865,24 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                 if (bind != null)
                     bind.starredTracksSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE);
                 if (bind != null)
-                    bind.starredTracksRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(songs.size(), 5), GridLayoutManager.HORIZONTAL, false));
+                    bind.starredTracksRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(songs.size(), 3), GridLayoutManager.HORIZONTAL, false));
 
                 starredSongAdapter.setItems(songs);
                 reapplyStarredSongsPlayback();
             }
         });
 
-        SnapHelper starredTrackSnapHelper = new PagerSnapHelper();
+        CustomLinearSnapHelper starredTrackSnapHelper = new CustomLinearSnapHelper();
         starredTrackSnapHelper.attachToRecyclerView(bind.starredTracksRecyclerView);
-
-        bind.starredTracksRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredAlbumsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_STARRED_ALBUMS)) return;
 
+        bind.starredAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.starredAlbumsRecyclerView.setHasFixedSize(true);
 
-        starredAlbumAdapter = new AlbumHorizontalAdapter(this, false);
+        starredAlbumAdapter = new AlbumAdapter(this);
         bind.starredAlbumsRecyclerView.setAdapter(starredAlbumAdapter);
         homeViewModel.getStarredAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
             if (albums == null) {
@@ -908,32 +890,22 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             } else {
                 if (bind != null)
                     bind.starredAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.starredAlbumsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 5), GridLayoutManager.HORIZONTAL, false));
 
                 starredAlbumAdapter.setItems(albums);
             }
         });
 
-        SnapHelper starredAlbumSnapHelper = new PagerSnapHelper();
+        CustomLinearSnapHelper starredAlbumSnapHelper = new CustomLinearSnapHelper();
         starredAlbumSnapHelper.attachToRecyclerView(bind.starredAlbumsRecyclerView);
-
-        bind.starredAlbumsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredArtistsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_STARRED_ARTISTS)) return;
 
+        bind.starredArtistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.starredArtistsRecyclerView.setHasFixedSize(true);
 
-        starredArtistAdapter = new ArtistHorizontalAdapter(this);
+        starredArtistAdapter = new ArtistAdapter(this, false, false);
         bind.starredArtistsRecyclerView.setAdapter(starredArtistAdapter);
         homeViewModel.getStarredArtists(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), artists -> {
             if (artists == null) {
@@ -941,32 +913,22 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             } else {
                 if (bind != null)
                     bind.starredArtistsSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.starredArtistsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(artists.size(), 5), GridLayoutManager.HORIZONTAL, false));
 
                 starredArtistAdapter.setItems(artists);
             }
         });
 
-        SnapHelper starredArtistSnapHelper = new PagerSnapHelper();
+        CustomLinearSnapHelper starredArtistSnapHelper = new CustomLinearSnapHelper();
         starredArtistSnapHelper.attachToRecyclerView(bind.starredArtistsRecyclerView);
-
-        bind.starredArtistsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initNewReleasesView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_NEW_RELEASES)) return;
 
+        bind.newReleasesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.newReleasesRecyclerView.setHasFixedSize(true);
 
-        newReleasesAlbumAdapter = new AlbumHorizontalAdapter(this, false);
+        newReleasesAlbumAdapter = new AlbumAdapter(this);
         bind.newReleasesRecyclerView.setAdapter(newReleasesAlbumAdapter);
         homeViewModel.getRecentlyReleasedAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
             if (albums == null) {
@@ -974,24 +936,13 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             } else {
                 if (bind != null)
                     bind.homeNewReleasesSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.newReleasesRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 5), GridLayoutManager.HORIZONTAL, false));
 
                 newReleasesAlbumAdapter.setItems(albums);
             }
         });
 
-        SnapHelper newReleasesSnapHelper = new PagerSnapHelper();
+        CustomLinearSnapHelper newReleasesSnapHelper = new CustomLinearSnapHelper();
         newReleasesSnapHelper.attachToRecyclerView(bind.newReleasesRecyclerView);
-
-        bind.newReleasesRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initYearSongView() {
@@ -1089,7 +1040,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     private void initPinnedPlaylistsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_PINNED_PLAYLISTS)) return;
 
-        bind.pinnedPlaylistsRecyclerView.setHasFixedSize(true);
+        bind.pinnedPlaylistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        bind.pinnedPlaylistsRecyclerView.setNestedScrollingEnabled(false);
 
         playlistHorizontalAdapter = new PlaylistHorizontalAdapter(this);
         bind.pinnedPlaylistsRecyclerView.setAdapter(playlistHorizontalAdapter);
@@ -1099,24 +1051,10 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             } else {
                 if (bind != null)
                     bind.pinnedPlaylistsSector.setVisibility(!playlists.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.pinnedPlaylistsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(playlists.size(), 5), GridLayoutManager.HORIZONTAL, false));
 
                 playlistHorizontalAdapter.setItems(playlists);
             }
         });
-
-        SnapHelper pinnedPlaylistsSnapHelper = new PagerSnapHelper();
-        pinnedPlaylistsSnapHelper.attachToRecyclerView(bind.pinnedPlaylistsRecyclerView);
-
-        bind.pinnedPlaylistsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initSharesView() {
@@ -1143,15 +1081,6 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         SnapHelper starredTrackSnapHelper = new PagerSnapHelper();
         starredTrackSnapHelper.attachToRecyclerView(bind.sharesRecyclerView);
-
-        bind.sharesRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initMusicFolderChangeListener() {
