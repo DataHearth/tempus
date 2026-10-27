@@ -85,7 +85,7 @@ public class PlaylistHorizontalAdapter extends RecyclerView.Adapter<PlaylistHori
         Context context = holder.itemView.getContext();
         holder.item.playlistSubtitleTextView.setText(context.getString(R.string.browse_meta_formatter,
                 context.getResources().getQuantityString(R.plurals.player_queue_song_count, playlist.getSongCount(), playlist.getSongCount()),
-                MusicUtil.getReadablePodcastDurationString(playlist.getDuration())));
+                MusicUtil.getReadableTotalDuration(context, playlist.getDuration())));
 
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), playlist.getCoverArtId(), CustomGlideRequest.ResourceType.Playlist)

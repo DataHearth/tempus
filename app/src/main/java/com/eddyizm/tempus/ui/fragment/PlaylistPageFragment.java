@@ -282,7 +282,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback, Men
     private void bindMetaLine(int songCount, long durationSeconds) {
         bind.playlistHeader.playlistMetaLabel.setText(
                 getResources().getQuantityString(R.plurals.page_song_count, songCount, songCount)
-                        + " · " + getString(R.string.duration_minutes_short, (int) (durationSeconds / 60)));
+                        + " · " + MusicUtil.getReadableTotalDuration(requireContext(), durationSeconds));
     }
 
     // The view model keeps the song list across reopens of the same playlist, so a kept playlist

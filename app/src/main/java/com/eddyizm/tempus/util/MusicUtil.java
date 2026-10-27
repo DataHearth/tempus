@@ -235,6 +235,14 @@ public class MusicUtil {
                 detail;
     }
 
+    public static String getReadableTotalDuration(Context context, long seconds) {
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        if (hours == 0) return context.getString(R.string.duration_minutes_short, (int) minutes);
+        if (minutes == 0) return context.getString(R.string.player_queue_duration_hours_short, (int) hours);
+        return context.getString(R.string.player_queue_duration_hours_minutes, (int) hours, (int) minutes);
+    }
+
     public static String getReadablePodcastDurationString(long duration) {
         long minutes = duration / 60;
 

@@ -343,7 +343,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback, MenuPr
             appendMetaPart(meta, getResources().getQuantityString(R.plurals.page_song_count, songCount, songCount));
         }
         if (album.getDuration() != null && album.getDuration() > 0) {
-            appendMetaPart(meta, getString(R.string.duration_minutes_short, album.getDuration() / 60));
+            appendMetaPart(meta, MusicUtil.getReadableTotalDuration(requireContext(), album.getDuration()));
         }
 
         bind.albumHeader.albumMetaLabel.setText(meta);
