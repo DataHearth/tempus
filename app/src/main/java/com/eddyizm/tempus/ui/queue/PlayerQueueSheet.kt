@@ -268,6 +268,7 @@ fun PlayerQueueSheet(
                         totalDurationSeconds = totalDurationSeconds,
                         upcomingSongsCount = upcomingCount,
                         isSyncEnabled = Preferences.isSyncronizationEnabled(),
+                        currentCoverArtId = currentSongs.getOrNull(effectiveCurrentIndex)?.song?.coverArtId,
                         onClearUpcoming = { onClearUpcoming(currentRawSongs, effectiveCurrentIndex) },
                         onShuffleUpcoming = { onShuffleUpcoming(currentRawSongs, effectiveCurrentIndex) },
                         onSaveToPlaylist = { onSaveToPlaylist(currentSongs.map { it.song }) },

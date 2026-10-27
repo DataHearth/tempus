@@ -105,7 +105,6 @@
     <string name="delete_download_storage_dialog_positive_button">Davam et</string>
     <string name="delete_download_storage_dialog_summary">Bu əməliyyata davam etsəniz, bütün serverlərdən yüklənib saxlanılmış elementlər həmişəlik silinəcək.</string>
     <string name="delete_download_storage_dialog_title">Saxlanılmış elementlərin silinməsi</string>
-    <string name="description_empty_title">Mahnı sözləri yoxdur</string>
     <string name="disc_titlefull">Disk %1$s - %2$s</string>
     <string name="disc_titleless">Disk %1$s</string>
     <string name="download_directory_dialog_negative_button">Ləğv et</string>
@@ -747,7 +746,7 @@
     <string name="sleep_timer_dialog_end_of_track_active">Bu mahnıdan sonra dayandır</string>
     <string name="sleep_timer_end_of_track_label">Mahnının sonu</string>
     <!-- Duration options shown in the sleep-timer picker.
-         The order must match MINUTE_VALUES in SleepTimerDialog: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
+         SleepTimerDialog reads entries by index, so keep the order: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
     <string-array name="sleep_timer_duration_labels">
         <item>5 dəqiqə</item>
         <item>10 dəqiqə</item>

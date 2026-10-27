@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
+
+            <View
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_sheet_header_tile" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/BottomSheetHeaderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/sleep_timer_dialog_title" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_status_text_view"
+                    style="@style/BottomSheetHeaderSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/sleep_timer_sheet_subtitle" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout style="@style/BottomSheetActionGroups">
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/sleep_timer_15_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_bedtime" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_30_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_bedtime" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_45_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_bedtime" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_60_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_bedtime"
+                    android:text="@string/sleep_timer_one_hour" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_end_of_track_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_music_note"
+                    android:text="@string/sleep_timer_end_of_track_label" />
+
+                <TextView
+                    android:id="@+id/sleep_timer_custom_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_timer" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sleep_timer_cancel_group"
+                style="@style/BottomSheetActionGroup"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/sleep_timer_cancel_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_close"
+                    android:text="@string/sleep_timer_dialog_cancel_timer" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

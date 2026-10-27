@@ -79,7 +79,6 @@
     <string name="delete_download_storage_dialog_positive_button">继续</string>
     <string name="delete_download_storage_dialog_summary">请注意，继续执行此操作将永久删除从所有服务器下载的所有已保存的项目。</string>
     <string name="delete_download_storage_dialog_title">删除已保存的项目</string>
-    <string name="description_empty_title">没有可用的歌词</string>
     <string name="disc_titlefull">第 %1$s 张光盘 - %2$s</string>
     <string name="disc_titleless">第 %1$s 张光盘</string>
     <string name="download_directory_dialog_negative_button">取消</string>

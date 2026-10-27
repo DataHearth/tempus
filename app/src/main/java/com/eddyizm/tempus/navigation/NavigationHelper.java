@@ -60,13 +60,17 @@ public class NavigationHelper {
 
     public void syncWithBottomSheetBehavior(@NonNull BottomSheetBehavior<View> bottomSheetBehavior,
                                             @NonNull NavController navController) {
+        NavDestination[] previous = {null};
         navController.addOnDestinationChangedListener(
                 (controller, destination, arguments) -> {
-                    // React to the user clicking one of these on bottom-navbar/drawer
+                    // React to the user clicking one of these on bottom-navbar/drawer. Closing a
+                    // sheet opened over the player also lands back on one, and must leave it open.
+                    boolean fromDialog = previous[0] != null && "dialog".equals(previous[0].getNavigatorName());
+                    previous[0] = destination;
                     boolean isTarget = isTargetDestination(destination);
                     int currentState = bottomSheetBehavior.getState();
 
-                    if (isTarget && currentState == BottomSheetBehavior.STATE_EXPANDED) {
+                    if (isTarget && !fromDialog && currentState == BottomSheetBehavior.STATE_EXPANDED) {
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 });

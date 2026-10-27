@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/queue_cover_image_view"
+                style="@style/BottomSheetHeaderCover" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/BottomSheetHeaderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/player_action_queue" />
+
+                <TextView
+                    android:id="@+id/queue_meta_text_view"
+                    style="@style/BottomSheetHeaderSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout style="@style/BottomSheetActionGroups">
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/queue_shuffle_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_shuffle"
+                    android:text="@string/player_queue_shuffle_upcoming" />
+
+                <TextView
+                    android:id="@+id/queue_save_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_playlist_add"
+                    android:text="@string/player_queue_save_to_playlist" />
+
+                <TextView
+                    android:id="@+id/queue_download_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_download"
+                    android:text="@string/player_queue_download_all" />
+
+                <TextView
+                    android:id="@+id/queue_load_row"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_bookmark_sync"
+                    android:text="@string/player_queue_load_queue" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

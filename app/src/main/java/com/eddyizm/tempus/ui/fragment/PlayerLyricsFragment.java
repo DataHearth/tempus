@@ -202,31 +202,27 @@ public class PlayerLyricsFragment extends Fragment {
         if (hasStructuredLyrics(currentLyricsList)) {
             setSyncLyrics(currentLyricsList);
             bind.nowPlayingSongLyricsTextView.setVisibility(View.VISIBLE);
-            bind.emptyDescriptionImageView.setVisibility(View.GONE);
-            bind.titleEmptyDescriptionLabel.setVisibility(View.GONE);
+            bind.emptyLyricsCard.setVisibility(View.GONE);
             bind.syncLyricsTapButton.setVisibility(View.VISIBLE);
             bind.downloadLyricsButton.setVisibility(View.VISIBLE);
             bind.downloadLyricsButton.setEnabled(true);
         } else if (hasText(currentLyrics)) {
             bind.nowPlayingSongLyricsTextView.setText(MusicUtil.getReadableLyrics(currentLyrics));
             bind.nowPlayingSongLyricsTextView.setVisibility(View.VISIBLE);
-            bind.emptyDescriptionImageView.setVisibility(View.GONE);
-            bind.titleEmptyDescriptionLabel.setVisibility(View.GONE);
+            bind.emptyLyricsCard.setVisibility(View.GONE);
             bind.syncLyricsTapButton.setVisibility(View.GONE);
             bind.downloadLyricsButton.setVisibility(View.VISIBLE);
             bind.downloadLyricsButton.setEnabled(true);
         } else if (hasText(currentDescription)) {
             bind.nowPlayingSongLyricsTextView.setText(MusicUtil.getReadableLyrics(currentDescription));
             bind.nowPlayingSongLyricsTextView.setVisibility(View.VISIBLE);
-            bind.emptyDescriptionImageView.setVisibility(View.GONE);
-            bind.titleEmptyDescriptionLabel.setVisibility(View.GONE);
+            bind.emptyLyricsCard.setVisibility(View.GONE);
             bind.syncLyricsTapButton.setVisibility(View.GONE);
             bind.downloadLyricsButton.setVisibility(View.GONE);
             bind.downloadLyricsButton.setEnabled(false);
         } else {
             bind.nowPlayingSongLyricsTextView.setVisibility(View.GONE);
-            bind.emptyDescriptionImageView.setVisibility(View.VISIBLE);
-            bind.titleEmptyDescriptionLabel.setVisibility(View.VISIBLE);
+            bind.emptyLyricsCard.setVisibility(View.VISIBLE);
             bind.syncLyricsTapButton.setVisibility(View.GONE);
             bind.downloadLyricsButton.setVisibility(View.GONE);
             bind.downloadLyricsButton.setEnabled(false);

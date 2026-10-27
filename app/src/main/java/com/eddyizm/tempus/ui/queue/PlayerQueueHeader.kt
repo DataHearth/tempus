@@ -1,5 +1,10 @@
 package com.eddyizm.tempus.ui.queue
 
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,20 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eddyizm.tempus.R
+import com.eddyizm.tempus.glide.CustomGlideRequest
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 @Composable
 fun PlayerQueueHeader(
@@ -37,6 +40,7 @@ fun PlayerQueueHeader(
     totalDurationSeconds: Long,
     upcomingSongsCount: Int,
     isSyncEnabled: Boolean,
+    currentCoverArtId: String?,
     onClearUpcoming: () -> Unit,
     onShuffleUpcoming: () -> Unit,
     onSaveToPlaylist: () -> Unit,
@@ -44,8 +48,6 @@ fun PlayerQueueHeader(
     onLoadSavedQueue: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var menuExpanded by remember { mutableStateOf(false) }
-
     val (hours, minutes, seconds) = remember(totalDurationSeconds) {
         Triple(
             totalDurationSeconds / 3600,
@@ -136,67 +138,71 @@ fun PlayerQueueHeader(
                 )
             }
 
-            Box {
-                IconButton(
-                    onClick = { menuExpanded = true },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_more_vert),
-                        contentDescription = stringResource(R.string.content_description_more_options),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+            val context = LocalContext.current
+            IconButton(
+                onClick = {
+                    showQueueActionsSheet(
+                        context = context,
+                        coverArtId = currentCoverArtId,
+                        meta = subtitle,
+                        canShuffle = upcomingSongsCount > 1,
+                        hasSongs = songCount > 0,
+                        isSyncEnabled = isSyncEnabled,
+                        onShuffleUpcoming = onShuffleUpcoming,
+                        onSaveToPlaylist = onSaveToPlaylist,
+                        onDownloadAll = onDownloadAll,
+                        onLoadSavedQueue = onLoadSavedQueue
                     )
-                }
-
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.player_queue_save_to_playlist)) },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_playlist_add),
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onSaveToPlaylist()
-                        },
-                        enabled = songCount > 0
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.player_queue_download_all)) },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_download),
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onDownloadAll()
-                        },
-                        enabled = songCount > 0
-                    )
-                    if (isSyncEnabled) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.player_queue_load_queue)) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_bookmark_sync),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onLoadSavedQueue()
-                            }
-                        )
-                    }
-                }
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more_vert),
+                    contentDescription = stringResource(R.string.content_description_more_options),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
+
+private fun showQueueActionsSheet(
+    context: Context,
+    coverArtId: String?,
+    meta: String,
+    canShuffle: Boolean,
+    hasSongs: Boolean,
+    isSyncEnabled: Boolean,
+    onShuffleUpcoming: () -> Unit,
+    onSaveToPlaylist: () -> Unit,
+    onDownloadAll: () -> Unit,
+    onLoadSavedQueue: () -> Unit
+) {
+    val dialog = BottomSheetDialog(context)
+    val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_queue_actions, null)
+    CustomGlideRequest.Builder
+        .from(context, coverArtId, CustomGlideRequest.ResourceType.Song)
+        .build()
+        .into(view.findViewById<ImageView>(R.id.queue_cover_image_view))
+    view.findViewById<TextView>(R.id.queue_meta_text_view).text = meta
+
+    fun row(id: Int, enabled: Boolean, action: () -> Unit) {
+        val row = view.findViewById<View>(id)
+        row.isEnabled = enabled
+        row.alpha = if (enabled) 1f else QUEUE_DISABLED_ALPHA
+        row.setOnClickListener {
+            dialog.dismiss()
+            action()
+        }
+    }
+    row(R.id.queue_shuffle_row, canShuffle, onShuffleUpcoming)
+    row(R.id.queue_save_row, hasSongs, onSaveToPlaylist)
+    row(R.id.queue_download_row, hasSongs, onDownloadAll)
+    row(R.id.queue_load_row, true, onLoadSavedQueue)
+    view.findViewById<View>(R.id.queue_load_row).visibility = if (isSyncEnabled) View.VISIBLE else View.GONE
+
+    dialog.setContentView(view)
+    dialog.show()
+}
+
+private const val QUEUE_DISABLED_ALPHA = 0.38f

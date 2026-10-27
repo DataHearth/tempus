@@ -110,7 +110,6 @@
     <string name="delete_download_storage_dialog_positive_button">Continuer</string>
     <string name="delete_download_storage_dialog_summary">Attention, la poursuite de cette action entraînera la suppression définitive de tous les éléments sauvegardés et téléchargés à partir de tous les serveurs</string>
     <string name="delete_download_storage_dialog_title">Supprimer les éléments téléchargés</string>
-    <string name="description_empty_title">Paroles non disponibles</string>
     <string name="disc_titlefull">Disque %1$s - %2$s</string>
     <string name="disc_titleless">Disque %1$s</string>
     <string name="download_directory_dialog_negative_button">Annuler</string>
@@ -280,7 +279,7 @@
     <string name="player_queue_clean_all_button">Vider la file d\'attente</string>
     <string name="player_queue_save_queue_success">File d\'attente sauvegardée</string>
     <string name="player_queue_save_to_playlist">Sauvegarder la file d\'attente dans une playlist</string>
-    <string name="player_queue_load_queue">Charger la file d\'attente</string>
+    <string name="player_queue_load_queue">Charger la file d\'attente enregistrée</string>
     <string name="player_queue_playing_next">À suivre</string>
     <string name="player_queue_clear">Vider</string>
     <string name="player_queue_shuffle_upcoming">Mélanger les titres à venir</string>
@@ -307,6 +306,9 @@
     <string name="player_queue_duration_seconds_short">%d s</string>
     <string name="player_action_timer">Minuterie</string>
     <string name="player_action_lyrics">Paroles</string>
+    <string name="player_action_hide_lyrics">Masquer</string>
+    <string name="player_lyrics_empty_title">Pas de paroles pour ce titre</string>
+    <string name="player_lyrics_empty_body">Les paroles viennent de votre serveur. Les paroles synchronisées défilent avec le titre quand le fichier contient des horodatages.</string>
     <string name="player_action_queue">File d\'attente</string>
     <string name="player_collapse">Réduire le lecteur</string>
     <string name="player_overflow_menu_add_to_playlist">Ajouter à une playlist</string>
@@ -768,8 +770,10 @@
     <string name="sleep_timer_custom_set">Régler</string>
     <string name="sleep_timer_dialog_end_of_track_active">Arrêter après ce titre</string>
     <string name="sleep_timer_end_of_track_label">Fin de titre</string>
+    <string name="sleep_timer_sheet_subtitle">La lecture se met en pause à la fin</string>
+    <string name="sleep_timer_one_hour">1 heure</string>
     <!-- Duration options shown in the sleep-timer picker.
-         The order must match MINUTE_VALUES in SleepTimerDialog: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
+         SleepTimerDialog reads entries by index, so keep the order: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
     <string-array name="sleep_timer_duration_labels">
         <item>5 minutes</item>
         <item>10 minutes</item>
@@ -779,7 +783,7 @@
         <item>45 minutes</item>
         <item>60 minutes</item>
         <item>@string/sleep_timer_end_of_track_label</item>
-        <item>Custom\u2026</item>
+        <item>Personnalisé\u2026</item>
     </string-array>
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">Tempus a planté.</string>
 

@@ -104,7 +104,6 @@
     <string name="delete_download_storage_dialog_positive_button">続行</string>
     <string name="delete_download_storage_dialog_summary">この操作を続行すると、サーバーからダウンロードした保存済みアイテムがすべて完全に削除されます。</string>
     <string name="delete_download_storage_dialog_title">保存済みアイテムの削除</string>
-    <string name="description_empty_title">説明はありません</string>
     <string name="disc_titlefull">ディスク %1$s - %2$s</string>
     <string name="disc_titleless">ディスク %1$s</string>
     <string name="download_directory_dialog_negative_button">キャンセル</string>

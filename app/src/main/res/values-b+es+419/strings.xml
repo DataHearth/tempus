@@ -100,7 +100,6 @@
     <string name="delete_download_storage_dialog_positive_button">Continuar</string>
     <string name="delete_download_storage_dialog_summary">Ten en cuenta que al continuar todas las canciones que hayas descargado se eliminarán permanentemente de todos los servidores.</string>
     <string name="delete_download_storage_dialog_title">Eliminar elementos guardados</string>
-    <string name="description_empty_title">No hay letra disponible</string>
     <string name="disc_titlefull">Disco %1$s - %2$s</string>
     <string name="disc_titleless">Disco %1$s</string>
     <string name="download_directory_dialog_negative_button">Cancelar</string>
@@ -698,7 +697,7 @@
     <string name="sleep_timer_dialog_end_of_track_active">Se pausará cuando acabe esta canción</string>
     <string name="sleep_timer_end_of_track_label">Acabando la canción</string>
     <!-- Duration options shown in the sleep-timer picker.
-         The order must match MINUTE_VALUES in SleepTimerDialog: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
+         SleepTimerDialog reads entries by index, so keep the order: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
     <string-array name="sleep_timer_duration_labels">
         <item>5 minutos</item>
         <item>10 minutos</item>

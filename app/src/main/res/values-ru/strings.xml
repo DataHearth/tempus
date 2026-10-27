@@ -104,7 +104,6 @@
     <string name="delete_download_storage_dialog_positive_button">Продолжить</string>
     <string name="delete_download_storage_dialog_summary">Внимание: это действие безвозвратно удалит все скачанные файлы со всех серверов.</string>
     <string name="delete_download_storage_dialog_title">Удалить скачанное</string>
-    <string name="description_empty_title">Нет текста песни</string>
     <string name="disc_titlefull">Диск %1$s - %2$s</string>
     <string name="disc_titleless">Диск %1$s</string>
     <string name="download_directory_dialog_negative_button">Отмена</string>
@@ -779,7 +778,7 @@
     <string name="sleep_timer_dialog_end_of_track_active">Остановить после этого трека</string>
     <string name="sleep_timer_end_of_track_label">Конец трека</string>
     <!-- Duration options shown in the sleep-timer picker.
-         The order must match MINUTE_VALUES in SleepTimerDialog: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
+         SleepTimerDialog reads entries by index, so keep the order: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
     <string-array name="sleep_timer_duration_labels">
         <item>5 минут</item>
         <item>10 минут</item>

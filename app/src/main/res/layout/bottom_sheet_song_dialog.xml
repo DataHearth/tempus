@@ -145,6 +145,33 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/player_actions_group"
+            style="@style/BottomSheetActionGroup"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/playback_speed_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_ms_speed"
+                android:text="@string/playback_speed_dialog_title"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/equalizer_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_graphic_eq"
+                android:text="@string/settings_app_equalizer"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/lan_playback_text_view"
+                style="@style/BottomSheetActionRow"
+                android:drawableStart="@drawable/ic_settings_cast"
+                android:text="@string/lan_play_on"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/remove_group"
             style="@style/BottomSheetActionGroup"
             android:visibility="gone">

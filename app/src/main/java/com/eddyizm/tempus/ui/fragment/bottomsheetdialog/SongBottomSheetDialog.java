@@ -77,6 +77,20 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
     private static final String TAG = "SongBottomSheetDialog";
 
+    /** Opened from the now playing ⋮: stays over the player and adds the player's own actions. */
+    public static final String ARG_FROM_PLAYER = "from_player";
+    public static final String ARG_SHOW_SPEED = "show_speed";
+    public static final String ARG_SHOW_EQUALIZER = "show_equalizer";
+    public static final String ARG_SHOW_LAN = "show_lan";
+    /** Fragment result on the activity's fragment manager, which the player listens on. */
+    public static final String PLAYER_ACTION_RESULT = "player_action_result";
+    public static final String PLAYER_ACTION = "player_action";
+    public static final String PLAYER_ACTION_SPEED = "speed";
+    public static final String PLAYER_ACTION_EQUALIZER = "equalizer";
+    public static final String PLAYER_ACTION_LAN = "lan";
+
+    private boolean fromPlayer;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -88,6 +102,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
             return view;
         }
 
+        fromPlayer = args.getBoolean(ARG_FROM_PLAYER);
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         songBottomSheetViewModel = new ViewModelProvider(requireActivity()).get(SongBottomSheetViewModel.class);
         songBottomSheetViewModel.setSong(song);
@@ -186,7 +201,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
                 if (isFirstBatch) {
                     isFirstBatch = false;
                     MediaManager.startQueue(activityBrowserFuture, media, 0);
-                    activity.setBottomSheetInPeek(true);
+                    if (!fromPlayer) activity.setBottomSheetInPeek(true);
                     if (isAdded()) {
                         dismissBottomSheet();
                     }
@@ -199,14 +214,14 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
         TextView playNext = view.findViewById(R.id.play_next_text_view);
         playNext.setOnClickListener(v -> {
             MediaManager.enqueue(mediaBrowserListenableFuture, song, true);
-            ((MainActivity) requireActivity()).setBottomSheetInPeek(true);
+            if (!fromPlayer) ((MainActivity) requireActivity()).setBottomSheetInPeek(true);
             dismissBottomSheet();
         });
 
         TextView addToQueue = view.findViewById(R.id.add_to_queue_text_view);
         addToQueue.setOnClickListener(v -> {
             MediaManager.enqueue(mediaBrowserListenableFuture, song, false);
-            ((MainActivity) requireActivity()).setBottomSheetInPeek(true);
+            if (!fromPlayer) ((MainActivity) requireActivity()).setBottomSheetInPeek(true);
             dismissBottomSheet();
         });
 
@@ -330,6 +345,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable(Constants.ALBUM_OBJECT, album);
                 NavHostFragment.findNavController(this).navigate(R.id.albumPageFragment, bundle);
+                collapsePlayer();
             } else
                 Toast.makeText(requireContext(), getString(R.string.song_bottom_sheet_error_retrieving_album), Toast.LENGTH_SHORT).show();
 
@@ -344,6 +360,7 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable(Constants.ARTIST_OBJECT, artist);
                 NavHostFragment.findNavController(this).navigate(R.id.artistPageFragment, bundle);
+                collapsePlayer();
             } else
                 Toast.makeText(requireContext(), getString(R.string.song_bottom_sheet_error_retrieving_artist), Toast.LENGTH_SHORT).show();
 
@@ -367,6 +384,31 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
         }));
 
         share.setVisibility(Preferences.isSharingEnabled() ? View.VISIBLE : View.GONE);
+
+        if (fromPlayer) initPlayerActions(view, args);
+    }
+
+    private void initPlayerActions(View view, Bundle args) {
+        boolean any = bindPlayerAction(view, R.id.playback_speed_text_view, args.getBoolean(ARG_SHOW_SPEED), PLAYER_ACTION_SPEED);
+        any |= bindPlayerAction(view, R.id.equalizer_text_view, args.getBoolean(ARG_SHOW_EQUALIZER), PLAYER_ACTION_EQUALIZER);
+        any |= bindPlayerAction(view, R.id.lan_playback_text_view, args.getBoolean(ARG_SHOW_LAN), PLAYER_ACTION_LAN);
+        view.findViewById(R.id.player_actions_group).setVisibility(any ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean bindPlayerAction(View view, int rowId, boolean shown, String action) {
+        View row = view.findViewById(rowId);
+        row.setVisibility(shown ? View.VISIBLE : View.GONE);
+        row.setOnClickListener(v -> {
+            Bundle result = new Bundle();
+            result.putString(PLAYER_ACTION, action);
+            requireActivity().getSupportFragmentManager().setFragmentResult(PLAYER_ACTION_RESULT, result);
+            dismissBottomSheet();
+        });
+        return shown;
+    }
+
+    private void collapsePlayer() {
+        if (fromPlayer && getActivity() instanceof MainActivity) ((MainActivity) getActivity()).collapseBottomSheetDelayed();
     }
 
     @Override

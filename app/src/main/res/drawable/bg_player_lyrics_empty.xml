@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/player_lyrics_empty_container" />
+    <corners android:radius="@dimen/player_artwork_radius" />
+</shape>

@@ -100,7 +100,6 @@
     <string name="delete_download_storage_dialog_positive_button">Jarraitu</string>
     <string name="delete_download_storage_dialog_summary">Kontuan izan, ekintza honekin jarraituz gero, zerbitzari guztietatik deskargatutako elementu guztiak betirako ezabatuko direla.</string>
     <string name="delete_download_storage_dialog_title">Gordetako elementuak ezabatu</string>
-    <string name="description_empty_title">Ez dago letrarik eskuragarri</string>
     <string name="disc_titlefull">%1$s diskoa - %2$s</string>
     <string name="disc_titleless">%1$s diskoa</string>
     <string name="download_directory_dialog_negative_button">Utzi</string>
@@ -715,7 +714,7 @@
     <string name="sleep_timer_dialog_end_of_track_active">Abesti hau amaitzean gelditu</string>
     <string name="sleep_timer_end_of_track_label">Abestiaren amaieran</string>
     <!-- Duration options shown in the sleep-timer picker.
-         The order must match MINUTE_VALUES in SleepTimerDialog: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
+         SleepTimerDialog reads entries by index, so keep the order: 5,10,15,20,30,45,60,END_OF_TRACK,CUSTOM. -->
     <string-array name="sleep_timer_duration_labels">
         <item>5 minutu</item>
         <item>10 minutu</item>

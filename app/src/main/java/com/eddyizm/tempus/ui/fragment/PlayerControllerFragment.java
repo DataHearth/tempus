@@ -56,6 +56,7 @@ import com.eddyizm.tempus.ui.activity.MainActivity;
 import com.eddyizm.tempus.ui.dialog.PlaybackSpeedDialog;
 import com.eddyizm.tempus.ui.dialog.PlaylistChooserDialog;
 import com.eddyizm.tempus.ui.dialog.SleepTimerDialog;
+import com.eddyizm.tempus.ui.fragment.bottomsheetdialog.SongBottomSheetDialog;
 import com.eddyizm.tempus.util.SleepTimerManager;
 
 import android.content.res.ColorStateList;
@@ -97,6 +98,7 @@ public class PlayerControllerFragment extends Fragment {
     private ViewPager2 playerMediaCoverViewPager;
     private ToggleButton buttonFavorite;
     private ImageButton playerOverflowButton;
+    private boolean playingMusic = true;
     private RatingViewModel ratingViewModel;
     private RatingBar songRatingBar;
     private TextView playerMediaTitleLabel;
@@ -251,12 +253,21 @@ public class PlayerControllerFragment extends Fragment {
         if (collapseButton != null) collapseButton.setOnClickListener(v -> activity.collapseBottomSheetDelayed());
         checkAndSetRatingContainerVisibility();
         styleTimeBar();
+        initRepeatButton();
     }
 
     private void initOverflowButton() {
         // Not available on sw600dp
         if (playerOverflowButton != null) {
+            requireActivity().getSupportFragmentManager().setFragmentResultListener(
+                    SongBottomSheetDialog.PLAYER_ACTION_RESULT, getViewLifecycleOwner(),
+                    (key, result) -> onPlayerAction(result.getString(SongBottomSheetDialog.PLAYER_ACTION)));
             playerOverflowButton.setOnClickListener(v -> {
+                var song = playerBottomSheetViewModel.getLiveMedia().getValue();
+                if (playingMusic && song != null) {
+                    openSongSheet(song);
+                    return;
+                }
                 PopupMenu popup = new PopupMenu(requireContext(), v);
                 popup.inflate(R.menu.player_overflow_menu);
 
@@ -752,6 +763,7 @@ public class PlayerControllerFragment extends Fragment {
         if (bind == null || com.eddyizm.tempus.lan.LanRemoteSession.isActive()) return;
         initPlaybackSpeedButton(mediaBrowser);
 
+        playingMusic = true;
         if (mediaBrowser.getMediaMetadata().extras != null) {
             switch (mediaBrowser.getMediaMetadata().extras.getString("type", Constants.MEDIA_TYPE_MUSIC)) {
                 case Constants.MEDIA_TYPE_PODCAST:
@@ -764,6 +776,7 @@ public class PlayerControllerFragment extends Fragment {
                     bind.getRoot().findViewById(R.id.player_playback_speed_button).setVisibility(View.VISIBLE);
                     bind.getRoot().findViewById(R.id.player_skip_silence_toggle_button).setVisibility(View.VISIBLE);
                     bind.getRoot().findViewById(R.id.button_favorite).setVisibility(View.GONE);
+                    playingMusic = false;
                     setPlaybackParameters(mediaBrowser);
                     break;
                 case Constants.MEDIA_TYPE_RADIO:
@@ -776,6 +789,7 @@ public class PlayerControllerFragment extends Fragment {
                     bind.getRoot().findViewById(R.id.player_playback_speed_button).setVisibility(View.GONE);
                     bind.getRoot().findViewById(R.id.player_skip_silence_toggle_button).setVisibility(View.GONE);
                     bind.getRoot().findViewById(R.id.button_favorite).setVisibility(View.GONE);
+                    playingMusic = false;
                     setPlaybackParameters(mediaBrowser);
                     break;
                 case Constants.MEDIA_TYPE_MUSIC:
@@ -896,17 +910,18 @@ public class PlayerControllerFragment extends Fragment {
                 }
                 if (position == 0) {
                     playerMediaCoverViewPager.setUserInputEnabled(false);
-                    updateLyricsButtonTint(false);
+                    updateLyricsButton(false);
                 } else if (position == 1) {
                     playerMediaCoverViewPager.setUserInputEnabled(true);
-                    updateLyricsButtonTint(true);
+                    updateLyricsButton(true);
                 }
             }
         });
     }
 
-    private void updateLyricsButtonTint(boolean isLyricsActive) {
-        setActionActive(playerOpenLyricsButton, isLyricsActive);
+    private void updateLyricsButton(boolean isLyricsActive) {
+        if (playerOpenLyricsButton != null)
+            playerOpenLyricsButton.setText(isLyricsActive ? R.string.player_action_hide_lyrics : R.string.player_action_lyrics);
     }
 
     public void updateQueueButtonTint(boolean isQueueActive) {
@@ -924,6 +939,22 @@ public class PlayerControllerFragment extends Fragment {
                 : androidx.core.content.ContextCompat.getColorStateList(button.getContext(), R.color.player_control_container));
         button.setIconTint(content);
         button.setTextColor(content);
+    }
+
+    // Media3's own toggle steps off, one, all; the design steps off, all, one.
+    private void initRepeatButton() {
+        View repeat = bind.getRoot().findViewById(androidx.media3.ui.R.id.exo_repeat_toggle);
+        if (repeat == null)
+            return;
+        repeat.setOnClickListener(v -> {
+            Player player = bind.nowPlayingMediaControllerView.getPlayer();
+            if (player == null)
+                return;
+            int mode = player.getRepeatMode();
+            player.setRepeatMode(mode == Player.REPEAT_MODE_OFF ? Player.REPEAT_MODE_ALL
+                    : mode == Player.REPEAT_MODE_ALL ? Player.REPEAT_MODE_ONE
+                    : Player.REPEAT_MODE_OFF);
+        });
     }
 
     private void styleTimeBar() {
@@ -1037,6 +1068,26 @@ public class PlayerControllerFragment extends Fragment {
         skipSilenceToggleButton.setOnClickListener(view -> {
             Preferences.setSkipSilenceMode(!skipSilenceToggleButton.isChecked());
         });
+    }
+
+    private void openSongSheet(com.eddyizm.tempus.subsonic.models.Child song) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.TRACK_OBJECT, song);
+        bundle.putBoolean(SongBottomSheetDialog.ARG_FROM_PLAYER, true);
+        bundle.putBoolean(SongBottomSheetDialog.ARG_SHOW_SPEED, playbackSpeedButton.getVisibility() != View.VISIBLE);
+        bundle.putBoolean(SongBottomSheetDialog.ARG_SHOW_EQUALIZER, Preferences.getSelectedEqualizer() == 1);
+        bundle.putBoolean(SongBottomSheetDialog.ARG_SHOW_LAN, com.eddyizm.tempus.lan.LanDevicePicker.isOffered());
+        NavHostFragment.findNavController(this).navigate(R.id.songBottomSheetDialog, bundle);
+    }
+
+    private void onPlayerAction(String action) {
+        if (SongBottomSheetDialog.PLAYER_ACTION_SPEED.equals(action)) {
+            playbackSpeedButton.performClick();
+        } else if (SongBottomSheetDialog.PLAYER_ACTION_EQUALIZER.equals(action)) {
+            navigateToEqualizerFragment();
+        } else if (SongBottomSheetDialog.PLAYER_ACTION_LAN.equals(action)) {
+            com.eddyizm.tempus.lan.LanDevicePicker.toggle(requireActivity());
+        }
     }
 
     private void openAddToPlaylistDialog() {
