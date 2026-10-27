@@ -18,6 +18,7 @@
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
         android:importantForAccessibility="no"
+        android:padding="1dp"
         android:scaleType="fitCenter"
         app:tint="?attr/colorOnSurfaceVariant" />
 

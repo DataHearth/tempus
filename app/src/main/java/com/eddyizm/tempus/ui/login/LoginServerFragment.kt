@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.core.content.edit
@@ -24,6 +23,7 @@ import com.eddyizm.tempus.subsonic.utils.CacheUtil
 import com.eddyizm.tempus.ui.activity.MainActivity
 import com.eddyizm.tempus.util.CustomHeaders
 import com.eddyizm.tempus.viewmodel.ServerViewModel
+import com.google.android.material.chip.Chip
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 private const val ARG_SINGLE_PAGE_MODE = "single_page_mode"
@@ -86,11 +86,10 @@ class LoginServerFragment : Fragment() {
     fun setupServerDropdownSelector() {
         serverViewModel = ViewModelProvider(this)[ServerViewModel::class.java]
         initServerListSync()
-        initServerListSelector()
     }
 
     /**
-     * Keeps the dropdown list up-to-date with changes on the database
+     * Keeps the server chips up-to-date with changes on the database
      */
     fun initServerListSync() {
 
@@ -122,17 +121,9 @@ class LoginServerFragment : Fragment() {
                     customHeaders = server.customHeaders
                 )
             } ?: emptyList())
-            val adapter = ArrayAdapter(
-                requireContext(),
-                R.layout.item_login_server2,
-                serverList.map { it.serverName }.toTypedArray()
-            )
-            adapter.setDropDownViewResource(R.layout.item_login_server2)
-            binding.serversList.setAdapter(adapter)
-            // Don't start dropdown with blank item, use the first dummy item
+            if (selectedServerPosition >= serverList.size) selectedServerPosition = 0
+            renderServerChips()
             if (!isInitialSyncDone && serverList.isNotEmpty()) {
-                binding.serversList.setText(serverList[0].serverName, false)
-                binding.createOrUpdateButton.text = getString(R.string.la_server_button_create)
                 binding.deleteButton.visibility = View.GONE
                 binding.testButton.isEnabled = false
                 isInitialSyncDone = true
@@ -141,21 +132,31 @@ class LoginServerFragment : Fragment() {
     }
 
     /**
-     * React to server selection and trigger a custom action
+     * One chip per saved server, after a first chip for adding a new one.
      */
-    fun initServerListSelector() {
-        binding.serversList.setOnItemClickListener { _, _, position, _ ->
-            selectedServerPosition = position
-            if (position == 0) {
-                onFirstServerSelected()
-            } else {
-                onNonFirstServerSelected(position)
-            }
+    private fun renderServerChips() {
+        val group = binding.serverChips
+        group.removeAllViews()
+        serverList.forEachIndexed { position, server ->
+            val chip = layoutInflater.inflate(R.layout.item_server_editor_chip, group, false) as Chip
+            chip.id = View.generateViewId()
+            chip.text = if (position == 0) getString(R.string.la_server_chip_new) else server.serverName
+            chip.isChecked = position == selectedServerPosition
+            chip.setOnClickListener { onServerChipClicked(position) }
+            group.addView(chip)
+        }
+    }
+
+    private fun onServerChipClicked(position: Int) {
+        selectedServerPosition = position
+        if (position == 0) {
+            onFirstServerSelected()
+        } else {
+            onNonFirstServerSelected(position)
         }
     }
 
     private fun onFirstServerSelected() {
-        binding.createOrUpdateButton.text = getString(R.string.la_server_button_create)
         binding.deleteButton.visibility = View.GONE
         binding.testButton.isEnabled = false
         binding.serverNameField.setText("")
@@ -170,7 +171,6 @@ class LoginServerFragment : Fragment() {
     }
 
     private fun onNonFirstServerSelected(position: Int) {
-        binding.createOrUpdateButton.text = getString(R.string.la_server_button_update)
         binding.deleteButton.visibility = View.VISIBLE
         binding.testButton.isEnabled = true
         binding.serverNameField.setText(serverList[position].serverName)
@@ -218,8 +218,7 @@ class LoginServerFragment : Fragment() {
         } else {
             onNonFirstServerSelected(position)
         }
-        binding.serversList.setText(serverList[position].serverName, false)
-        binding.serversList.performCompletion()
+        (binding.serverChips.getChildAt(position) as? Chip)?.isChecked = true
     }
 
     @OptIn(UnstableApi::class)

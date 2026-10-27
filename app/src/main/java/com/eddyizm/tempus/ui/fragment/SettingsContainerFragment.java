@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -35,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -129,7 +131,6 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
     // in search results they would add noise, and the filter would match against them.
     private final Map<String, CharSequence> categorySummaries = new HashMap<>();
     private final Map<String, Drawable> categoryIcons = new HashMap<>();
-    private int categoryHeaderLayout;
 
     private OnBackPressedCallback closeCategoryCallback;
 
@@ -232,6 +233,8 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         if (view != null) {
             getListView().setPadding(0, 0, 0, (int) getResources().getDimension(R.dimen.global_padding_bottom));
         }
+        // The library divider spans the whole list, outside the cards; the cards draw their own.
+        setDivider(null);
 
         Context context = requireContext();
         cardColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceContainer, Color.TRANSPARENT);
@@ -258,6 +261,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
             public void onBindViewHolder(@NonNull PreferenceViewHolder holder, int position) {
                 super.onBindViewHolder(holder, position);
                 Preference preference = getItem(position);
+                if (preference instanceof SeekBarPreference) styleSeekBarRow(holder);
                 boolean card = isCardRow(preference);
                 boolean first = card && (position == 0
                         || !isCardRow(getItem(position - 1))
@@ -265,9 +269,26 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
                 boolean last = card && (position == getItemCount() - 1
                         || !isCardRow(getItem(position + 1))
                         || startsCardGroup(getItem(position + 1)));
-                styleCardRow(holder.itemView, card, first, last);
+                // Two cards in a row share one 8dp gap rather than stacking both margins.
+                boolean followsCard = first && position > 0 && isCardRow(getItem(position - 1));
+                styleCardRow(holder.itemView, card, first, last, followsCard);
             }
         };
+    }
+
+    // SeekBarPreference keeps the library layout, which holds the seekbar ids it binds to.
+    private static void styleSeekBarRow(PreferenceViewHolder holder) {
+        int[][] textViews = {
+                {android.R.id.title, R.style.TextAppearance_Settings_RowTitle},
+                {android.R.id.summary, R.style.TextAppearance_Settings_RowSummary},
+                {androidx.preference.R.id.seekbar_value, R.style.TextAppearance_Settings_RowSummary},
+        };
+        for (int[] entry : textViews) {
+            View view = holder.findViewById(entry[0]);
+            if (view instanceof TextView) {
+                TextViewCompat.setTextAppearance((TextView) view, entry[1]);
+            }
+        }
     }
 
     private boolean isIndexShowing() {
@@ -290,14 +311,15 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         return preference != null && isIndexShowing() && CARD_GROUP_STARTS.contains(preference.getKey());
     }
 
-    private void styleCardRow(View row, boolean card, boolean first, boolean last) {
+    private void styleCardRow(View row, boolean card, boolean first, boolean last, boolean followsCard) {
         float density = getResources().getDisplayMetrics().density;
         int side = card ? Math.round(16 * density) : 0;
         int gap = Math.round(8 * density);
 
         ViewGroup.LayoutParams params = row.getLayoutParams();
         if (params instanceof ViewGroup.MarginLayoutParams) {
-            ((ViewGroup.MarginLayoutParams) params).setMargins(side, first ? gap : 0, side, last ? gap : 0);
+            int top = first && !followsCard ? gap : 0;
+            ((ViewGroup.MarginLayoutParams) params).setMargins(side, top, side, last ? gap : 0);
             row.setLayoutParams(params);
         }
 
@@ -402,16 +424,13 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
 
         PreferenceScreen screen = getPreferenceScreen();
         if (screen != null) {
-            disableIconSpace(screen);
+            applyRowLayouts(screen);
             for (int i = 0; i < screen.getPreferenceCount(); i++) {
                 Preference pref = screen.getPreference(i);
                 if (pref instanceof ClickablePreferenceCategory) {
                     ClickablePreferenceCategory category = (ClickablePreferenceCategory) pref;
                     if (category.getKey() == null) {
                         category.setKey("category_key_" + i);
-                    }
-                    if (categoryHeaderLayout == 0) {
-                        categoryHeaderLayout = category.getLayoutResource();
                     }
                     categorySummaries.put(category.getKey(), category.getSummary());
                     categoryIcons.put(category.getKey(), category.getIcon());
@@ -446,12 +465,28 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private static void disableIconSpace(PreferenceGroup group) {
+    /**
+     * Root categories are left alone: applyPageState swaps their layout for each page.
+     */
+    private static void applyRowLayouts(PreferenceGroup group) {
         for (int i = 0; i < group.getPreferenceCount(); i++) {
             Preference pref = group.getPreference(i);
             pref.setIconSpaceReserved(false);
             if (pref instanceof PreferenceGroup) {
-                disableIconSpace((PreferenceGroup) pref);
+                if (!(pref instanceof ClickablePreferenceCategory)) {
+                    pref.setLayoutResource(R.layout.preference_settings_header);
+                }
+                applyRowLayouts((PreferenceGroup) pref);
+                continue;
+            }
+            if (pref instanceof SeekBarPreference) continue;
+            if (!pref.isSelectable() && TextUtils.isEmpty(pref.getTitle())) {
+                pref.setLayoutResource(R.layout.preference_settings_note);
+            } else {
+                pref.setLayoutResource(R.layout.preference_settings_row);
+            }
+            if (pref instanceof SwitchPreference) {
+                pref.setWidgetLayoutResource(R.layout.preference_settings_switch);
             }
         }
     }
@@ -488,7 +523,7 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
             category.setIcon(index ? categoryIcons.get(key) : null);
 
             if (searching) {
-                category.setLayoutResource(categoryHeaderLayout);
+                category.setLayoutResource(R.layout.preference_settings_header);
             } else if (index) {
                 category.setLayoutResource(R.layout.preference_settings_category);
                 for (int j = 0; j < category.getPreferenceCount(); j++) {

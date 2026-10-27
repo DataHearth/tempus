@@ -24,30 +24,29 @@
             android:paddingEnd="16dp"
             android:paddingBottom="24dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/serversListContainer"
-                style="@style/Widget.App.TextInputLayout.Filled.Dropdown"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:hint="@string/la_server_field_server">
+                android:clipToPadding="false"
+                android:scrollbars="none">
 
-                <AutoCompleteTextView
-                    android:id="@+id/serversList"
-                    android:layout_width="match_parent"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/server_chips"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:inputType="none" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:chipSpacingHorizontal="8dp"
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true" />
+            </HorizontalScrollView>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/server_name_field_container"
                 style="@style/Widget.App.TextInputLayout.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="20dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/server_name_field"
@@ -62,7 +61,7 @@
                 style="@style/Widget.App.TextInputLayout.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="20dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/server_user_field"
@@ -77,7 +76,7 @@
                 style="@style/Widget.App.TextInputLayout.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="20dp"
                 app:endIconMode="password_toggle"
                 app:endIconTint="?attr/colorOnSurfaceVariant">
 
@@ -107,14 +106,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                style="@style/LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
                 android:paddingBottom="8dp"
                 android:text="@string/la_server_advanced"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textFontWeight="600" />
+                android:textAppearance="@style/TextAppearance.Settings.GroupLabel" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -332,7 +329,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="@string/la_server_headers_help" />
+                                android:text="@string/la_server_field_server_headers" />
                         </LinearLayout>
 
                         <com.google.android.material.materialswitch.MaterialSwitch
@@ -366,6 +363,40 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginStart="-12dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="-12dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deleteButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/la_server_button_delete"
+                    android:textColor="?attr/colorError"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_delete"
+                    app:iconTint="?attr/colorError" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/goToLoginButton"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/la_server_button_login"
+                    android:textColor="?attr/colorOnSurface" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
@@ -382,64 +413,40 @@
             app:dividerColor="?attr/colorOutlineVariant" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="4dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="4dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/deleteButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/la_server_button_delete"
-                android:textColor="?attr/colorError"
-                android:visibility="gone"
-                app:icon="@drawable/ic_delete"
-                app:iconTint="?attr/colorError" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/goToLoginButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/la_server_button_login"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/buttoner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingStart="16dp"
-            android:paddingTop="4dp"
+            android:paddingTop="12dp"
             android:paddingEnd="16dp"
             android:paddingBottom="16dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/testButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="@string/la_server_button_test" />
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/la_server_button_test"
+                android:textAppearance="@style/TextAppearance.ServerEditor.Button"
+                app:icon="@drawable/ic_network_check"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="20dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/createOrUpdateButton"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="@string/la_server_button_create" />
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/la_server_button_save"
+                android:textAppearance="@style/TextAppearance.ServerEditor.Button" />
         </LinearLayout>
     </LinearLayout>
 

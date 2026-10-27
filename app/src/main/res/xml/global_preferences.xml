@@ -348,7 +348,7 @@
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="settings_data_category_key"
-        android:icon="@drawable/ic_settings_storage"
+        android:icon="@drawable/ic_settings_database"
         app:summary="@string/settings_data_category_summary"
         app:title="@string/settings_title_data">
         <ListPreference
@@ -461,7 +461,7 @@
 
     <com.eddyizm.tempus.util.ClickablePreferenceCategory
         android:key="settings_transcoding_category_key"
-        android:icon="@drawable/ic_transcode"
+        android:icon="@drawable/ic_settings_swap"
         app:summary="@string/settings_transcoding_category_summary"
         app:title="@string/settings_title_transcoding">
         <Preference

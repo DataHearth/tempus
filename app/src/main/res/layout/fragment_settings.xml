@@ -8,11 +8,9 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_toolbar"
+        style="@style/Widget.Settings.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurface"
-        app:layout_collapseMode="pin"
-        app:navigationIcon="@drawable/ic_arrow_back" />
+        app:layout_collapseMode="pin" />
 
     <FrameLayout
         android:id="@+id/settings_container"

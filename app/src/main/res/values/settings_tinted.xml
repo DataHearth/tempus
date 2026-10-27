@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.Settings.ScreenTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.Settings.RowTitle" parent="">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/settings_row_title</item>
+    </style>
+
+    <style name="TextAppearance.Settings.RowSummary" parent="">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/settings_row_summary</item>
+    </style>
+
+    <style name="TextAppearance.Settings.GroupLabel" parent="">
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="fontFamily">@font/inter_semi_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.Settings.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:layout_height">64dp</item>
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="titleMarginStart">0dp</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Settings.ScreenTitle</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.ServerEditor.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="fontFamily">@font/inter_semi_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="ShapeAppearance.ServerEditor.Chip" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+    <style name="Widget.ServerEditor.Chip" parent="Browse.TabChip">
+        <item name="chipMinHeight">36dp</item>
+        <item name="chipStartPadding">6dp</item>
+        <item name="chipEndPadding">6dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.ServerEditor.Chip</item>
+    </style>
+</resources>
