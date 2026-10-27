@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
@@ -55,31 +57,20 @@ class StatusBarBackdrop(
         return opaqueColorAt(pageRoot, pageRoot.width / 2f, 0f) ?: fallback
     }
 
-    /** Walks down the topmost visible views under (x, y) and returns the last opaque background met. */
-    private fun opaqueColorAt(root: View, rootX: Float, rootY: Float): Int? {
-        var found: Int? = null
-        var view: View? = root
-        var x = rootX
-        var y = rootY
-        while (view != null) {
-            backgroundColor(view.background)?.let { found = it }
-            if (view !is ViewGroup) break
-            var next: View? = null
+    /** Returns the opaque colour drawn at (x, y): the topmost child that paints there wins, else this view's own background. */
+    private fun opaqueColorAt(view: View, x: Float, y: Float): Int? {
+        if (view is ViewGroup) {
             for (i in view.childCount - 1 downTo 0) {
                 val child = view.getChildAt(i)
                 if (child.visibility != View.VISIBLE || child.alpha == 0f) continue
                 val cx = x + view.scrollX - child.left - child.translationX
                 val cy = y + view.scrollY - child.top - child.translationY
                 if (cx >= 0 && cy >= 0 && cx < child.width && cy < child.height) {
-                    next = child
-                    x = cx
-                    y = cy
-                    break
+                    opaqueColorAt(child, cx, cy)?.let { return it }
                 }
             }
-            view = next
         }
-        return found
+        return backgroundColor(view.background)
     }
 
     private fun backgroundColor(drawable: Drawable?): Int? {
@@ -87,6 +78,8 @@ class StatusBarBackdrop(
             is ColorDrawable -> drawable.color
             is MaterialShapeDrawable -> drawable.fillColor?.defaultColor
             is GradientDrawable -> drawable.colors?.firstOrNull() ?: drawable.color?.defaultColor
+            is RippleDrawable -> null
+            is LayerDrawable -> (0 until drawable.numberOfLayers).firstNotNullOfOrNull { backgroundColor(drawable.getDrawable(it)) }
             else -> null
         } ?: return null
         return if (Color.alpha(color) == 0xFF) color else null

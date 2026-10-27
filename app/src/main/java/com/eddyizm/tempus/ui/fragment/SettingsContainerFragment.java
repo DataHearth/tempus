@@ -924,7 +924,10 @@ public class SettingsContainerFragment extends PreferenceFragmentCompat {
     }
 
     private void actionTheme() {
-        findPreference("theme").setOnPreferenceClickListener( preference -> {
+        Preference theme = findPreference("theme");
+        int selected = java.util.Arrays.asList(getResources().getStringArray(R.array.theme_list_values)).indexOf(Preferences.getTheme());
+        if (selected >= 0) theme.setSummary(getResources().getStringArray(R.array.theme_list_titles)[selected]);
+        theme.setOnPreferenceClickListener( preference -> {
             Intent tempus = new Intent(requireActivity(), LoginActivity.class);
             tempus.putExtra("HIDE_TAB_LAYOUT", true);
             tempus.putExtra("HIDE_TOPAPPBAR_LAYOUT", false);
