@@ -483,10 +483,10 @@ Tempus shows four tabs on the car screen:
 
 | Tab | What it shows |
 |---|---|
-| Home | **Mixes** (Quick mix, My mix, Discovery mix) as tiles, then the 15 **Recently added** albums and your **Starred albums** |
-| Library | **Artists**, **Albums**, **Genres** and **Folders** with how many of each your server has, **Downloads**, and **Shuffle all songs** (100 random songs) |
+| Home | **Mixes** (Quick mix, My mix, Discovery mix) as tiles, then the 15 **Recently added** albums and your **Starred albums**. When the server takes more than 3 seconds to answer, or can't be reached, Home shows what it has, and the mixes are always there |
+| Library | **Artists**, **Albums**, **Genres** and **Folders** with how many of each your server has, **Downloads**, and **Shuffle all songs** (100 random songs). A count the server doesn't give within 3 seconds is left out, so the rows, Downloads included, show up even offline |
 | Playlists | Your playlists as covers, each with its number of songs and length |
-| Radio & podcasts | Your radio stations, then the 100 newest podcast episodes. An episode you have started shows how far you got |
+| Radio & podcasts | Your radio stations, then the 100 newest podcast episodes. Each episode shows whether you haven't played it, how far you got, or that you finished it |
 
 Downloads plays the 500 first downloaded tracks, or 100 random downloaded tracks if "shuffle downloaded tracks" is selected, and works without connectivity.
 
@@ -500,11 +500,13 @@ Downloads plays the 500 first downloaded tracks, or 100 random downloaded tracks
 
 ### Albums, artists and playlists
 
-Albums and Artists are sorted by name and grouped under letter ranges such as **A–F** and **G–M**, so the A-Z button lands on a range heading. Names starting with a digit or symbol come first, under **#**. Display of albums and artists is limited to 500.
+Albums and Artists are sorted by name and grouped under letter ranges such as **A–F** and **G–M**, so the A-Z button lands on a range heading. Names starting with a digit or symbol come first, under **#**. Display of artists is limited to 500.
+
+With more than 500 albums, **Albums** first lists the letter ranges, each with its number of albums, and a range opens on its albums, so every album can be reached. The album list is loaded from the server once and kept for 10 minutes.
 
 An album opens on **Shuffle album**, with its number of songs and length, followed by its tracks with their track number and duration. When an album has tracks on more than one disc, its track list is grouped under a heading for each disc, such as **Disc 1**, with the disc's title after the number when your server sends one.
 
-A playlist opens on **Shuffle playlist**, followed by its tracks with their artist and duration. A playlist plays its first 500 tracks, or 100 random tracks if "shuffle playlists" is selected.
+A playlist opens on **Shuffle playlist**, followed by its first 500 tracks in the playlist's order, with their artist and duration.
 
 A genre plays 500 songs of the chosen genre, or 100 random songs if "shuffle genre songs" is selected.
 
@@ -516,7 +518,7 @@ Search results are grouped into **Artists**, **Albums** shown as covers, and **S
 
 ### Now playing
 
-The two buttons next to the playback controls are, by default, **Favorite** and **Instant mix**; **Shuffle** and **Repeat** are in the overflow. The first two can be changed with **First custom command** and **Second custom command** under **Settings → Players**, which also set the buttons of the media notification.
+The two buttons next to the playback controls are, by default, **Favorite** and **Instant mix**; **Shuffle** and **Repeat** are in the overflow. The first two can be changed with **First custom command** and **Second custom command** under **Settings → Players**, which also set the buttons of the media notification. The buttons keep their places: while a favorite is being saved, its button shows a sync icon instead of disappearing. If your second button was still on the former default, Repeat, it moves to Instant mix once after the update.
 
 [Back to top](#table-of-contents)
 

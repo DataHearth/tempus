@@ -55,10 +55,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -74,9 +79,15 @@ public class AutomotiveRepository {
 
     private static final int MIN_LETTER_GROUP_SIZE = 6;
     private static final int TARGET_LETTER_GROUPS = 8;
+    private static final int ALBUM_PAGE_SIZE = 500;
+    private static final long ALBUM_LIST_TTL_MS = 10 * 60 * 1000L;
 
     public final InstantMixBuilder instantMixBuilder = new InstantMixBuilder(this);
     public final MadeForYouBuilder madeForYouBuilder = new MadeForYouBuilder(this);
+
+    private ListenableFuture<List<AlbumID3>> allAlbums;
+    private String allAlbumsLibrary;
+    private long allAlbumsRequestedAt;
 
     private Bundle createContentStyleExtras(boolean gridView) {
         Bundle extras = new Bundle();
@@ -233,13 +244,14 @@ public class AutomotiveRepository {
     }
 
     // Counts keyed by the Library row they label; a count the server can't give is left out.
+    // The album count comes from getAlbumCount, which can take longer.
     public ListenableFuture<Map<String, Integer>> getLibraryCounts() {
-        ListenableFuture<List<ArtistID3>> artists = fetch(
+        ListenableFuture<Integer> artists = fetch(
                 App.getSubsonicClientInstance(false).getBrowsingClient().getArtists(),
                 response -> response.getArtists().getIndices().stream()
                         .filter(index -> index.getArtists() != null)
-                        .flatMap(index -> index.getArtists().stream())
-                        .collect(Collectors.toList()));
+                        .mapToInt(index -> index.getArtists().size())
+                        .sum());
         ListenableFuture<Integer> genres = fetch(
                 App.getSubsonicClientInstance(false).getBrowsingClient().getGenres(),
                 response -> response.getGenres().getGenres().size());
@@ -252,17 +264,132 @@ public class AutomotiveRepository {
 
         return Futures.whenAllComplete(artists, genres, folders, songs).call(() -> {
             Map<String, Integer> counts = new HashMap<>();
-            List<ArtistID3> artistList = Futures.getDone(artists);
-            if (artistList != null) {
-                counts.put(ConstantsAA.ARTISTS_ID, artistList.size());
-                // Subsonic has no album count; an album shared by several album artists counts once for each
-                counts.put(ConstantsAA.ALBUMS_ID, artistList.stream().mapToInt(ArtistID3::getAlbumCount).sum());
-            }
+            if (Futures.getDone(artists) != null) counts.put(ConstantsAA.ARTISTS_ID, Futures.getDone(artists));
             if (Futures.getDone(genres) != null) counts.put(ConstantsAA.GENRES_ID, Futures.getDone(genres));
             if (Futures.getDone(folders) != null) counts.put(ConstantsAA.FOLDER_ID, Futures.getDone(folders));
             if (Futures.getDone(songs) != null) counts.put(ConstantsAA.RANDOM_ID, Futures.getDone(songs).intValue());
             return counts;
         }, MoreExecutors.directExecutor());
+    }
+
+    public ListenableFuture<Integer> getAlbumCount() {
+        return Futures.transform(getAllAlbums(), List::size, MoreExecutors.directExecutor());
+    }
+
+    // getAlbumList2 serves at most 500 albums a call, so the whole library takes several pages.
+    // The list is shared by the Albums rows and the album count, and kept for a while so opening
+    // a letter range doesn't page through the library again.
+    private synchronized ListenableFuture<List<AlbumID3>> getAllAlbums() {
+        String library = Preferences.getServerId() + "/" + Preferences.getActiveMusicFolderId();
+        boolean stale = allAlbums == null
+                || !library.equals(allAlbumsLibrary)
+                || System.currentTimeMillis() - allAlbumsRequestedAt > ALBUM_LIST_TTL_MS
+                || (allAlbums.isDone() && hasFailed(allAlbums));
+        if (stale) {
+            allAlbumsLibrary = library;
+            allAlbumsRequestedAt = System.currentTimeMillis();
+            allAlbums = fetchAlbumPages(0, new LinkedHashMap<>());
+        }
+        // A caller giving up on the list must not cancel it for the others
+        return Futures.nonCancellationPropagating(allAlbums);
+    }
+
+    private static boolean hasFailed(Future<?> future) {
+        try {
+            Futures.getDone(future);
+            return false;
+        } catch (ExecutionException | CancellationException e) {
+            return true;
+        }
+    }
+
+    private static ListenableFuture<List<AlbumID3>> fetchAlbumPages(int offset, Map<String, AlbumID3> collected) {
+        ListenableFuture<List<AlbumID3>> page = fetch(
+                App.getSubsonicClientInstance(false)
+                        .getAlbumSongListClient()
+                        .getAlbumList2("alphabeticalByName", ALBUM_PAGE_SIZE, offset, null, null),
+                response -> {
+                    List<AlbumID3> albums = response.getAlbumList2().getAlbums();
+                    return albums != null ? albums : Collections.<AlbumID3>emptyList();
+                });
+
+        return Futures.transformAsync(page, albums -> {
+            if (albums == null) {
+                return Futures.immediateFailedFuture(new IllegalStateException("Album list page at " + offset + " unavailable"));
+            }
+            int known = collected.size();
+            for (AlbumID3 album : albums) collected.putIfAbsent(album.getId(), album);
+            // A server that ignores the offset serves the same page again
+            if (albums.size() < ALBUM_PAGE_SIZE || collected.size() == known) {
+                return Futures.immediateFuture(new ArrayList<>(collected.values()));
+            }
+            return fetchAlbumPages(offset + albums.size(), collected);
+        }, MoreExecutors.directExecutor());
+    }
+
+    // The whole list when it fits, else one row per letter range, each opening its own slice:
+    // a car shows only so many rows of a list, which would leave the later letters out of reach.
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbumsByLetter(String albumPrefix, String rangePrefix) {
+        return Futures.transform(getAllAlbums(), albums -> {
+            if (albums.size() <= ConstantsAA.MAX_ITEMS) {
+                return LibraryResult.ofItemList(ImmutableList.copyOf(groupByLetterRange(albumItems(albums, albumPrefix))), null);
+            }
+
+            List<String> names = albums.stream().map(AlbumID3::getName).collect(Collectors.toList());
+            List<MediaItem> ranges = new ArrayList<>();
+            letterRanges(names).forEach((range, count) -> ranges.add(createAlbumRange(range, count, rangePrefix + range)));
+            return LibraryResult.ofItemList(ImmutableList.copyOf(ranges), null);
+        }, MoreExecutors.directExecutor());
+    }
+
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbumRange(String albumPrefix, String range) {
+        return Futures.transform(getAllAlbums(), albums -> {
+            List<AlbumID3> inRange = albums.stream()
+                    .filter(album -> inLetterRange(album.getName(), range))
+                    .collect(Collectors.toList());
+            return LibraryResult.ofItemList(ImmutableList.copyOf(groupByLetterRange(albumItems(inRange, albumPrefix))), null);
+        }, MoreExecutors.directExecutor());
+    }
+
+    // The titles letterRangeTitles gives, in order, with how many names fall in each
+    static Map<String, Integer> letterRanges(List<String> names) {
+        List<String> sorted = new ArrayList<>(names);
+        sorted.sort(Comparator.comparing(AutomotiveRepository::letterKey));
+        Map<String, Integer> ranges = new LinkedHashMap<>();
+        for (String title : letterRangeTitles(sorted)) ranges.merge(title, 1, Integer::sum);
+        return ranges;
+    }
+
+    static boolean inLetterRange(String name, String range) {
+        String[] bounds = range.split("–");
+        String key = letterKey(name);
+        return key.compareTo(bounds[0]) >= 0 && key.compareTo(bounds[bounds.length - 1]) <= 0;
+    }
+
+    private List<MediaItem> albumItems(List<AlbumID3> albums, String prefix) {
+        List<MediaItem> mediaItems = new ArrayList<>();
+        for (AlbumID3 album : albums) {
+            mediaItems.add(createAlbum(album.getName(), album.getArtist(), album.getGenre(), prefix + album.getId(), false, album.getCoverArtId()));
+        }
+        return mediaItems;
+    }
+
+    private MediaItem createAlbumRange(String range, int albumCount, String id) {
+        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+                .setTitle(range)
+                .setIsBrowsable(true)
+                .setIsPlayable(false)
+                .setMediaType(MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS)
+                .setArtworkUri(Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_aa_albums))
+                .setExtras(createContentStyleExtras(true))
+                .build();
+
+        MediaItem item = new MediaItem.Builder()
+                .setMediaId(id)
+                .setMediaMetadata(mediaMetadata)
+                .build();
+        String subtitle = App.getContext().getResources().getQuantityString(R.plurals.aa_album_count, albumCount, albumCount);
+        return withSingleItemStyle(withSubtitle(item, subtitle), false);
     }
 
     private MediaItem createArtist(String artistName, String id, String artistCoverArtId){
@@ -318,7 +445,7 @@ public class AutomotiveRepository {
         }
     }
 
-    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbums(String prefix, String type, int size, boolean groupByLetter) {
+    public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getAlbums(String prefix, String type, int size) {
         final SettableFuture<LibraryResult<ImmutableList<MediaItem>>> listenableFuture = SettableFuture.create();
         if (size > ConstantsAA.MAX_ITEMS) size = ConstantsAA.MAX_ITEMS;
         final int maxSize = size;
@@ -344,10 +471,6 @@ public class AutomotiveRepository {
                                         album.getCoverArtId()
                                 );
                                 mediaItems.add(mediaItem);
-                            }
-
-                            if (groupByLetter) {
-                                mediaItems = groupByLetterRange(mediaItems);
                             }
 
                             LibraryResult<ImmutableList<MediaItem>> libraryResult = LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), null);
@@ -789,6 +912,7 @@ public class AutomotiveRepository {
 
                             Map<String, Long> resumePositions = new HashMap<>();
                             Preferences.getContinueListening().forEach(point -> resumePositions.put(point.getId(), point.getPosition()));
+                            Set<String> playedEpisodes = Preferences.getPlayedPodcastEpisodes();
 
                             List<MediaItem> mediaItems = new ArrayList<>();
 
@@ -814,14 +938,14 @@ public class AutomotiveRepository {
                                         episode.getAlbum() != null ? episode.getAlbum() : episode.getArtist(),
                                         durationSeconds > 0 ? MusicUtil.getReadablePodcastDurationString(durationSeconds) : null));
 
-                                // Only a started episode has a known state: a finished one leaves no resume point behind
                                 Long position = resumePositions.get(episode.getId());
-                                if (position != null && durationSeconds > 0) {
-                                    Bundle completion = new Bundle();
-                                    completion.putInt(MediaConstants.EXTRAS_KEY_COMPLETION_STATUS, MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_PARTIALLY_PLAYED);
+                                int status = completionStatus(position, playedEpisodes.contains(episode.getId()));
+                                Bundle completion = new Bundle();
+                                completion.putInt(MediaConstants.EXTRAS_KEY_COMPLETION_STATUS, status);
+                                if (status == MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_PARTIALLY_PLAYED && durationSeconds > 0) {
                                     completion.putDouble(MediaConstants.EXTRAS_KEY_COMPLETION_PERCENTAGE, Math.min(1.0, position / (durationSeconds * 1000.0)));
-                                    mediaItem = withExtras(mediaItem, completion);
                                 }
+                                mediaItem = withExtras(mediaItem, completion);
 
                                 mediaItems.add(mediaItem);
                             }
@@ -843,6 +967,13 @@ public class AutomotiveRepository {
                 });
 
         return listenableFuture;
+    }
+
+    // A replayed episode has a resume point again, which outranks having been finished before
+    static int completionStatus(Long resumePositionMs, boolean played) {
+        if (resumePositionMs != null && resumePositionMs > 0) return MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_PARTIALLY_PLAYED;
+        if (played) return MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_FULLY_PLAYED;
+        return MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_NOT_PLAYED;
     }
 
     public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> getInternetRadioStations() {
@@ -1166,14 +1297,7 @@ public class AutomotiveRepository {
                         if (response.isSuccessful() && subsonicResponse != null && subsonicResponse.getPlaylist() != null && subsonicResponse.getPlaylist().getEntries() != null) {
                             PlaylistWithSongs playlist = subsonicResponse.getPlaylist();
                             List<Child> tracks = playlist.getEntries();
-
-                            if( !Preferences.isAndroidAutoShufflePlaylistsEnabled() ) {
-                                tracks = tracks.subList(0, Math.min(ConstantsAA.MAX_ITEMS, tracks.size()));
-                            }
-                            else {
-                                Collections.shuffle(tracks);
-                                tracks = tracks.subList(0, Math.min(ConstantsAA.MAX_SHUFFLE_ITEMS, tracks.size()));
-                            }
+                            tracks = tracks.subList(0, Math.min(ConstantsAA.MAX_ITEMS, tracks.size()));
 
                             setChildrenMetadata(tracks);
 

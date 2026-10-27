@@ -565,11 +565,6 @@
             android:key="androidauto_shuffle_genre_songs" />
 
         <SwitchPreference
-            android:title="@string/settings_androidauto_shuffle_playlists"
-            android:defaultValue="false"
-            android:key="androidauto_shuffle_playlists" />
-
-        <SwitchPreference
             android:title="@string/settings_androidauto_shuffle_downloaded_tracks"
             android:defaultValue="false"
             android:key="androidauto_shuffle_downloaded_tracks" />

@@ -25,7 +25,7 @@ import androidx.media3.session.SessionError
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-private const val LIBRARY_COUNTS_TIMEOUT_SECONDS = 3L
+private const val SERVER_TIMEOUT_SECONDS = 3L
 
 private typealias ChildrenFuture = ListenableFuture<LibraryResult<ImmutableList<MediaItem>>>
 
@@ -231,34 +231,42 @@ object MediaBrowserTree {
             LibraryResult.ofItemList(items, null)
         }, MoreExecutors.directExecutor())
 
+    // Offline, a server request can hang until the connection times out; a tab must not wait
+    // that long to show the rows that don't need the server.
+    private fun <T> withServerTimeout(future: ListenableFuture<T>): ListenableFuture<T> =
+        Futures.withTimeout(future, SERVER_TIMEOUT_SECONDS, TimeUnit.SECONDS, timeoutScheduler)
+
     private fun getHome(): ChildrenFuture = sections(
         appContext.getString(R.string.aa_mixes) to
                 Futures.immediateFuture(LibraryResult.ofItemList(mixIds.map { treeNodes[it]!!.item }, null)),
-        appContext.getString(R.string.aa_recently_added) to automotiveRepository.getAlbums(
+        appContext.getString(R.string.aa_recently_added) to withServerTimeout(automotiveRepository.getAlbums(
             ConstantsAA.ALBUM_ID,
             "newest",
-            ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS,
-            false),
-        appContext.getString(R.string.aa_starred_albums) to automotiveRepository.getStarredAlbums(ConstantsAA.ALBUM_ID)
+            ConstantsAA.NUMBER_OF_DISPLAYED_ALBUMS)),
+        appContext.getString(R.string.aa_starred_albums) to
+                withServerTimeout(automotiveRepository.getStarredAlbums(ConstantsAA.ALBUM_ID))
     )
 
     private fun getLibrary(): ChildrenFuture {
-        // The counts only label the rows: offline, the Downloads row must not wait for the
-        // server requests to time out.
+        // The counts only label the rows, so the rows go out without the ones that are late
         val counts = Futures.catching(
-            Futures.withTimeout(
-                automotiveRepository.libraryCounts,
-                LIBRARY_COUNTS_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS,
-                timeoutScheduler),
+            withServerTimeout(automotiveRepository.libraryCounts),
             Exception::class.java,
             { emptyMap() },
             MoreExecutors.directExecutor())
+        val albumCount = Futures.catching(
+            withServerTimeout(automotiveRepository.albumCount),
+            Exception::class.java,
+            { null },
+            MoreExecutors.directExecutor())
 
-        return Futures.transform(counts, { counts ->
+        return Futures.whenAllSucceed(counts, albumCount).call({
+            val allCounts = Futures.getDone(counts).toMutableMap()
+            Futures.getDone(albumCount)?.let { allCounts[ConstantsAA.ALBUMS_ID] = it }
+
             fun row(nodeId: String, countKey: String, pluralRes: Int): MediaItem {
                 val item = treeNodes[nodeId]!!.item
-                val count = counts[countKey] ?: return item
+                val count = allCounts[countKey] ?: return item
                 return AutomotiveRepository.withSubtitle(item, appContext.resources.getQuantityString(pluralRes, count, count))
             }
 
@@ -274,7 +282,7 @@ object MediaBrowserTree {
     }
 
     private fun getRadioAndPodcasts(): ChildrenFuture {
-        val stations = Futures.transform(automotiveRepository.internetRadioStations, { result ->
+        val stations = Futures.transform(withServerTimeout(automotiveRepository.internetRadioStations), { result ->
             val withHosts = result.value?.map { station ->
                 station.localConfiguration?.uri?.host?.let { AutomotiveRepository.withSubtitle(station, it) } ?: station
             } ?: return@transform result
@@ -284,7 +292,7 @@ object MediaBrowserTree {
         return sections(
             appContext.getString(R.string.aa_radio_stations) to stations,
             appContext.getString(R.string.aa_new_episodes) to
-                    automotiveRepository.getNewestPodcastEpisodes(ConstantsAA.NUMBER_OF_DISPLAYED_PODCASTS)
+                    withServerTimeout(automotiveRepository.getNewestPodcastEpisodes(ConstantsAA.NUMBER_OF_DISPLAYED_PODCASTS))
         )
     }
 
@@ -299,11 +307,7 @@ object MediaBrowserTree {
             ConstantsAA.PLAYLIST_ID -> automotiveRepository.getPlaylists(ConstantsAA.PLAYLIST_ID)
             ConstantsAA.RADIO_PODCAST_ID -> getRadioAndPodcasts()
 
-            ConstantsAA.ALBUMS_ID -> automotiveRepository.getAlbums(
-                ConstantsAA.ALBUM_ID,
-                "alphabeticalByName",
-                ConstantsAA.MAX_ITEMS,
-                true)
+            ConstantsAA.ALBUMS_ID -> automotiveRepository.getAlbumsByLetter(ConstantsAA.ALBUM_ID, ConstantsAA.ALBUM_RANGE_ID)
             ConstantsAA.ARTISTS_ID -> automotiveRepository.getArtists(ConstantsAA.ARTIST_ID)
             ConstantsAA.FOLDER_ID -> automotiveRepository.getMusicFolders(ConstantsAA.FOLDER_ID)
             ConstantsAA.DOWNLOADED_ID -> automotiveRepository.getDownloadedSongs()
@@ -320,6 +324,10 @@ object MediaBrowserTree {
 
                 if (id.startsWith(ConstantsAA.PLAYLIST_ID)) {
                     return automotiveRepository.getPlaylistSongs(id.removePrefix(ConstantsAA.PLAYLIST_ID))
+                }
+
+                if (id.startsWith(ConstantsAA.ALBUM_RANGE_ID)) {
+                    return automotiveRepository.getAlbumRange(ConstantsAA.ALBUM_ID, id.removePrefix(ConstantsAA.ALBUM_RANGE_ID))
                 }
 
                 if (id.startsWith(ConstantsAA.ALBUM_ID)) {

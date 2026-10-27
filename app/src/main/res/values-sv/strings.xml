@@ -3,10 +3,10 @@
     <string name="aa_albums">Album</string>
     <string name="aa_artists">Artister</string>
     <string name="aa_home">Hem</string>
-    <string name="aa_music_folder">Mapp</string>
+    <string name="aa_music_folder">Mappar</string>
     <string name="aa_playlists">Spellistor</string>
     <string name="aa_genres">Genrer</string>
-    <string name="aa_starred_albums">★ Album</string>
+    <string name="aa_starred_albums">Stjärnmärkta album</string>
     <string name="aa_instant_mix">Direktmix</string>
     <string name="aa_quick_mix">Snabbmix</string>
     <string name="aa_my_mix">Min mix</string>
@@ -477,10 +477,8 @@
     <string name="settings_playlist_sort">Sortering av spellistor</string>
     <string name="settings_androidauto">Android Auto</string>
     <string name="settings_androidauto_shuffle_genre_songs">Blanda låtar inom genren</string>
-    <string name="settings_androidauto_shuffle_playlists">Blanda spellistor</string>
     <string name="settings_androidauto_shuffle_downloaded_tracks">Blanda hämtade låtar</string>
     <string name="settings_androidauto_shuffle_genre_songs_summary">Spela slumpmässiga låtar när du väljer en genre</string>
-    <string name="settings_androidauto_artists_view">Visa artister efter album</string>
     <string name="settings_androidauto_starred_for_made_for_you">Stjärnmärkt innehåll i mixen Skapat för dig</string>
     <string name="settings_audio_quality">Visa ljudkvalitet</string>
     <string name="settings_audio_quality_summary">Bithastighet och ljudformat visas för varje låt.</string>

@@ -5,7 +5,7 @@
     <string name="aa_music_folder">Carpetas</string>
     <string name="aa_playlists">Listas de reproducción</string>
     <string name="aa_genres">Géneros</string>
-    <string name="aa_starred_albums">★ Álbumes</string>
+    <string name="aa_starred_albums">Álbumes favoritos</string>
     <string name="aa_instant_mix">Mix instantáneo</string>
     <string name="aa_quick_mix">Mix rápido</string>
     <string name="aa_my_mix">Mi mix</string>
@@ -417,9 +417,7 @@
     <string name="settings_playlist_sort">Orden de las listas de reproducción</string>
     <string name="settings_androidauto">Android Auto</string>
     <string name="settings_androidauto_shuffle_genre_songs">Reproducción aleatoria en géneros</string>
-    <string name="settings_androidauto_shuffle_playlists">Listas de reprodución en aleatorio</string>
     <string name="settings_androidauto_shuffle_genre_songs_summary">Reproduce canciones aleatorias cuando seleccionas un género</string>
-    <string name="settings_androidauto_artists_view">Los artistas se muestran por álbum</string>
     <string name="settings_androidauto_starred_for_made_for_you">Mix de tus canciones favoritas hecho para ti</string>
     <string name="settings_audio_quality">Mostrar calidad de audio</string>
     <string name="settings_audio_quality_summary">La tasa de bits y el formato de audio se mostrará en cada canción que reproduzcas</string>

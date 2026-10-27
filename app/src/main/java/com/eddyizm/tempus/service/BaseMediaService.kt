@@ -608,6 +608,11 @@ open class BaseMediaService : MediaLibraryService(), MediaManager.QueueTarget {
                     MediaManager.saveChronology(player.currentMediaItem)
                     // Last track played to completion - drop it from Continue listening.
                     MediaManager.deleteResumePoint(player.currentMediaItem)
+                } else if (!player.hasNextMediaItem() &&
+                    playbackState == Player.STATE_ENDED &&
+                    player.mediaMetadata.extras?.getString("type") == Constants.MEDIA_TYPE_PODCAST
+                ) {
+                    MediaManager.deleteResumePoint(player.currentMediaItem)
                 }
                 updateWidget(player)
             }

@@ -605,10 +605,10 @@
     <string name="aa_albums">Álbumes</string>
     <string name="aa_artists">Artistas</string>
     <string name="aa_home">Inicio</string>
-    <string name="aa_music_folder">Carpeta</string>
+    <string name="aa_music_folder">Carpetas</string>
     <string name="aa_playlists">Listas de reproducción</string>
     <string name="aa_genres">Géneros</string>
-    <string name="aa_starred_albums">★ Álbumes</string>
+    <string name="aa_starred_albums">Álbumes favoritos</string>
     <string name="playlist_chooser_dialog_toast_remove_success">Canción eliminada de la lista</string>
     <string name="settings_androidauto">Android Auto</string>
     <string name="settings_enable_drawer_on_landscape">Habilitar el menú lateral en modo vertical [Experimental]</string>
@@ -628,7 +628,6 @@
     <string name="settings_androidauto_shuffle_genre_songs">Mezclar canciones del género</string>
     <string name="settings_androidauto_shuffle_downloaded_tracks">Descargas en aleatorio</string>
     <string name="settings_androidauto_shuffle_genre_songs_summary">Reproducir canciones aleatorias al seleccionar un género</string>
-    <string name="settings_androidauto_artists_view">Los artistas se muestran por álbum</string>
     <string name="settings_title_misc">Varios</string>
     <string name="settings_title_loudness">Ajuste de sonoridad</string>
     <string name="settings_loudness_preamp_title">Preamplificación</string>
@@ -693,7 +692,6 @@
     <string name="settings_precache_tracks">Precargar las siguientes canciones [Experimental]</string>
     <string name="settings_precache_tracks_summary">Cargar completamente las siguientes canciones de la cola en segundo plano, para que los saltos de canciones se produzcan instantáneamente y la reproducción no se interrumpa ante caídas breves de señal</string>
     <string name="settings_precache_wifi_only">Precargar solo en Wi-Fi</string>
-    <string name="settings_androidauto_shuffle_playlists">Listas de reprodución en aleatorio</string>
     <string name="settings_track_number">Mostrar número de pista</string>
     <string name="settings_track_number_summary">Si está activado, mostrará el número de pista de la canción que estás escuchando.</string>
     <string name="settings_album_year">Mostrar el año del álbum</string>

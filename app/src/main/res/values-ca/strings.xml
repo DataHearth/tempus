@@ -3,10 +3,10 @@
     <string name="aa_albums">Àlbums</string>
     <string name="aa_artists">Artistes</string>
     <string name="aa_home">Inici</string>
-    <string name="aa_music_folder">Carpeta</string>
+    <string name="aa_music_folder">Carpetes</string>
     <string name="aa_playlists">Llistes de reproducció</string>
     <string name="aa_genres">Gèneres</string>
-    <string name="aa_starred_albums">Àlbums amb ★</string>
+    <string name="aa_starred_albums">Àlbums amb estrelles</string>
     <string name="aa_instant_mix">Mescla instantània</string>
     <string name="aa_quick_mix">Mescla ràpida</string>
     <string name="aa_my_mix">La meva mescla</string>
@@ -417,9 +417,7 @@
     <string name="settings_playlist_sort">Ordre de les llistes de reproducció</string>
 	<string name="settings_androidauto">Android Auto</string>
     <string name="settings_androidauto_shuffle_genre_songs">Reprodueix aleatòriament les cançons del gènere</string>
-    <string name="settings_androidauto_shuffle_playlists">Reprodueix aleatòriament les llistes de reproducció</string>
     <string name="settings_androidauto_shuffle_genre_songs_summary">Reprodueix cançons aleatòries en seleccionar un gènere</string>
-    <string name="settings_androidauto_artists_view">Els artistes es mostren per àlbum</string>
     <string name="settings_androidauto_starred_for_made_for_you">Estrelles per a la mescla personal</string>
     <string name="settings_audio_quality">Mostra la qualitat de l\'àudio</string>
     <string name="settings_audio_quality_summary">Es mostraran la taxa de bits i el format d\'àudio per a cada pista d\'àudio.</string>

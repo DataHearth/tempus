@@ -1,6 +1,7 @@
 package com.eddyizm.tempus.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AutomotiveRepositoryTest {
@@ -200,6 +202,65 @@ public class AutomotiveRepositoryTest {
                 .collect(Collectors.toList());
 
         assertEquals(Arrays.asList("10cc", "alpha", "Édith", "zed"), titles);
+    }
+
+    @Test
+    public void everyNameFallsInExactlyOneLetterRange() {
+        List<String> names = new ArrayList<>(Arrays.asList("10cc", "Édith", "zed"));
+        for (char letter = 'A'; letter <= 'Z'; letter++) names.addAll(repeat(String.valueOf(letter), 30));
+
+        Map<String, Integer> ranges = AutomotiveRepository.letterRanges(names);
+
+        assertEquals(names.size(), ranges.values().stream().mapToInt(Integer::intValue).sum());
+        for (String name : names) {
+            long matching = ranges.keySet().stream().filter(range -> AutomotiveRepository.inLetterRange(name, range)).count();
+            assertEquals(name, 1, matching);
+        }
+        for (Map.Entry<String, Integer> range : ranges.entrySet()) {
+            long inRange = names.stream().filter(name -> AutomotiveRepository.inLetterRange(name, range.getKey())).count();
+            assertEquals(range.getKey(), (long) range.getValue(), inRange);
+        }
+    }
+
+    @Test
+    public void letterRangesFollowTheAlphabet() {
+        List<String> names = new ArrayList<>();
+        for (char letter = 'Z'; letter >= 'A'; letter--) names.addAll(repeat(String.valueOf(letter), 30));
+        names.addAll(repeat("1", 30));
+
+        List<String> ranges = new ArrayList<>(AutomotiveRepository.letterRanges(names).keySet());
+
+        assertTrue(ranges.get(0).startsWith("#"));
+        assertTrue(ranges.get(ranges.size() - 1).endsWith("Z"));
+        assertTrue(ranges.size() <= 8);
+    }
+
+    @Test
+    public void singleLetterRangeHoldsOnlyThatLetter() {
+        assertTrue(AutomotiveRepository.inLetterRange("Mogwai", "M"));
+        assertFalse(AutomotiveRepository.inLetterRange("Nirvana", "M"));
+        assertTrue(AutomotiveRepository.inLetterRange("10cc", "#–C"));
+        assertTrue(AutomotiveRepository.inLetterRange("Édith", "D–F"));
+    }
+
+    @Test
+    public void episodeWithAResumePointIsPartiallyPlayedEvenIfFinishedBefore() {
+        assertEquals(MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_PARTIALLY_PLAYED,
+                AutomotiveRepository.completionStatus(60_000L, true));
+    }
+
+    @Test
+    public void finishedEpisodeIsFullyPlayed() {
+        assertEquals(MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_FULLY_PLAYED,
+                AutomotiveRepository.completionStatus(null, true));
+    }
+
+    @Test
+    public void untouchedEpisodeIsNotPlayed() {
+        assertEquals(MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_NOT_PLAYED,
+                AutomotiveRepository.completionStatus(null, false));
+        assertEquals(MediaConstants.EXTRAS_VALUE_COMPLETION_STATUS_NOT_PLAYED,
+                AutomotiveRepository.completionStatus(0L, false));
     }
 
     private static MediaItem titled(String title) {

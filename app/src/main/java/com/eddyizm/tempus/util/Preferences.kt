@@ -113,6 +113,9 @@ object Preferences {
     private const val MINI_SHUFFLE_BUTTON_VISIBILITY = "mini_shuffle_button_visibility"
     private const val CUSTOM_COMMAND_FIRST_BUTTON = "custom_command_first_button"
     private const val CUSTOM_COMMAND_SECOND_BUTTON = "custom_command_second_button"
+    private const val CUSTOM_COMMAND_SECOND_BUTTON_MIGRATED = "custom_command_second_button_migrated"
+    private const val DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON = "[instantMixID]"
+    private const val OLD_DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON = "[repeatID]"
     private const val ALBUM_DETAIL = "album_detail"
     private const val ALBUM_SORT_ORDER = "album_sort_order"
     private const val DEFAULT_ALBUM_SORT_ORDER = Constants.ALBUM_ORDER_BY_NAME
@@ -125,7 +128,6 @@ object Preferences {
     private const val AA_SHUFFLE_GENRE_SONGS = "androidauto_shuffle_genre_songs"
     private const val AA_STARRED_FOR_MADE_FOR_YOU ="androidauto_starred_for_made_for_you"
     private const val DARK_THEME_STYLE = "dark_theme_style"
-    private const val AA_SHUFFLE_PLAYLISTS = "androidauto_shuffle_playlists"
     private const val AA_SHUFFLE_DOWNLOADED_TRACKS = "androidauto_shuffle_downloaded_tracks"
     private const val ACTIVE_MUSIC_FOLDER_ID = "active_music_folder_id"
 
@@ -143,6 +145,9 @@ object Preferences {
     // and every write re-serializes, so without a cap it grew to thousands of entries / multiple
     // MB of JSON churn per operation (see capResumePoints).
     private const val MAX_RESUME_POINTS = 200
+
+    private const val PLAYED_PODCAST_EPISODES = "played_podcast_episodes"
+    private const val MAX_PLAYED_PODCAST_EPISODES = 200
 
     data class ResumePoint(
         val id: String,
@@ -220,6 +225,30 @@ object Preferences {
         App.getInstance().preferences.edit()
             .putString(RESUME_POINTS, Gson().toJson(capResumePoints(pts, MAX_RESUME_POINTS)))
             .apply()
+    }
+
+    /** Podcast episodes played to the end, which leave no resume point behind. */
+    @JvmStatic
+    fun getPlayedPodcastEpisodes(): Set<String> = readPlayedPodcastEpisodes().toSet()
+
+    @JvmStatic
+    fun markPodcastEpisodePlayed(id: String) {
+        val ids = readPlayedPodcastEpisodes()
+        ids.remove(id)
+        ids.add(id)
+        App.getInstance().preferences.edit {
+            putString(PLAYED_PODCAST_EPISODES, Gson().toJson(ids.takeLast(MAX_PLAYED_PODCAST_EPISODES)))
+        }
+    }
+
+    private fun readPlayedPodcastEpisodes(): MutableList<String> {
+        val raw = App.getInstance().preferences.getString(PLAYED_PODCAST_EPISODES, null)
+        return try {
+            if (raw.isNullOrBlank()) mutableListOf()
+            else Gson().fromJson(raw, object : TypeToken<MutableList<String>>() {}.type) ?: mutableListOf()
+        } catch (_: Exception) {
+            mutableListOf()
+        }
     }
 
 	@JvmStatic
@@ -736,7 +765,22 @@ object Preferences {
 
     @JvmStatic
     fun getCustomCommandSecondButton(): String? {
-        return App.getInstance().preferences.getString(CUSTOM_COMMAND_SECOND_BUTTON, "[instantMixID]")
+        return App.getInstance().preferences.getString(CUSTOM_COMMAND_SECOND_BUTTON, DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON)
+    }
+
+    // The settings screen writes a list preference's default into storage, so a stored Repeat is
+    // usually the old default rather than a choice. Runs once: a Repeat picked afterwards stays.
+    @JvmStatic
+    fun migrateCustomCommandSecondButton() {
+        val preferences = App.getInstance().preferences
+        if (preferences.getBoolean(CUSTOM_COMMAND_SECOND_BUTTON_MIGRATED, false)) return
+        preferences.edit {
+            if (preferences.getString(CUSTOM_COMMAND_SECOND_BUTTON, null) == OLD_DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON
+                && getCustomCommandFirstButton() != DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON) {
+                putString(CUSTOM_COMMAND_SECOND_BUTTON, DEFAULT_CUSTOM_COMMAND_SECOND_BUTTON)
+            }
+            putBoolean(CUSTOM_COMMAND_SECOND_BUTTON_MIGRATED, true)
+        }
     }
 
     @JvmStatic
@@ -1144,11 +1188,6 @@ object Preferences {
     @JvmStatic
     fun isAndroidAutoShuffleGenreSongsEnabled(): Boolean {
         return App.getInstance().preferences.getBoolean(AA_SHUFFLE_GENRE_SONGS, false)
-    }
-
-    @JvmStatic
-    fun isAndroidAutoShufflePlaylistsEnabled(): Boolean {
-        return App.getInstance().preferences.getBoolean(AA_SHUFFLE_PLAYLISTS, false)
     }
 
     @JvmStatic

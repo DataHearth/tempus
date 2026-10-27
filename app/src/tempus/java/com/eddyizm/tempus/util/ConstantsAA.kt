@@ -28,6 +28,8 @@ object ConstantsAA {
     const val INDEX_ID = "[indexID]"
     const val DIRECTORY_ID = "[directoryID]"
     const val ALBUM_ID = "[albumID]"
+    // Followed by a letter range title such as "A–F"
+    const val ALBUM_RANGE_ID = "[albumRangeID]"
     const val ARTIST_ID = "[artistID]"
     const val QUICKMIX_ID = "[quickmixID]"
     const val MYMIX_ID = "[mymixID]"

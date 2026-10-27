@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Rating
+import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
@@ -22,6 +23,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -210,6 +212,55 @@ class BaseSessionCallbackTest {
             }
         }
     }
+    @Test
+    fun customLayout_keepsEveryButtonInPlaceWhileTheHeartIsPending() {
+        val context = mock<Context>()
+        val service = mock<BaseMediaService>()
+        val player = mock<Player>()
+        val app = mock<App>()
+        val preferences = mock<SharedPreferences>()
+
+        whenever(context.getString(anyInt())).thenReturn("mock_string")
+        whenever(preferences.getString(any(), any())).thenAnswer {
+            when (it.getArgument<String>(0)) {
+                "custom_command_first_button" -> "[heartID]"
+                "custom_command_second_button" -> "[instantMixID]"
+                else -> it.getArgument<String>(1)
+            }
+        }
+        whenever(app.preferences).thenReturn(preferences)
+        whenever(player.mediaMetadata).thenReturn(MediaMetadata.EMPTY)
+        whenever(player.repeatMode).thenReturn(Player.REPEAT_MODE_OFF)
+
+        mockStatic(App::class.java).use { appStatic ->
+            appStatic.`when`<App> { App.getInstance() }.thenReturn(app)
+
+            mockConstruction(SessionCommand::class.java).use {
+                val callback = object : BaseSessionCallback(context, service) {
+                    fun layout(pending: Boolean) = buildCustomLayout(player, pending)
+                }
+
+                for (pending in listOf(false, true)) {
+                    val layout = callback.layout(pending)
+
+                    assertEquals(4, layout.size)
+                    assertEquals(
+                        if (pending) R.drawable.ic_bookmark_sync else R.drawable.ic_favorites_outlined,
+                        layout[0].iconResId)
+                    assertEquals(R.drawable.ic_instantmix_on, layout[1].iconResId)
+                    assertEquals(CommandButton.ICON_SHUFFLE_OFF, layout[2].icon)
+                    assertEquals(CommandButton.ICON_REPEAT_OFF, layout[3].icon)
+                    assertEquals(CommandButton.SLOT_BACK_SECONDARY, layout[0].slots[0])
+                    assertEquals(CommandButton.SLOT_FORWARD_SECONDARY, layout[1].slots[0])
+                    assertEquals(CommandButton.SLOT_OVERFLOW, layout[2].slots[0])
+                    assertEquals(CommandButton.SLOT_OVERFLOW, layout[3].slots[0])
+                    // Android Auto only shows buttons that can also go to the overflow
+                    layout.forEach { assertTrue(it.slots.contains(CommandButton.SLOT_OVERFLOW)) }
+                }
+            }
+        }
+    }
+
     @Test
     fun heartTap_sendsUnstarWhenTheRegistrySaysStarredAndTheItemRatingIsStale() {
         val context = mock<Context>()

@@ -643,6 +643,10 @@ public class MediaManager {
      */
     public static void deleteResumePoint(MediaItem mediaItem) {
         if (mediaItem != null) {
+            String type = mediaItem.mediaMetadata.extras != null ? mediaItem.mediaMetadata.extras.getString("type") : null;
+            if (Constants.MEDIA_TYPE_PODCAST.equals(type)) {
+                Preferences.markPodcastEpisodePlayed(mediaItem.mediaId);
+            }
             getQueueRepository().deleteServerBookmark(mediaItem.mediaId);
         }
     }
