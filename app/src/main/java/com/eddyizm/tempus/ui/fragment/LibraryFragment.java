@@ -166,7 +166,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
         Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
 
-        AppBarLayout appBarLayout = bind.getRoot().findViewById(R.id.appbar);
+        AppBarLayout appBarLayout = bind.getRoot().findViewById(R.id.toolbar_fragment);
         View anchors = getLayoutInflater().inflate(R.layout.view_library_anchor_chips, appBarLayout, false);
         appBarLayout.addView(anchors);
 
