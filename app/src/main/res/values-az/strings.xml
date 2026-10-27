@@ -522,8 +522,6 @@
 
     <string name="settings_radio">Radionu göstər</string>
     <string name="settings_radio_summary">Aktiv olduqda radio bölməsini göstərir. Dəyişikliyin tam qüvvəyə minməsi üçün tətbiqi yenidən başladın.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Şaquli görünüşdə alt naviqasiya panelini gizlət [Sınaq mərhələsində]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Alt naviqasiya panelini gizlədərək şaquli sahəni artırır. Dəyişikliklər yenidən başladıqdan sonra qüvvəyə minəcək.</string>
     <string name="settings_auto_download_lyrics">Mahnı sözlərini avtomatik yüklə</string>
     <string name="settings_auto_download_lyrics_summary">Mahnı sözləri mövcud olduqda onları avtomatik saxlayır ki, oflayn rejimdə də göstərilə bilsin.</string>
     <string name="settings_replay_gain">ReplayGain rejimini təyin et</string>

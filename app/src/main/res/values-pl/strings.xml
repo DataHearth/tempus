@@ -583,8 +583,6 @@
     <string name="settings_custom_command_second_button">Druga niestandardowa komenda</string>
     <string name="settings_radio">Pokaż radio</string>
     <string name="settings_radio_summary">Jeżeli włączone, widoczna będzie sekcja radia. Zrestartuj aplikację aby, zmiany przyniosły pełny efekt.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Ukryj dolny pasek nawigacji w trybie pionowym [Eksperymentalne]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Eksperymentalne. Zwiększa ilość miejsca w pionie przez usunięcie dolnego paska nawigacji. Zmiany przyniosą efekt po restarcie.</string>
     <string name="settings_auto_download_lyrics">Automatyczne pobieranie tesktów</string>
     <string name="settings_auto_download_lyrics_summary">Automatycznie zapisuj teksty jeżeli, są dostępne aby, mogły być wyświetlane offline.</string>
     <string name="settings_replay_gain">Normalizacja głośności (ReplayGain)</string>

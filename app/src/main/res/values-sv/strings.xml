@@ -533,8 +533,6 @@
     <string name="settings_custom_command_second_button">Andra anpassade kommandot</string>
     <string name="settings_radio">Visa radio</string>
     <string name="settings_radio_summary">Visa radiosektionen. Starta om appen för att ändringen ska få full effekt.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Dölj nedre navigeringsfältet i stående läge [Experimentellt]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Frigör höjd genom att dölja det nedre navigeringsfältet. Ändringen börjar gälla efter omstart.</string>
     <string name="settings_auto_download_lyrics">Hämta låttexter automatiskt</string>
     <string name="settings_auto_download_lyrics_summary">Spara tillgängliga låttexter automatiskt så att de kan visas offline.</string>
     <string name="settings_replay_gain">Ange ReplayGain-läge</string>

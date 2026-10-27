@@ -489,8 +489,6 @@
 
     <string name="settings_radio">Irratia erakutsi</string>
     <string name="settings_radio_summary">Gaituta badago, irrati atala erakusten da. Berrabiarazi aplikazioa erabat eragina izan dezan.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Beheko nabigazio-barra ezkutatu bertikalean [Esperimentala]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Espazio bertikala handitzen du beheko nabigazio-barra kenduz. Aldaketek berrabiaraztean izango dute eragina.</string>
     <string name="settings_auto_download_lyrics">Letrak automatikoki deskargatu</string>
     <string name="settings_auto_download_lyrics_summary">Erabilgarri dauden letrak automatikoki gorde, lineaz kanpo erakutsi ahal izateko.</string>
     <string name="settings_replay_gain">Erreprodukzio-irabaziaren modua ezarri</string>

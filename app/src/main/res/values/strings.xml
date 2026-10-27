@@ -598,8 +598,6 @@
 
     <string name="settings_radio">Show radio</string>
     <string name="settings_radio_summary">If enabled, show the radio section.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Hide bottom navbar on portrait [Experimental]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Increases vertical space by removing the bottom navbar.</string>
     <string name="settings_auto_download_lyrics">Auto download lyrics</string>
     <string name="settings_auto_download_lyrics_summary">Automatically save lyrics when they are available so they can be shown while offline.</string>
     <string name="settings_replay_gain">Set replay gain mode</string>
@@ -645,7 +643,7 @@
     <string name="settings_title_general">General</string>
     <string name="settings_general_category_summary">Server, library scan, permissions</string>
     <string name="settings_ui_category_summary">Theme, language, covers, layout</string>
-    <string name="settings_ui_restart_note">Rounded corners, the bottom navbar, song ratings and the podcast and radio sections change fully after the app restarts.</string>
+    <string name="settings_ui_restart_note">Rounded corners, song ratings and the podcast and radio sections change fully after the app restarts.</string>
     <string name="settings_sound_category_summary">Equalizer, ReplayGain, loudness</string>
     <string name="settings_players_category_summary">Continuous play, queue, player buttons</string>
     <string name="settings_playlist_category_summary">Duplicates, sort order</string>

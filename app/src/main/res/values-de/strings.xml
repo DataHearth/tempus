@@ -535,8 +535,6 @@
     <string name="settings_custom_command_second_button">Zweiter eigener Befehl</string>
     <string name="settings_radio">Radio zeigen</string>
     <string name="settings_radio_summary">Radio auf Startseite anzeigen (Neustart der App nötig)</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Navigationsleiste im Hochformat ausblenden [Experimentell]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Entfernt die Navigationsleiste am unteren Rand für mehr Platz (Neustart der App nötig)</string>
     <string name="settings_auto_download_lyrics">Liedtexte automatisch laden</string>
     <string name="settings_auto_download_lyrics_summary">Verfügbare Liedtexte automatisch herunterladen, um sie offline verfügbar zu machen</string>
     <string name="settings_replay_gain">Replay Gain Modus</string>

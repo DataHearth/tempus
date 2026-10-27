@@ -515,8 +515,6 @@
 
     <string name="settings_radio">Voir les radios</string>
     <string name="settings_radio_summary">Si activé, rend visible la section Radio.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Cacher la barre de navigation en mode portrait [Expérimental]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Augmente l\'espace vertical en enlevant la barre de navigation du bas.</string>
 	<string name="settings_auto_download_lyrics">Téléchargement automatique des paroles</string>
     <string name="settings_auto_download_lyrics_summary">Ce paramètre active la sauvegarde automatique des paroles pour affichage hors-ligne, si elles sont disponibles.</string>
     <string name="settings_replay_gain">Ajuster le Replay Gain</string>
@@ -575,7 +573,7 @@
     <string name="settings_title_ui">UI</string>
     <string name="settings_general_category_summary">Serveur, analyse de la bibliothèque, autorisations</string>
     <string name="settings_ui_category_summary">Thème, langue, pochettes, disposition</string>
-    <string name="settings_ui_restart_note">Les coins arrondis, la barre de navigation du bas, les notes des pistes et les sections podcast et radio ne changent complètement qu\'après le redémarrage de l\'application.</string>
+    <string name="settings_ui_restart_note">Les coins arrondis, les notes des pistes et les sections podcast et radio ne changent complètement qu\'après le redémarrage de l\'application.</string>
     <string name="settings_sound_category_summary">Égaliseur, ReplayGain, niveau sonore</string>
     <string name="settings_players_category_summary">Lecture continue, file d\'attente, boutons du lecteur</string>
     <string name="settings_playlist_category_summary">Doublons, ordre de tri</string>

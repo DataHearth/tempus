@@ -559,8 +559,6 @@
     <string name="settings_custom_command_second_button">2番目のカスタムコマンド</string>
     <string name="settings_radio">ラジオを表示</string>
     <string name="settings_radio_summary">有効にすると、ラジオのセクションが表示されます。完全に反映するにはアプリを再起動してください。</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">縦画面で下部ナビバーを非表示 [実験的機能]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">下部ナビバーを削除して縦方向のスペースを広げます。変更は再起動後に反映されます。</string>
     <string name="settings_auto_download_lyrics">歌詞を自動ダウンロード</string>
     <string name="settings_auto_download_lyrics_summary">歌詞が利用可能な場合に自動的に保存し、オフラインでも表示できるようにします。</string>
     <string name="settings_replay_gain">リプレイゲインモードを設定</string>

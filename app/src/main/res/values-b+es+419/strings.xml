@@ -473,8 +473,6 @@
 
     <string name="settings_radio">Mostrar radio</string>
     <string name="settings_radio_summary">Si está activado, mostrará la sección de radio. Reinicia la app para que tenga efecto.</string>
-    <string name="settings_hide_bottom_navbar_on_portrait">Ocultar botones de navegación en vertical [Experimental]</string>
-    <string name="settings_hide_bottom_navbar_on_portrait_summary">Te permite tener más espacio en modo vertical removiendo los botones de navegación. Reinicia la app para que tenga efecto</string>
     <string name="settings_auto_download_lyrics">Descargar letra automaticamente</string>
     <string name="settings_auto_download_lyrics_summary">Guardará automaticamente las letras de las canciones cuando estén disponibles para mostrarlas cuando estés sin conexión.</string>
     <string name="settings_replay_gain">Ganancia de reproducción</string>
