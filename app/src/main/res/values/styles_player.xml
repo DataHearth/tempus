@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Widget.Tempus.PlayerAction" parent="Widget.Material3.Button.TonalButton.Icon">
         <item name="android:layout_height">40dp</item>
         <item name="android:minHeight">40dp</item>
@@ -8,7 +8,7 @@
         <item name="android:paddingStart">12dp</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:textSize">13sp</item>
-        <item name="android:textFontWeight">600</item>
+        <item name="android:textFontWeight" tools:targetApi="28">600</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="backgroundTint">@color/player_control_container</item>
         <item name="cornerRadius">20dp</item>
