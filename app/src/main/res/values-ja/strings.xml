@@ -241,6 +241,7 @@
     <string name="library_title_genre">ジャンル</string>
     <string name="library_title_genre_see_all_button">すべて表示</string>
     <string name="library_title_music_folder">ミュージックフォルダー</string>
+    <string name="library_anchor_folders">フォルダー</string>
     <string name="library_title_playlist">プレイリスト</string>
     <string name="library_title_playlist_see_all_button">すべて表示</string>
     <string name="login_empty">サーバーが追加されていません</string>
@@ -446,8 +447,13 @@
     <string name="search_title_album">アルバム</string>
     <string name="search_title_artist">アーティスト</string>
     <string name="search_title_song">曲</string>
-    <string name="search_title_empty_response">結果がありません。</string>
-    <string name="search_description_empty_response">サーバーの応答を確認しましたが、空でした。</string>
+    <string name="search_top_result">トップの検索結果</string>
+    <string name="search_recent_title">最近の検索</string>
+    <string name="search_result_artist">アーティスト</string>
+    <string name="search_result_album">アルバム · %1$s</string>
+    <string name="search_result_song">曲 · %1$s</string>
+    <string name="search_no_results_title">「%1$s」の検索結果はありません</string>
+    <string name="search_no_results_hint">スペルを確認するか、キーワードを減らしてお試しください。</string>
     <string name="server_unreachable_dialog_negative_button">キャンセル</string>
     <string name="server_unreachable_dialog_neutral_button">ログイン画面へ</string>
     <string name="server_unreachable_dialog_positive_button">このまま続行</string>

@@ -21,7 +21,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_folder"
+            android:src="@drawable/ic_folder_outline"
             app:tint="?attr/colorOnSecondaryContainer" />
     </FrameLayout>
 
@@ -41,5 +41,5 @@
         android:layout_height="22dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_navigate_next"
-        app:tint="?attr/colorOnSurfaceVariant" />
+        app:tint="@color/browse_text_tertiary" />
 </LinearLayout>

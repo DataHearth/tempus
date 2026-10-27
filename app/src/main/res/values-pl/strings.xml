@@ -253,6 +253,7 @@
     <string name="library_title_genre">Gatunki</string>
     <string name="library_title_genre_see_all_button">Zobacz wszystkie</string>
     <string name="library_title_music_folder">Foldery z muzyką</string>
+    <string name="library_anchor_folders">Foldery</string>
     <string name="library_title_playlist">Playlisty</string>
     <string name="library_title_playlist_see_all_button">Zobacz wszystkie</string>
     <string name="login_empty">Brak dodanych serwerów</string>
@@ -470,8 +471,13 @@
     <string name="search_title_album">Albumy</string>
     <string name="search_title_artist">Wykonawcy</string>
     <string name="search_title_song">Piosenki</string>
-    <string name="search_title_empty_response">Brak wyników.</string>
-    <string name="search_description_empty_response">Sprawdziliśmy odpowiedź twojego serwera, ale była pusta.</string>
+    <string name="search_top_result">Najlepszy wynik</string>
+    <string name="search_recent_title">Ostatnie wyszukiwania</string>
+    <string name="search_result_artist">Wykonawca</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Piosenka · %1$s</string>
+    <string name="search_no_results_title">Brak wyników dla „%1$s”</string>
+    <string name="search_no_results_hint">Sprawdź pisownię lub spróbuj użyć mniejszej liczby słów.</string>
     <string name="server_unreachable_dialog_negative_button">Anuluj</string>
     <string name="server_unreachable_dialog_neutral_button">Przejdź do logowania</string>
     <string name="server_unreachable_dialog_positive_button">Kontynuuj mimo wszystko</string>

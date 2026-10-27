@@ -228,6 +228,7 @@
     <string name="library_title_genre">Genres</string>
     <string name="library_title_genre_see_all_button">Voir tout</string>
     <string name="library_title_music_folder">Dossiers de musiques</string>
+    <string name="library_anchor_folders">Dossiers</string>
     <string name="library_title_playlist">Playlists</string>
     <string name="library_title_playlist_see_all_button">Voir tout</string>
     <string name="login_empty">Aucun serveur ajouté</string>
@@ -404,6 +405,13 @@
     <string name="search_title_album">Albums</string>
     <string name="search_title_artist">Artistes</string>
     <string name="search_title_song">Pistes</string>
+    <string name="search_top_result">Meilleur résultat</string>
+    <string name="search_recent_title">Recherches récentes</string>
+    <string name="search_result_artist">Artiste</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Piste · %1$s</string>
+    <string name="search_no_results_title">Aucun résultat pour « %1$s »</string>
+    <string name="search_no_results_hint">Vérifiez l\'orthographe ou essayez avec moins de mots.</string>
     <string name="server_unreachable_dialog_negative_button">Annuler</string>
     <string name="server_unreachable_dialog_neutral_button">Aller à la connexion</string>
     <string name="server_unreachable_dialog_positive_button">Continuer quand même</string>
@@ -875,6 +883,4 @@
     <string name="la_server_local_url_help">Utilisée lorsque vous êtes sur le même réseau</string>
     <string name="la_server_cert_help">S\'authentifier avec un fichier de certificat</string>
     <string name="error_custom_headers_invalid">En-tête non valide à la ligne %1$s. Utilisez Nom: Valeur</string>
-    <string name="search_title_empty_response">Aucun résultat.</string>
-    <string name="search_description_empty_response">Nous avons vérifié la réponse de votre serveur, mais elle était vide.</string>
 </resources>

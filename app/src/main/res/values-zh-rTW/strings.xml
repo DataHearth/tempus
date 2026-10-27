@@ -213,6 +213,7 @@
     <string name="library_title_genre">流派</string>
     <string name="library_title_genre_see_all_button">查看全部</string>
     <string name="library_title_music_folder">音樂資料夾</string>
+    <string name="library_anchor_folders">資料夾</string>
     <string name="library_title_playlist">播放清單</string>
     <string name="library_title_playlist_see_all_button">查看全部</string>
     <string name="login_empty">尚未新增伺服器</string>
@@ -324,6 +325,13 @@
     <string name="search_title_album">專輯</string>
     <string name="search_title_artist">藝術家</string>
     <string name="search_title_song">歌曲</string>
+    <string name="search_top_result">最佳結果</string>
+    <string name="search_recent_title">最近搜尋</string>
+    <string name="search_result_artist">藝術家</string>
+    <string name="search_result_album">專輯 · %1$s</string>
+    <string name="search_result_song">歌曲 · %1$s</string>
+    <string name="search_no_results_title">找不到「%1$s」的結果</string>
+    <string name="search_no_results_hint">請檢查拼字或嘗試減少關鍵字。</string>
     <string name="server_unreachable_dialog_negative_button">取消</string>
     <string name="server_unreachable_dialog_neutral_button">前往登入</string>
     <string name="server_unreachable_dialog_positive_button">仍然繼續</string>
@@ -538,6 +546,4 @@
     <string name="widget_time_elapsed_placeholder">0:00</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">開啟此選項會將播放清單設為公開。保持原樣不會改變播放清單的可見性。</string>
     <string name="playlist_editor_dialog_action_save_empty">播放清單必須至少保留一首曲目</string>
-    <string name="search_title_empty_response">沒有結果。</string>
-    <string name="search_description_empty_response">我們檢查了您的伺服器回應，但它是空的。</string>
 </resources>

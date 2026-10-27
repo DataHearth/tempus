@@ -20,6 +20,7 @@ import com.eddyizm.tempus.subsonic.models.Child;
 import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.MusicUtil;
 import com.eddyizm.tempus.util.Util;
+import com.google.android.material.color.MaterialColors;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
 
     private final java.util.Map<String, String> playlistCoverCache = new java.util.HashMap<>();
 
+    private String nowPlayingId;
+    private Integer nowPlayingAccent;
+
     public DownloadHorizontalAdapter(ClickCallback click) {
         this.click = click;
         this.view = Constants.DOWNLOAD_TYPE_TRACK;
@@ -60,6 +64,9 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.item.downloadedItemNowPlaying.setVisibility(View.GONE);
+        holder.item.downloadedItemTitleTextView.setTextColor(MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorOnSurface));
+
         switch (view) {
             case Constants.DOWNLOAD_TYPE_TRACK:
                 initTrackLayout(holder, position);
@@ -85,6 +92,16 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
     @Override
     public int getItemCount() {
         return grouped.size();
+    }
+
+    /**
+     * Marks the song being played; {@code accent} comes from its cover, and null keeps the plain text colour.
+     */
+    public void setNowPlaying(String songId, Integer accent) {
+        if (Objects.equals(nowPlayingId, songId) && Objects.equals(nowPlayingAccent, accent)) return;
+        nowPlayingId = songId;
+        nowPlayingAccent = accent;
+        notifyDataSetChanged();
     }
 
     public void setItems(String view, String filterKey, String filterValue, List<Child> songs) {
@@ -285,6 +302,11 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
         holder.item.itemCoverImageView.setVisibility(View.VISIBLE);
         holder.item.downloadedItemMoreButton.setVisibility(View.VISIBLE);
 
+        if (nowPlayingId != null && nowPlayingId.equals(song.getId())) {
+            holder.item.downloadedItemNowPlaying.setVisibility(View.VISIBLE);
+            if (nowPlayingAccent != null) holder.item.downloadedItemTitleTextView.setTextColor(nowPlayingAccent);
+        }
+
         boolean startsAlbum = position == 0 || grouped.get(position - 1) == null || !sameAlbum(grouped.get(position - 1), song);
         bindGroupHeader(holder, position, startsAlbum);
 
@@ -315,7 +337,9 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
         holder.item.divider.setVisibility(visible ? View.VISIBLE : View.GONE);
         if (!visible) return;
 
-        int top = position == 0 ? 0 : holder.itemView.getResources().getDimensionPixelSize(R.dimen.downloaded_item_padding);
+        // The header insets itself as much above as below; the list's top padding is the first group's gap.
+        int top = holder.item.divider.getPaddingBottom();
+        if (position > 0) top += holder.itemView.getResources().getDimensionPixelSize(R.dimen.downloaded_item_padding);
         holder.item.divider.setPadding(holder.item.divider.getPaddingStart(), top, holder.item.divider.getPaddingEnd(), holder.item.divider.getPaddingBottom());
     }
 
@@ -467,9 +491,6 @@ public class DownloadHorizontalAdapter extends RecyclerView.Adapter<DownloadHori
             super(item.getRoot());
 
             this.item = item;
-
-            item.downloadedItemTitleTextView.setSelected(true);
-            item.downloadedItemSubtitleTextView.setSelected(true);
 
             item.downloadedItemRow.setOnClickListener(v -> onClick());
             item.downloadedItemRow.setOnLongClickListener(v -> onLongClick());

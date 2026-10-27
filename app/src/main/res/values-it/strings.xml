@@ -178,6 +178,7 @@
     <string name="library_title_genre">Generi</string>
     <string name="library_title_genre_see_all_button">Vedi tutto</string>
     <string name="library_title_music_folder">Cartelle della musica</string>
+    <string name="library_anchor_folders">Cartelle</string>
     <string name="library_title_playlist">Playlist</string>
     <string name="library_title_playlist_see_all_button">Vedi tutto</string>
     <string name="login_empty">Nessun server aggiunto</string>
@@ -285,6 +286,13 @@
     <string name="search_title_album">Album</string>
     <string name="search_title_artist">Artisti</string>
     <string name="search_title_song">Brani</string>
+    <string name="search_top_result">Risultato migliore</string>
+    <string name="search_recent_title">Ricerche recenti</string>
+    <string name="search_result_artist">Artista</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Brano · %1$s</string>
+    <string name="search_no_results_title">Nessun risultato per «%1$s»</string>
+    <string name="search_no_results_hint">Controlla l\'ortografia o prova con meno parole.</string>
     <string name="server_unreachable_dialog_negative_button">Annulla</string>
     <string name="server_unreachable_dialog_neutral_button">Vai al login</string>
     <string name="server_unreachable_dialog_positive_button">Continua comunque</string>
@@ -556,6 +564,4 @@
     <string name="la_perms_access_local_network_description">Necessario per accedere ad altri dispositivi sulla stessa LAN del dispositivo attuale.</string>
     <string name="la_perms_nearby_devices_title">Dispositivi nelle vicinanze</string>
     <string name="la_perms_nearby_devices_description">Necessaria per trovare altri dispositivi tramite UPnP e Chromecast.</string>
-    <string name="search_title_empty_response">Nessun risultato.</string>
-    <string name="search_description_empty_response">Abbiamo controllato la risposta del server ma era vuota.</string>
 </resources>

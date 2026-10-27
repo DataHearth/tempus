@@ -487,8 +487,8 @@
     <string name="search_result_artist">Artist</string>
     <string name="search_result_album">Album · %1$s</string>
     <string name="search_result_song">Song · %1$s</string>
-    <string name="search_title_empty_response">No results.</string>
-    <string name="search_description_empty_response">We checked your server response but it was empty.</string>
+    <string name="search_no_results_title">No results for “%1$s”</string>
+    <string name="search_no_results_hint">Check the spelling or try fewer words.</string>
     <string name="server_unreachable_dialog_negative_button">Cancel</string>
     <string name="server_unreachable_dialog_neutral_button">Go to login</string>
     <string name="server_unreachable_dialog_positive_button">Continue anyway</string>

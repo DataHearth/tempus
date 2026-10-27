@@ -245,6 +245,7 @@
     <string name="library_title_genre">Janrlar</string>
     <string name="library_title_genre_see_all_button">Hamısına bax</string>
     <string name="library_title_music_folder">Musiqi qovluqları</string>
+    <string name="library_anchor_folders">Qovluqlar</string>
     <string name="library_title_playlist">Pleylistlər</string>
     <string name="library_title_playlist_see_all_button">Hamısına bax</string>
     <string name="login_empty">Server əlavə edilməyib</string>
@@ -409,8 +410,13 @@
     <string name="search_title_album">Albomlar</string>
     <string name="search_title_artist">İfaçılar</string>
     <string name="search_title_song">Mahnılar</string>
-    <string name="search_title_empty_response">Nəticə yoxdur.</string>
-    <string name="search_description_empty_response">Serverin cavabı yoxlanıldı, lakin boş idi.</string>
+    <string name="search_top_result">Ən uyğun nəticə</string>
+    <string name="search_recent_title">Son axtarışlar</string>
+    <string name="search_result_artist">İfaçı</string>
+    <string name="search_result_album">Albom · %1$s</string>
+    <string name="search_result_song">Mahnı · %1$s</string>
+    <string name="search_no_results_title">“%1$s” üçün nəticə yoxdur</string>
+    <string name="search_no_results_hint">Yazılışı yoxlayın və ya daha az sözlə axtarın.</string>
     <string name="server_unreachable_dialog_negative_button">Ləğv et</string>
     <string name="server_unreachable_dialog_neutral_button">Girişə keç</string>
     <string name="server_unreachable_dialog_positive_button">Yenə də davam et</string>

@@ -187,6 +187,7 @@
     <string name="library_title_genre">Géneros</string>
     <string name="library_title_genre_see_all_button">Ver todo</string>
     <string name="library_title_music_folder">Carpetas de música</string>
+    <string name="library_anchor_folders">Carpetas</string>
     <string name="library_title_playlist">Listas de reproducción</string>
     <string name="library_title_playlist_see_all_button">Ver todo</string>
     <string name="login_empty">No has añadido ningún servidor</string>
@@ -319,6 +320,13 @@
     <string name="settings_system_equalizer_title">Ecualizador del sistema</string>
     <string name="search_title_artist">Artistas</string>
     <string name="search_title_song">Pistas</string>
+    <string name="search_top_result">Mejor resultado</string>
+    <string name="search_recent_title">Búsquedas recientes</string>
+    <string name="search_result_artist">Artista</string>
+    <string name="search_result_album">Álbum · %1$s</string>
+    <string name="search_result_song">Pista · %1$s</string>
+    <string name="search_no_results_title">Sin resultados para «%1$s»</string>
+    <string name="search_no_results_hint">Revisa la ortografía o prueba con menos palabras.</string>
     <string name="server_unreachable_dialog_negative_button">Cancelar</string>
     <string name="server_unreachable_dialog_neutral_button">Ir al inicio de sesión</string>
     <string name="server_unreachable_dialog_positive_button">Continuar de todas formas</string>
@@ -849,8 +857,6 @@
     <string name="la_perms_access_local_network_description">Necesario para acceder a otros dispositivos en la misma LAN que tu dispositivo actual.</string>
     <string name="la_perms_nearby_devices_title">Dispositivos cercanos</string>
     <string name="la_perms_nearby_devices_description">Necesario para descubrir otros dispositivos mediante UPnP y Chromecast.</string>
-    <string name="search_title_empty_response">Sin resultados.</string>
-    <string name="search_description_empty_response">Hemos comprobado la respuesta de su servidor pero estaba vacía.</string>
     <string name="la_button_advanced_editor">Abrir editor de servidores</string>
     <string name="lan_title">Dispositivo remoto</string>
     <string name="lan_choose_device">Elige un dispositivo remoto</string>

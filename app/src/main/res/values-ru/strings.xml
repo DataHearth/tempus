@@ -256,6 +256,7 @@
     <string name="library_title_genre">Жанры</string>
     <string name="library_title_genre_see_all_button">Все</string>
     <string name="library_title_music_folder">Папки</string>
+    <string name="library_anchor_folders">Папки</string>
     <string name="library_title_playlist">Плейлисты</string>
     <string name="library_title_playlist_see_all_button">Все</string>
     <string name="login_empty">Серверы не добавлены</string>
@@ -434,8 +435,13 @@
     <string name="search_title_album">Альбомы</string>
     <string name="search_title_artist">Исполнители</string>
     <string name="search_title_song">Треки</string>
-    <string name="search_title_empty_response">Нет результатов.</string>
-    <string name="search_description_empty_response">Сервер вернул пустой ответ.</string>
+    <string name="search_top_result">Лучший результат</string>
+    <string name="search_recent_title">Недавние запросы</string>
+    <string name="search_result_artist">Исполнитель</string>
+    <string name="search_result_album">Альбом · %1$s</string>
+    <string name="search_result_song">Трек · %1$s</string>
+    <string name="search_no_results_title">Ничего не найдено по запросу «%1$s»</string>
+    <string name="search_no_results_hint">Проверьте написание или попробуйте меньше слов.</string>
     <string name="server_unreachable_dialog_negative_button">Отмена</string>
     <string name="server_unreachable_dialog_neutral_button">Ко входу</string>
     <string name="server_unreachable_dialog_positive_button">Всё равно продолжить</string>

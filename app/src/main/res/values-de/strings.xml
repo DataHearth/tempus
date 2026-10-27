@@ -247,6 +247,7 @@
     <string name="library_title_genre">Genres</string>
     <string name="library_title_genre_see_all_button">Alle zeigen</string>
     <string name="library_title_music_folder">Musikordner</string>
+    <string name="library_anchor_folders">Ordner</string>
     <string name="library_title_playlist">Wiedergabelisten</string>
     <string name="library_title_playlist_see_all_button">Alle zeigen</string>
     <string name="login_empty">Kein Server hinzugefügt</string>
@@ -422,6 +423,13 @@
     <string name="search_title_album">Alben</string>
     <string name="search_title_artist">Interpreten</string>
     <string name="search_title_song">Titel</string>
+    <string name="search_top_result">Top-Ergebnis</string>
+    <string name="search_recent_title">Letzte Suchanfragen</string>
+    <string name="search_result_artist">Interpret</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Titel · %1$s</string>
+    <string name="search_no_results_title">Keine Ergebnisse für „%1$s“</string>
+    <string name="search_no_results_hint">Prüfe die Schreibweise oder versuche es mit weniger Wörtern.</string>
     <string name="server_unreachable_dialog_negative_button">Abbrechen</string>
     <string name="server_unreachable_dialog_neutral_button">Zur Anmeldung</string>
     <string name="server_unreachable_dialog_positive_button">Trotzdem fortfahren</string>
@@ -766,8 +774,6 @@
     </string-array>
     <string name="playlist_chooser_dialog_visibility_summary_v2">Wenn diese Option aktiviert ist, wird die Wiedergabeliste öffentlich. Wenn sie in Ruhe gelassen wird, ändert sich die Sichtbarkeit der Wiedergabeliste nicht.</string>
     <string name="playlist_editor_dialog_action_save_empty">Eine Wiedergabeliste muss mindestens einen Titel enthalten</string>
-    <string name="search_title_empty_response">Keine Ergebnisse.</string>
-    <string name="search_description_empty_response">Wir haben Ihre Serverantwort überprüft, aber sie war leer.</string>
 
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">Tempus ist abgestürzt.</string>
     <string name="playlist_error_not_found_title">Wiedergabeliste nicht gefunden</string>

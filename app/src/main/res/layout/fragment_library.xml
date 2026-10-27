@@ -23,10 +23,16 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!--
+            Holds focus itself so a carousel that receives focus when its data arrives cannot make
+            the scroll view jump to it, which left a section's header hidden under the anchor chips.
+        -->
         <LinearLayout
             android:id="@+id/library_linear_layout_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
             android:orientation="vertical"
             android:paddingBottom="@dimen/global_padding_bottom">
 
@@ -63,7 +69,9 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <LinearLayout style="@style/Browse.SectionHeader">
+                <LinearLayout
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="40dp">
 
                     <TextView
                         android:id="@+id/album_catalogue_sample_text_view_refreshable"
@@ -83,14 +91,24 @@
                     <Button
                         android:id="@+id/album_refresh_button"
                         style="@style/Browse.IconButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="10dp"
                         android:contentDescription="@string/library_refresh_albums"
                         app:icon="@drawable/ic_refresh" />
 
                     <TextView
                         android:id="@+id/album_catalogue_text_view_clickable"
                         style="@style/Browse.SeeAll"
+                        android:layout_marginStart="4dp"
+                        android:drawableEnd="@drawable/ic_navigate_next_small"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:minHeight="40dp"
+                        android:textStyle="normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/library_title_album_see_all_button" />
@@ -115,7 +133,9 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <LinearLayout style="@style/Browse.SectionHeader">
+                <LinearLayout
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="40dp">
 
                     <TextView
                         android:id="@+id/artist_catalogue_sample_text_view_refreshable"
@@ -135,14 +155,24 @@
                     <Button
                         android:id="@+id/artist_refresh_button"
                         style="@style/Browse.IconButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="10dp"
                         android:contentDescription="@string/library_refresh_artists"
                         app:icon="@drawable/ic_refresh" />
 
                     <TextView
                         android:id="@+id/artist_catalogue_text_view_clickable"
                         style="@style/Browse.SeeAll"
+                        android:layout_marginStart="4dp"
+                        android:drawableEnd="@drawable/ic_navigate_next_small"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:minHeight="40dp"
+                        android:textStyle="normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/library_title_artist_see_all_button" />
@@ -166,7 +196,9 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <LinearLayout style="@style/Browse.SectionHeader">
+                <LinearLayout
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="40dp">
 
                     <TextView
                         android:id="@+id/genre_catalogue_sample_text_view_refreshable"
@@ -186,6 +218,11 @@
                     <TextView
                         android:id="@+id/genre_catalogue_text_view_clickable"
                         style="@style/Browse.SeeAll"
+                        android:layout_marginStart="4dp"
+                        android:drawableEnd="@drawable/ic_navigate_next_small"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:minHeight="40dp"
+                        android:textStyle="normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/library_title_genre_see_all_button" />
@@ -198,8 +235,8 @@
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
                     android:paddingTop="12dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="4dp" />
+                    android:layout_marginBottom="-4dp"
+                    android:paddingEnd="8dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -210,7 +247,9 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <LinearLayout style="@style/Browse.SectionHeader">
+                <LinearLayout
+                    style="@style/Browse.SectionHeader"
+                    android:minHeight="40dp">
 
                     <TextView
                         android:id="@+id/playlist_catalogue_sample_text_view_refreshable"
@@ -230,6 +269,11 @@
                     <TextView
                         android:id="@+id/playlist_catalogue_text_view_clickable"
                         style="@style/Browse.SeeAll"
+                        android:layout_marginStart="4dp"
+                        android:drawableEnd="@drawable/ic_navigate_next_small"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:minHeight="40dp"
+                        android:textStyle="normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/library_title_playlist_see_all_button" />

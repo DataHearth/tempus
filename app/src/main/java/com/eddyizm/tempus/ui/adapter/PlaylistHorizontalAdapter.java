@@ -1,5 +1,6 @@
 package com.eddyizm.tempus.ui.adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +82,10 @@ public class PlaylistHorizontalAdapter extends RecyclerView.Adapter<PlaylistHori
         Playlist playlist = playlists.get(position);
 
         holder.item.playlistTitleTextView.setText(playlist.getName());
-        holder.item.playlistSubtitleTextView.setText(holder.itemView.getContext().getString(R.string.playlist_counted_tracks, playlist.getSongCount(), MusicUtil.getReadableDurationString(playlist.getDuration(), false)));
+        Context context = holder.itemView.getContext();
+        holder.item.playlistSubtitleTextView.setText(context.getString(R.string.browse_meta_formatter,
+                context.getResources().getQuantityString(R.plurals.player_queue_song_count, playlist.getSongCount(), playlist.getSongCount()),
+                MusicUtil.getReadablePodcastDurationString(playlist.getDuration())));
 
         CustomGlideRequest.Builder
                 .from(holder.itemView.getContext(), playlist.getCoverArtId(), CustomGlideRequest.ResourceType.Playlist)
@@ -116,7 +120,6 @@ public class PlaylistHorizontalAdapter extends RecyclerView.Adapter<PlaylistHori
             super(item.getRoot());
 
             this.item = item;
-            item.playlistTitleTextView.setSelected(true);
 
             itemView.setOnClickListener(v -> onClick());
             itemView.setOnLongClickListener(this::onLongClick);

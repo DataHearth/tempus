@@ -206,9 +206,9 @@ public class ToolbarFragment extends Fragment implements MenuProvider {
         boolean canChoose = musicFolders.size() > 1 || Preferences.getActiveMusicFolderId() != null;
         boolean visible = canChoose && isLibraryScopedScreen() && isLibraryScopedTab();
 
-        // Podcast and Radio are the tabs the library never reaches, so the line carries the
-        // server instead of nothing. No caret there, since nothing is tappable.
-        boolean showServerName = !visible && serverName != null && isLibraryScopedScreen();
+        // Home carries the server name when there is no library to pick; Library and Downloads
+        // name only themselves. No caret there, since nothing is tappable.
+        boolean showServerName = !visible && serverName != null && getParentFragment() instanceof HomeFragment;
 
         bind.toolbarTitleContainer.setClickable(visible);
         bind.toolbarMusicLibraryTextView.setVisibility(visible || showServerName ? View.VISIBLE : View.GONE);

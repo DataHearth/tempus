@@ -221,6 +221,7 @@
     <string name="library_title_genre">Gèneres</string>
     <string name="library_title_genre_see_all_button">Visualitza-ho tot</string>
     <string name="library_title_music_folder">Carpetes de música</string>
+    <string name="library_anchor_folders">Carpetes</string>
     <string name="library_title_playlist">Llistes de reproducció</string>
     <string name="library_title_playlist_see_all_button">Visualitza-ho tot</string>
     <string name="login_empty">No s\'ha afegit cap servidor</string>
@@ -368,6 +369,13 @@
     <string name="search_title_album">Àlbums</string>
     <string name="search_title_artist">Artistes</string>
     <string name="search_title_song">Cançons</string>
+    <string name="search_top_result">Millor resultat</string>
+    <string name="search_recent_title">Cerques recents</string>
+    <string name="search_result_artist">Artista</string>
+    <string name="search_result_album">Àlbum · %1$s</string>
+    <string name="search_result_song">Cançó · %1$s</string>
+    <string name="search_no_results_title">Cap resultat per a «%1$s»</string>
+    <string name="search_no_results_hint">Revisa l\'ortografia o prova amb menys paraules.</string>
     <string name="server_unreachable_dialog_negative_button">Cancel·la</string>
     <string name="server_unreachable_dialog_neutral_button">Ves a l\'inici de sessió</string>
     <string name="server_unreachable_dialog_positive_button">Continua igualment</string>
@@ -734,8 +742,6 @@
     <string name="playlist_error_not_found_toast">S\'ha suprimit la llista de reproducció de la memòria cau</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">En activar això, la llista de reproducció es fa pública. Si ho deixes tal qual, no canvia la visibilitat de la llista de reproducció.</string>
     <string name="playlist_editor_dialog_action_save_empty">Una llista de reproducció ha de tenir almenys una pista</string>
-    <string name="search_title_empty_response">Sense resultats.</string>
-    <string name="search_description_empty_response">Hem comprovat la resposta del servidor però estava buida.</string>
     <string name="menu_keep_synced_button">Mantén sincronitzada</string>
     <plurals name="playlist_sync_downloading">
         <item quantity="one">S\'està baixant %d pista</item>

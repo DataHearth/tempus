@@ -220,6 +220,7 @@
     <string name="library_title_genre">Generoak</string>
     <string name="library_title_genre_see_all_button">Denak ikusi</string>
     <string name="library_title_music_folder">Musika-karpetak</string>
+    <string name="library_anchor_folders">Karpetak</string>
     <string name="library_title_playlist">Zerrendak</string>
     <string name="library_title_playlist_see_all_button">Denak ikusi</string>
     <string name="login_empty">Ez da zerbitzaririk gehitu</string>
@@ -375,6 +376,13 @@
     <string name="search_title_album">Diskak</string>
     <string name="search_title_artist">Artistak</string>
     <string name="search_title_song">Abestiak</string>
+    <string name="search_top_result">Emaitza onena</string>
+    <string name="search_recent_title">Azken bilaketak</string>
+    <string name="search_result_artist">Artista</string>
+    <string name="search_result_album">Diskoa · %1$s</string>
+    <string name="search_result_song">Abestia · %1$s</string>
+    <string name="search_no_results_title">Ez dago emaitzarik «%1$s» bilaketarako</string>
+    <string name="search_no_results_hint">Egiaztatu idazkera edo saiatu hitz gutxiagorekin.</string>
     <string name="server_unreachable_dialog_negative_button">Utzi</string>
     <string name="server_unreachable_dialog_neutral_button">Saioa hastera joan</string>
     <string name="server_unreachable_dialog_positive_button">Hala ere jarraitu</string>
@@ -753,8 +761,6 @@
     <string name="playlist_error_not_found_toast">Zerrenda cachetik kendu da</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">Hau aktibatuz gero, erreprodukzio-zerrenda publikoa izango da. Bere horretan utziz gero, ez da erreprodukzio-zerrendaren ikusgarritasuna aldatzen.</string>
     <string name="playlist_editor_dialog_action_save_empty">Erreprodukzio-zerrenda batek gutxienez pista bat izan behar du</string>
-    <string name="search_title_empty_response">Emaitzarik ez.</string>
-    <string name="search_description_empty_response">Zure zerbitzariaren erantzuna egiaztatu dugu, baina hutsik zegoen.</string>
     <string name="menu_keep_synced_button">Sinkronizatuta mantendu</string>
     <plurals name="playlist_sync_downloading">
         <item quantity="one">%d pista deskargatzen</item>

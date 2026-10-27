@@ -3,4 +3,7 @@
     <item
         android:id="@+id/menu_download_set_directory"
         android:title="@string/download_directory_set" />
+    <item
+        android:id="@+id/menu_download_refresh"
+        android:title="@string/download_refresh_button_content_description" />
 </menu>

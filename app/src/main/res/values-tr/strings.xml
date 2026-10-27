@@ -163,6 +163,7 @@
     <string name="library_title_genre">Türler</string>
     <string name="library_title_genre_see_all_button">Tümünü gör</string>
     <string name="library_title_music_folder">Müzik klasörleri</string>
+    <string name="library_anchor_folders">Klasörler</string>
     <string name="library_title_playlist">Çalma listeleri</string>
     <string name="library_title_playlist_see_all_button">Tümünü gör</string>
     <string name="login_empty">Sunucu eklenmedi</string>
@@ -260,6 +261,13 @@
     <string name="search_title_album">Albümler</string>
     <string name="search_title_artist">Sanatçılar</string>
     <string name="search_title_song">Şarkılar</string>
+    <string name="search_top_result">En iyi sonuç</string>
+    <string name="search_recent_title">Son aramalar</string>
+    <string name="search_result_artist">Sanatçı</string>
+    <string name="search_result_album">Albüm · %1$s</string>
+    <string name="search_result_song">Şarkı · %1$s</string>
+    <string name="search_no_results_title">“%1$s” için sonuç yok</string>
+    <string name="search_no_results_hint">Yazımı kontrol edin veya daha az kelime deneyin.</string>
     <string name="server_unreachable_dialog_negative_button">İptal</string>
     <string name="server_unreachable_dialog_neutral_button">Girişe git</string>
     <string name="server_unreachable_dialog_positive_button">Yine de devam et</string>
@@ -444,8 +452,6 @@
     <string name="settings_sync_starred_albums_for_offline_use_summary">"Etkinleştirildiğinde yıldızlı albümler çevrimdışı kullanım için indirilecek. "</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">Bunu açtığınızda çalma listesi herkese açık hale gelir. Kendi haline bıraktığınızda çalma listesinin görünürlüğü değişmez.</string>
     <string name="playlist_editor_dialog_action_save_empty">Bir çalma listesi en az bir parça içermelidir</string>
-    <string name="search_title_empty_response">Sonuç yok.</string>
-    <string name="search_description_empty_response">Sunucu yanıtınızı kontrol ettik ancak boştu.</string>
     <string name="menu_keep_synced_button">Eşitlemeyi sürdür</string>
     <plurals name="playlist_sync_downloading">
         <item quantity="one">%d parça indiriliyor</item>

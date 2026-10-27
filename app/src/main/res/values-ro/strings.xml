@@ -186,6 +186,7 @@
     <string name="library_title_genre">Genuri</string>
     <string name="library_title_genre_see_all_button">Vezi tot</string>
     <string name="library_title_music_folder">Foldere de muzică</string>
+    <string name="library_anchor_folders">Foldere</string>
     <string name="library_title_playlist">Playlisturi</string>
     <string name="library_title_playlist_see_all_button">Vezi tot</string>
     <string name="login_empty">Niciun server adăugat</string>
@@ -295,6 +296,13 @@
     <string name="search_title_album">Albume</string>
     <string name="search_title_artist">Artiști</string>
     <string name="search_title_song">Cântece</string>
+    <string name="search_top_result">Cel mai bun rezultat</string>
+    <string name="search_recent_title">Căutări recente</string>
+    <string name="search_result_artist">Artist</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Cântec · %1$s</string>
+    <string name="search_no_results_title">Niciun rezultat pentru „%1$s”</string>
+    <string name="search_no_results_hint">Verifică ortografia sau încearcă mai puține cuvinte.</string>
     <string name="server_unreachable_dialog_negative_button">Anulati</string>
     <string name="server_unreachable_dialog_neutral_button">Mergeți la conectare</string>
     <string name="server_unreachable_dialog_positive_button">Continuaţi oricum</string>
@@ -545,8 +553,6 @@
     <string name="search_sort_summary">Dacă este activat, sortează căutările cronologic. Sortează după nume dacă este dezactivat.</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">Activarea acestei opțiuni face lista de redare publică. Dacă este lăsată așa cum este, vizibilitatea listei de redare nu se va schimba.</string>
     <string name="playlist_editor_dialog_action_save_empty">O listă de redare trebuie să conțină cel puțin o piesă</string>
-    <string name="search_title_empty_response">Niciun rezultat.</string>
-    <string name="search_description_empty_response">Am verificat răspunsul serverului, dar era gol.</string>
     <string name="menu_keep_synced_button">Păstrează sincronizarea</string>
     <plurals name="playlist_sync_downloading">
         <item quantity="one">Se descarcă %d piesă</item>

@@ -245,6 +245,7 @@
     <string name="library_title_genre">Genrer</string>
     <string name="library_title_genre_see_all_button">Visa alla</string>
     <string name="library_title_music_folder">Musikmappar</string>
+    <string name="library_anchor_folders">Mappar</string>
     <string name="library_title_playlist">Spellistor</string>
     <string name="library_title_playlist_see_all_button">Visa alla</string>
     <string name="login_empty">Ingen server tillagd</string>
@@ -421,8 +422,13 @@
     <string name="search_title_album">Album</string>
     <string name="search_title_artist">Artister</string>
     <string name="search_title_song">Låtar</string>
-    <string name="search_title_empty_response">Inga resultat.</string>
-    <string name="search_description_empty_response">Serverns svar var tomt.</string>
+    <string name="search_top_result">Bästa resultat</string>
+    <string name="search_recent_title">Senaste sökningar</string>
+    <string name="search_result_artist">Artist</string>
+    <string name="search_result_album">Album · %1$s</string>
+    <string name="search_result_song">Låt · %1$s</string>
+    <string name="search_no_results_title">Inga resultat för ”%1$s”</string>
+    <string name="search_no_results_hint">Kontrollera stavningen eller försök med färre ord.</string>
     <string name="server_unreachable_dialog_negative_button">Avbryt</string>
     <string name="server_unreachable_dialog_neutral_button">Gå till inloggning</string>
     <string name="server_unreachable_dialog_positive_button">Fortsätt ändå</string>

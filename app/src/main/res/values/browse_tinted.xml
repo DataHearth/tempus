@@ -36,7 +36,8 @@
 
     <style name="Browse.SectionCount" parent="InterFontFamily">
         <item name="android:textSize">22sp</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textFontWeight" tools:targetApi="28">500</item>
+        <item name="android:textColor">@color/browse_text_tertiary</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">6dp</item>
         <item name="android:includeFontPadding">false</item>
@@ -113,9 +114,18 @@
         <item name="android:textColor">@color/browse_filter_chip_text</item>
         <item name="chipStrokeColor">@color/browse_filter_chip_stroke</item>
         <item name="chipStrokeWidth">1dp</item>
-        <item name="checkedIconTint">?attr/colorSurface</item>
+        <item name="checkedIconTint">?attr/colorOnSecondaryContainer</item>
         <item name="chipIconTint">@color/browse_filter_chip_text</item>
         <item name="android:textAppearance">@style/Browse.ChipText</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="chipStartPadding">4dp</item>
+        <item name="iconStartPadding">8dp</item>
+        <!-- Negative so the check sits 4dp from the label while an unchecked chip keeps 12dp each side. -->
+        <item name="iconEndPadding">-4dp</item>
+        <item name="textStartPadding">8dp</item>
+        <item name="textEndPadding">8dp</item>
+        <item name="chipEndPadding">4dp</item>
     </style>
 
     <style name="Browse.AnchorChip" parent="Widget.Material3.Chip.Assist">
@@ -124,6 +134,12 @@
         <item name="chipStrokeWidth">0dp</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Browse.Pill</item>
         <item name="android:textAppearance">@style/Browse.ChipText</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="chipStartPadding">6dp</item>
+        <item name="textStartPadding">8dp</item>
+        <item name="textEndPadding">8dp</item>
+        <item name="chipEndPadding">6dp</item>
     </style>
 
     <style name="Browse.ChipText" parent="TextAppearance.Material3.LabelLarge">
@@ -131,6 +147,7 @@
         <item name="android:textStyle">normal</item>
         <item name="fontFamily">@font/inter_semi_bold</item>
         <item name="android:fontFamily">@font/inter_semi_bold</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="ShapeAppearance.Browse.Pill" parent="">

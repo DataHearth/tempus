@@ -213,6 +213,7 @@
     <string name="library_title_genre">流派</string>
     <string name="library_title_genre_see_all_button">查看全部</string>
     <string name="library_title_music_folder">音乐文件夹</string>
+    <string name="library_anchor_folders">文件夹</string>
     <string name="library_title_playlist">播放列表</string>
     <string name="library_title_playlist_see_all_button">查看全部</string>
     <string name="login_empty">尚未添加服务器</string>
@@ -324,6 +325,13 @@
     <string name="search_title_album">专辑</string>
     <string name="search_title_artist">艺术家</string>
     <string name="search_title_song">歌曲</string>
+    <string name="search_top_result">最佳结果</string>
+    <string name="search_recent_title">最近搜索</string>
+    <string name="search_result_artist">艺术家</string>
+    <string name="search_result_album">专辑 · %1$s</string>
+    <string name="search_result_song">歌曲 · %1$s</string>
+    <string name="search_no_results_title">没有找到“%1$s”的结果</string>
+    <string name="search_no_results_hint">请检查拼写或尝试减少关键词。</string>
     <string name="server_unreachable_dialog_negative_button">取消</string>
     <string name="server_unreachable_dialog_neutral_button">前往登录</string>
     <string name="server_unreachable_dialog_positive_button">仍然继续</string>
@@ -538,8 +546,6 @@
     <string name="widget_time_elapsed_placeholder">0:00</string>
     <string name="playlist_chooser_dialog_visibility_summary_v2">开启此选项会将播放列表设为公开。保持原样不会改变播放列表的可见性。</string>
     <string name="playlist_editor_dialog_action_save_empty">播放列表必须至少保留一首曲目</string>
-    <string name="search_title_empty_response">没有结果。</string>
-    <string name="search_description_empty_response">我们检查了您的服务器响应，但它是空的。</string>
     <string name="menu_keep_synced_button">保持同步</string>
     <plurals name="playlist_sync_downloading">
         <item quantity="other">正在下载 %d 首曲目</item>

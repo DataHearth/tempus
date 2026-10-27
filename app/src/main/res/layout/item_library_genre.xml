@@ -29,13 +29,15 @@
                 style="@style/Browse.RowTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:fontFamily="@font/inter_semi_bold"
+                android:singleLine="true"
                 tools:text="Progressive metal" />
 
             <TextView
                 android:id="@+id/genre_meta_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/inter"
                 android:maxLines="1"

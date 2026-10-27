@@ -6,14 +6,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -68,6 +73,10 @@ public class SearchFragment extends Fragment implements ClickCallback {
 
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
 
+    // Survives the view being rebuilt when the user comes back from a result, so the results do too.
+    private String submittedQuery;
+    private boolean settingQuery;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,7 +89,12 @@ public class SearchFragment extends Fragment implements ClickCallback {
 
         initSearchResultView();
         initSearchView();
-        inputFocus();
+
+        if (submittedQuery != null) {
+            search(submittedQuery);
+        } else {
+            inputFocus();
+        }
 
         return view;
     }
@@ -122,17 +136,16 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind.searchResultAlbumRecyclerView.setAdapter(albumAdapter);
 
         bind.searchResultTracksRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        bind.searchResultTracksRecyclerView.setHasFixedSize(true);
 
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, false, null);
         songHorizontalAdapter.setShowKind(true);
+        songHorizontalAdapter.setDenseRows(true);
         setMediaBrowserListenableFuture();
         reapplyPlayback();
 
         bind.searchResultTracksRecyclerView.setAdapter(songHorizontalAdapter);
 
         bind.allsongsview.setLayoutManager(new LinearLayoutManager(requireContext()));
-        bind.allsongsview.setHasFixedSize(true);
 
         playlistHorizontalAdapter = new PlaylistHorizontalAdapter(this);
         bind.allsongsview.setAdapter(playlistHorizontalAdapter);
@@ -143,41 +156,63 @@ public class SearchFragment extends Fragment implements ClickCallback {
     private void initSearchView() {
         setRecentSuggestions();
 
-        bind.searchView
-                .getEditText()
-                .setOnEditorActionListener((textView, actionId, keyEvent) -> {
-                    String query = bind.searchView.getText().toString();
+        bind.searchBackButton.setOnClickListener(v -> {
+            hideKeyboard();
+            Navigation.findNavController(requireView()).navigateUp();
+        });
 
-                    if (isQueryValid(query)) {
-                        search(query);
-                        return true;
-                    }
+        bind.searchClearButton.setOnClickListener(v -> {
+            bind.searchEditText.setText(null);
+            inputFocus();
+        });
 
-                    return false;
-                });
+        bind.searchEditText.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            String query = bind.searchEditText.getText().toString();
 
-        bind.searchView
-                .getEditText()
-                .addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+            if (isQueryValid(query)) {
+                search(query);
+                return true;
+            }
 
-                    }
+            return false;
+        });
 
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                        if (start + count > 1) {
-                            setSearchSuggestions(charSequence.toString());
-                        } else {
-                            setRecentSuggestions();
-                        }
-                    }
+        bind.searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
 
-                    @Override
-                    public void afterTextChanged(Editable editable) {
+            }
 
-                    }
-                });
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                bind.searchClearButton.setVisibility(charSequence.length() > 0 ? View.VISIBLE : View.GONE);
+                if (settingQuery) return;
+
+                submittedQuery = null;
+                showSuggestions();
+
+                if (start + count > 1) {
+                    setSearchSuggestions(charSequence.toString());
+                } else {
+                    setRecentSuggestions();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void showSuggestions() {
+        bind.searchViewSuggestionContainer.setVisibility(View.VISIBLE);
+        bind.searchResultLayout.setVisibility(View.GONE);
+    }
+
+    private void showResults() {
+        bind.searchViewSuggestionContainer.setVisibility(View.GONE);
+        bind.searchResultLayout.setVisibility(View.VISIBLE);
     }
 
     public void setRecentSuggestions() {
@@ -187,6 +222,9 @@ public class SearchFragment extends Fragment implements ClickCallback {
         if (!recentSearches.isEmpty()) {
             TextView header = new TextView(requireContext(), null, 0, R.style.Browse_Subheader);
             header.setText(R.string.search_recent_title);
+            header.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.inter_semi_bold));
+            int top = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, getResources().getDisplayMetrics());
+            header.setPadding(header.getPaddingStart(), top, header.getPaddingEnd(), header.getPaddingBottom());
             bind.searchViewSuggestionContainer.addView(header);
         }
 
@@ -234,11 +272,18 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
 
     public void search(String query) {
+        submittedQuery = query;
         searchViewModel.setQuery(query);
-        bind.allSongs.setText(this.getView().getContext().getString(R.string.search_all_songs_loading));
+        bind.allSongs.setText(R.string.search_all_songs_loading);
         playlistHorizontalAdapter.setItems(Collections.emptyList());
-        bind.searchBar.setText(query);
-        bind.searchView.hide();
+
+        settingQuery = true;
+        bind.searchEditText.setText(query);
+        bind.searchEditText.setSelection(query.length());
+        settingQuery = false;
+
+        hideKeyboard();
+        showResults();
         performSearch(query);
     }
 
@@ -264,11 +309,8 @@ public class SearchFragment extends Fragment implements ClickCallback {
             albumAdapter.setItems(albums);
             songHorizontalAdapter.setItems(songs);
 
-            bind.searchFilterContainer.setVisibility(View.VISIBLE);
             showResult();
         });
-
-        bind.searchResultLayout.setVisibility(View.VISIBLE);
     }
 
     private void showResult() {
@@ -284,6 +326,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind.searchAlbumSector.setVisibility(showAlbums ? View.VISIBLE : View.GONE);
         bind.searchSongSector.setVisibility(showSongs ? View.VISIBLE : View.GONE);
         bind.emptyResponseContainer.setVisibility(showArtists || showAlbums || showSongs ? View.GONE : View.VISIBLE);
+        bind.searchEmptyTitle.setText(getString(R.string.search_no_results_title, submittedQuery));
 
         showTopResult(all);
     }
@@ -344,7 +387,14 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
 
     private void inputFocus() {
-        bind.searchView.show();
+        EditText editText = bind.searchEditText;
+        editText.requestFocus();
+        new WindowInsetsControllerCompat(requireActivity().getWindow(), editText).show(WindowInsetsCompat.Type.ime());
+    }
+
+    private void hideKeyboard() {
+        new WindowInsetsControllerCompat(requireActivity().getWindow(), bind.searchEditText).hide(WindowInsetsCompat.Type.ime());
+        bind.searchEditText.clearFocus();
     }
 
     private void initializeMediaBrowser() {

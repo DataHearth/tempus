@@ -166,6 +166,13 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
         Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
 
+        // A toolbar that scrolls away sizes the scroll view a toolbar taller than the screen, and the
+        // nested scroll never reached it through the refresh layout, so the last section stayed
+        // under the mini player. The title stays pinned above the chips instead.
+        AppBarLayout.LayoutParams toolbarParams = (AppBarLayout.LayoutParams) materialToolbar.getLayoutParams();
+        toolbarParams.setScrollFlags(0);
+        materialToolbar.setLayoutParams(toolbarParams);
+
         AppBarLayout appBarLayout = bind.getRoot().findViewById(R.id.toolbar_fragment);
         View anchors = getLayoutInflater().inflate(R.layout.view_library_anchor_chips, appBarLayout, false);
         appBarLayout.addView(anchors);

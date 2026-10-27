@@ -41,6 +41,6 @@
         android:background="?selectableItemBackgroundBorderless"
         android:padding="14dp"
         android:src="@drawable/ic_close"
-        app:tint="?attr/colorOnSurfaceVariant"
+        app:tint="@color/browse_text_tertiary"
         tools:ignore="ContentDescription" />
 </LinearLayout>

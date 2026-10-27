@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentDownloadBinding;
+import com.eddyizm.tempus.helper.CoverTint;
 import com.eddyizm.tempus.interfaces.ClickCallback;
 import com.eddyizm.tempus.model.DownloadStack;
 import com.eddyizm.tempus.navigation.NavigationController;
@@ -36,6 +37,8 @@ import com.eddyizm.tempus.util.Constants;
 import com.eddyizm.tempus.util.ExternalAudioReader;
 import com.eddyizm.tempus.util.Preferences;
 import com.eddyizm.tempus.viewmodel.DownloadViewModel;
+import com.eddyizm.tempus.viewmodel.PlaybackViewModel;
+import com.eddyizm.tempus.viewmodel.PlayerBottomSheetViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -58,6 +61,8 @@ public class DownloadFragment extends Fragment implements ClickCallback {
     private NavigationController navigationController;
 
     private DownloadViewModel downloadViewModel;
+    private PlaybackViewModel playbackViewModel;
+    private PlayerBottomSheetViewModel playerBottomSheetViewModel;
 
     private DownloadHorizontalAdapter downloadHorizontalAdapter;
 
@@ -90,6 +95,8 @@ public class DownloadFragment extends Fragment implements ClickCallback {
         bind = FragmentDownloadBinding.inflate(inflater, container, false);
         View view = bind.getRoot();
         downloadViewModel = new ViewModelProvider(requireActivity()).get(DownloadViewModel.class);
+        playbackViewModel = new ViewModelProvider(requireActivity()).get(PlaybackViewModel.class);
+        playerBottomSheetViewModel = new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class);
 
         return view;
     }
@@ -107,6 +114,7 @@ public class DownloadFragment extends Fragment implements ClickCallback {
         super.onStart();
 
         initializeMediaBrowser();
+        MediaManager.registerPlaybackObserver(mediaBrowserListenableFuture, playbackViewModel);
         activity.toggleBottomNavigationBarVisibilityOnOrientationChange();
         activity.setBottomSheetVisibility(true);
     }
@@ -193,8 +201,10 @@ public class DownloadFragment extends Fragment implements ClickCallback {
         }
 
         bind.downloadedMoreButton.setOnClickListener(view -> showPopupMenu(view, R.menu.download_popup_menu));
+
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> updateNowPlaying());
+        playerBottomSheetViewModel.getCoverTint().observe(getViewLifecycleOwner(), tint -> updateNowPlaying());
         bind.downloadedGoBackImageView.setOnClickListener(view -> downloadViewModel.popViewStack());
-        bind.downloadedRefreshImageView.setOnClickListener(view -> downloadViewModel.refreshExternalDownloads());
     }
 
     private void finishDownloadView(List<Child> songs) {
@@ -231,6 +241,11 @@ public class DownloadFragment extends Fragment implements ClickCallback {
             setupBackPressing(stack.size());
             setupShuffleButton();
         });
+    }
+
+    private void updateNowPlaying() {
+        CoverTint tint = playerBottomSheetViewModel.getCoverTint().getValue();
+        downloadHorizontalAdapter.setNowPlaying(playbackViewModel.getCurrentSongId().getValue(), tint != null ? tint.getAccent() : null);
     }
 
     private void checkGroupByChip(String downloadType) {
@@ -285,6 +300,9 @@ public class DownloadFragment extends Fragment implements ClickCallback {
         popup.setOnMenuItemClickListener(menuItem -> {
             if (menuItem.getItemId() == R.id.menu_download_set_directory) {
                 directoryPickerLauncher.launch(null);
+                return true;
+            } else if (menuItem.getItemId() == R.id.menu_download_refresh) {
+                downloadViewModel.refreshExternalDownloads();
                 return true;
             }
 
