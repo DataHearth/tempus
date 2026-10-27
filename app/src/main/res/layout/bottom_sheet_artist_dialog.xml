@@ -1,88 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <include layout="@layout/view_bottom_sheet_drag_handle" />
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/artist_cover_image_view"
-            style="@style/BottomSheetHeaderCover" />
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
 
-        <TextView
-            android:id="@+id/song_title_text_view"
-            style="@style/BottomSheetHeaderTitle"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/label_placeholder" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
 
-        <ToggleButton
-            android:id="@+id/button_favorite"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/button_favorite_inset"
-            android:backgroundTint="@color/page_favorite_icon_tint"
-            android:checked="false"
-            android:contentDescription="@string/favorite_icon_description"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:text=""
-            android:textOff=""
-            android:textOn="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/option_linear_layout"
-        style="@style/BottomSheetActionGroups">
-
-        <LinearLayout style="@style/BottomSheetActionGroup">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/artist_cover_image_view"
+                style="@style/BottomSheetHeaderCover" />
 
             <TextView
-                android:id="@+id/play_radio_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_instant_mix"
-                android:text="@string/artist_bottom_sheet_instant_mix" />
+                android:id="@+id/song_title_text_view"
+                style="@style/BottomSheetHeaderTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/label_placeholder" />
 
-            <TextView
-                android:id="@+id/play_random_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_shuffle"
-                android:text="@string/artist_bottom_sheet_shuffle" />
-
-            <TextView
-                android:id="@+id/play_next_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_playlist_play"
-                android:text="@string/artist_bottom_sheet_play_next" />
-
-            <TextView
-                android:id="@+id/add_to_queue_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_queue_music"
-                android:text="@string/artist_bottom_sheet_add_to_queue" />
+            <ToggleButton
+                android:id="@+id/button_favorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/button_favorite_inset"
+                android:backgroundTint="@color/page_favorite_icon_tint"
+                android:checked="false"
+                android:contentDescription="@string/favorite_icon_description"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                android:text=""
+                android:textOff=""
+                android:textOn="" />
         </LinearLayout>
 
-        <LinearLayout style="@style/BottomSheetActionGroup">
+        <LinearLayout
+            android:id="@+id/option_linear_layout"
+            style="@style/BottomSheetActionGroups">
 
-            <TextView
-                android:id="@+id/add_to_playlist_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_playlist_add"
-                android:text="@string/artist_bottom_sheet_add_to_playlist" />
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/play_radio_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_instant_mix"
+                    android:text="@string/artist_bottom_sheet_instant_mix" />
+
+                <TextView
+                    android:id="@+id/play_random_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_shuffle"
+                    android:text="@string/artist_bottom_sheet_shuffle" />
+
+                <TextView
+                    android:id="@+id/play_next_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_playlist_play"
+                    android:text="@string/artist_bottom_sheet_play_next" />
+
+                <TextView
+                    android:id="@+id/add_to_queue_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_queue_music"
+                    android:text="@string/artist_bottom_sheet_add_to_queue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/add_to_playlist_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_playlist_add"
+                    android:text="@string/artist_bottom_sheet_add_to_playlist" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

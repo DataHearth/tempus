@@ -1,46 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/podcast_cover_image_view"
-            style="@style/BottomSheetHeaderCover" />
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
 
-        <TextView
-            android:id="@+id/podcast_title_text_view"
-            style="@style/BottomSheetHeaderTitle"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:text="@string/label_placeholder" />
-    </LinearLayout>
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="12dp">
 
-    <LinearLayout
-        android:id="@+id/option_linear_layout"
-        style="@style/BottomSheetActionGroups">
-
-        <LinearLayout style="@style/BottomSheetActionGroup">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/podcast_cover_image_view"
+                style="@style/BottomSheetHeaderCover" />
 
             <TextView
-                android:id="@+id/delete_text_view"
-                style="@style/BottomSheetActionRow.Destructive"
-                android:drawableStart="@drawable/ic_delete"
-                android:text="@string/podcast_bottom_sheet_delete" />
+                android:id="@+id/podcast_title_text_view"
+                style="@style/BottomSheetHeaderTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:text="@string/label_placeholder" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_linear_layout"
+            style="@style/BottomSheetActionGroups">
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/delete_text_view"
+                    style="@style/BottomSheetActionRow.Destructive"
+                    android:drawableStart="@drawable/ic_delete"
+                    android:text="@string/podcast_bottom_sheet_delete" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

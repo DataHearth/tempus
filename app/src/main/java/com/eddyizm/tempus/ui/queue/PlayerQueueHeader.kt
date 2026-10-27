@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eddyizm.tempus.R
 import com.eddyizm.tempus.glide.CustomGlideRequest
+import com.eddyizm.tempus.util.SheetExpand
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 @Composable
@@ -203,6 +204,7 @@ private fun showQueueActionsSheet(
 
     dialog.setContentView(view)
     dialog.show()
+    SheetExpand.inLandscape(dialog)
 }
 
 private const val QUEUE_DISABLED_ALPHA = 0.38f

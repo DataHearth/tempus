@@ -1,87 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/group_cover_image_view"
-            style="@style/BottomSheetHeaderCover" />
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/group_title_text_view"
-                style="@style/BottomSheetHeaderTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="@string/label_placeholder" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/group_cover_image_view"
+                style="@style/BottomSheetHeaderCover" />
 
-            <TextView
-                android:id="@+id/group_subtitle_text_view"
-                style="@style/BottomSheetHeaderSubtitle"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/label_placeholder" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/group_title_text_view"
+                    style="@style/BottomSheetHeaderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
+
+                <TextView
+                    android:id="@+id/group_subtitle_text_view"
+                    style="@style/BottomSheetHeaderSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option_linear_layout"
+            style="@style/BottomSheetActionGroups">
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/play_random_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_shuffle"
+                    android:text="@string/downloaded_bottom_sheet_shuffle" />
+
+                <TextView
+                    android:id="@+id/play_next_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_skip_next"
+                    android:text="@string/downloaded_bottom_sheet_play_next" />
+
+                <TextView
+                    android:id="@+id/add_to_queue_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_queue"
+                    android:text="@string/downloaded_bottom_sheet_add_to_queue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/remove_all_text_view"
+                    style="@style/BottomSheetActionRow.Destructive"
+                    android:drawableStart="@drawable/ic_delete"
+                    android:text="@string/downloaded_bottom_sheet_remove_all" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/option_linear_layout"
-        style="@style/BottomSheetActionGroups">
-
-        <LinearLayout style="@style/BottomSheetActionGroup">
-
-            <TextView
-                android:id="@+id/play_random_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_shuffle"
-                android:text="@string/downloaded_bottom_sheet_shuffle" />
-
-            <TextView
-                android:id="@+id/play_next_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_skip_next"
-                android:text="@string/downloaded_bottom_sheet_play_next" />
-
-            <TextView
-                android:id="@+id/add_to_queue_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_queue"
-                android:text="@string/downloaded_bottom_sheet_add_to_queue" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/BottomSheetActionGroup">
-
-            <TextView
-                android:id="@+id/remove_all_text_view"
-                style="@style/BottomSheetActionRow.Destructive"
-                android:drawableStart="@drawable/ic_delete"
-                android:text="@string/downloaded_bottom_sheet_remove_all" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,99 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <include layout="@layout/view_bottom_sheet_drag_handle" />
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/playlist_cover_image_view"
-            style="@style/BottomSheetHeaderCover" />
+        <include layout="@layout/view_bottom_sheet_drag_handle" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/playlist_title_text_view"
-                style="@style/BottomSheetHeaderTitle"
-                android:layout_width="match_parent"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/playlist_cover_image_view"
+                style="@style/BottomSheetHeaderCover" />
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/label_placeholder" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/playlist_count_text_view"
-                style="@style/BottomSheetHeaderSubtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/label_placeholder" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/playlist_title_text_view"
+                    style="@style/BottomSheetHeaderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
 
-        <ToggleButton
-            android:id="@+id/button_favorite"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/button_favorite_inset"
-            android:backgroundTint="@color/page_favorite_icon_tint"
-            android:checked="false"
-            android:contentDescription="@string/favorite_icon_description"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:text=""
-            android:textOff=""
-            android:textOn=""
-            android:visibility="gone" />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/playlist_count_text_view"
+                    style="@style/BottomSheetHeaderSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/label_placeholder" />
+            </LinearLayout>
 
-    <include
-        android:id="@+id/song_asset_link_row"
-        layout="@layout/view_asset_link_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingEnd="16dp" />
-
-    <LinearLayout
-        android:id="@+id/option_linear_layout"
-        style="@style/BottomSheetActionGroups">
-
-        <LinearLayout style="@style/BottomSheetActionGroup">
-
-            <TextView
-                android:id="@+id/play_next_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_playlist_play"
-                android:text="@string/song_bottom_sheet_play_next" />
-
-            <TextView
-                android:id="@+id/add_to_queue_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_queue_music"
-                android:text="@string/song_bottom_sheet_add_to_queue" />
-
-            <TextView
-                android:id="@+id/share_text_view"
-                style="@style/BottomSheetActionRow"
-                android:drawableStart="@drawable/ic_ms_share"
-                android:text="@string/song_bottom_sheet_share"
+            <ToggleButton
+                android:id="@+id/button_favorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/button_favorite_inset"
+                android:backgroundTint="@color/page_favorite_icon_tint"
+                android:checked="false"
+                android:contentDescription="@string/favorite_icon_description"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                android:text=""
+                android:textOff=""
+                android:textOn=""
                 android:visibility="gone" />
         </LinearLayout>
+
+        <include
+            android:id="@+id/song_asset_link_row"
+            layout="@layout/view_asset_link_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="16dp" />
+
+        <LinearLayout
+            android:id="@+id/option_linear_layout"
+            style="@style/BottomSheetActionGroups">
+
+            <LinearLayout style="@style/BottomSheetActionGroup">
+
+                <TextView
+                    android:id="@+id/play_next_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_playlist_play"
+                    android:text="@string/song_bottom_sheet_play_next" />
+
+                <TextView
+                    android:id="@+id/add_to_queue_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_queue_music"
+                    android:text="@string/song_bottom_sheet_add_to_queue" />
+
+                <TextView
+                    android:id="@+id/share_text_view"
+                    style="@style/BottomSheetActionRow"
+                    android:drawableStart="@drawable/ic_ms_share"
+                    android:text="@string/song_bottom_sheet_share"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
