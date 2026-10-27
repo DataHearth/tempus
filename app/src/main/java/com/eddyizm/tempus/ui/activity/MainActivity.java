@@ -27,7 +27,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -74,7 +73,6 @@ import com.eddyizm.tempus.util.FavoriteRegistry;
 import com.eddyizm.tempus.util.SheetExpand;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.navigation.NavigationView;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.Collections;
@@ -94,8 +92,6 @@ public class MainActivity extends BaseActivity {
     private NavHostFragment navHostFragment;
     private BottomNavigationView bottomNavigationView;
     private FrameLayout bottomNavigationViewFrame;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
     public NavController navController;
     private NavigationController navigationController;
     private BottomSheetController bottomSheetController;
@@ -208,7 +204,6 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         pingServer();
-        toggleNavigationDrawerLockOnOrientationChange();
     }
 
     @Override
@@ -255,7 +250,6 @@ public class MainActivity extends BaseActivity {
             goToLogin();
         }
 
-        toggleNavigationDrawerLockOnOrientationChange();
 
     }
 
@@ -275,8 +269,6 @@ public class MainActivity extends BaseActivity {
                 new NavigationHelper(
                         findViewById(R.id.bottom_navigation),
                         findViewById(R.id.bottom_navigation_frame),
-                        findViewById(R.id.drawer_layout),
-                        findViewById(R.id.nav_view),
                         navHostFragment,
                         navController
                 );
@@ -439,17 +431,6 @@ public class MainActivity extends BaseActivity {
         navigationController.setSystemBarsVisibility(this, !isLandscape);
     }
 
-    public void setNavigationDrawerLock(boolean locked) {
-        navigationController.setDrawerLock(locked);
-    }
-
-    public boolean isNavigationDrawerLocked() {
-        return navigationController.isNavigationDrawerLocked();
-    }
-
-    public void toggleNavigationDrawerLockOnOrientationChange() {
-        navigationController.toggleDrawerLockOnOrientation(this);
-    }
 
     public void setSystemBarsVisibility(boolean visibility) {
         navigationController.setSystemBarsVisibility(this, visibility);

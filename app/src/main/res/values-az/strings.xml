@@ -522,8 +522,6 @@
 
     <string name="settings_radio">Radionu göstər</string>
     <string name="settings_radio_summary">Aktiv olduqda radio bölməsini göstərir. Dəyişikliyin tam qüvvəyə minməsi üçün tətbiqi yenidən başladın.</string>
-    <string name="settings_enable_drawer_on_landscape">Şaquli görünüşdə yan menyunu aktivləşdir</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Üfüqi görünüşün yan menyusunu şaquli görünüşdə də əlçatan edir.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Şaquli görünüşdə alt naviqasiya panelini gizlət [Sınaq mərhələsində]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Alt naviqasiya panelini gizlədərək şaquli sahəni artırır. Dəyişikliklər yenidən başladıqdan sonra qüvvəyə minəcək.</string>
     <string name="settings_auto_download_lyrics">Mahnı sözlərini avtomatik yüklə</string>
@@ -734,7 +732,6 @@
     <string name="search_all_songs">cəmi %1$s mahnı</string>
     <string name="search_all_songs_play">Səsləndir: %1$s</string>
 
-    <string name="nav_drawer_index">İndeks</string>
 
     <!-- Sleep timer -->
     <string name="sleep_timer_dialog_title">Yuxu taymeri</string>

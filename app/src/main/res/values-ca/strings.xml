@@ -473,8 +473,6 @@
 
     <string name="settings_radio">Mostra la ràdio</string>
     <string name="settings_radio_summary">Si s\'habilita, es mostra la secció de ràdio. Reinicieu l\'aplicació perquè tingui efecte completament.</string>
-    <string name="settings_enable_drawer_on_landscape">Habilita el calaix en mode vertical</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Desbloqueja el menú lateral del mode horitzontal en mode vertical.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Amaga la barra de navegació inferior en el mode vertical [experimental]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Elimina la barra de navegació inferior per a incrementar l\'espai vertical. Els canvis tindran efecte quan reinicieu l\'aplicació.</string>
     <string name="settings_auto_download_lyrics">Baixa les lletres automàticament</string>
@@ -686,7 +684,6 @@
     <string name="search_all_songs">les %1$s cançons</string>
     <string name="search_all_songs_play">Reprodueix %1$s</string>
 
-    <string name="nav_drawer_index">Índex</string>
 
     <!-- Sleep timer -->
     <string name="sleep_timer_dialog_title">Temporitzador</string>

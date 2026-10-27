@@ -535,8 +535,6 @@
     <string name="settings_custom_command_second_button">Zweiter eigener Befehl</string>
     <string name="settings_radio">Radio zeigen</string>
     <string name="settings_radio_summary">Radio auf Startseite anzeigen (Neustart der App nötig)</string>
-    <string name="settings_enable_drawer_on_landscape">Seitenleiste im Hochformat</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Aktiviert die Querformat-Seitenleiste auch im Hochformat</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Navigationsleiste im Hochformat ausblenden [Experimentell]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Entfernt die Navigationsleiste am unteren Rand für mehr Platz (Neustart der App nötig)</string>
     <string name="settings_auto_download_lyrics">Liedtexte automatisch laden</string>
@@ -751,7 +749,6 @@
     <string name="search_all_songs_loading">Hole alle Titel…</string>
     <string name="search_all_songs">alle %1$s Titel</string>
     <string name="search_all_songs_play">Spiele %1$s</string>
-    <string name="nav_drawer_index">Index</string>
     <string name="sleep_timer_dialog_title">Sleep-Timer</string>
     <string name="sleep_timer_dialog_active_message">Timer aktiv — noch %1$s</string>
     <string name="sleep_timer_dialog_cancel_timer">Timer abbrechen</string>

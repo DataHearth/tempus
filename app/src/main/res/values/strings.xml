@@ -598,8 +598,6 @@
 
     <string name="settings_radio">Show radio</string>
     <string name="settings_radio_summary">If enabled, show the radio section.</string>
-    <string name="settings_enable_drawer_on_landscape">Enable drawer on portrait</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Unlocks the lateral landscape menu drawer on portrait.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Hide bottom navbar on portrait [Experimental]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Increases vertical space by removing the bottom navbar.</string>
     <string name="settings_auto_download_lyrics">Auto download lyrics</string>
@@ -843,7 +841,6 @@
     <string name="search_all_songs">all %1$s songs</string>
     <string name="search_all_songs_play">Play %1$s</string>
 
-    <string name="nav_drawer_index">Index</string>
 
     <!-- Sleep timer -->
     <string name="sleep_timer_dialog_title">Sleep timer</string>

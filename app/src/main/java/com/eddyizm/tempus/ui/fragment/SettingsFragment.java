@@ -1,12 +1,12 @@
 package com.eddyizm.tempus.ui.fragment;
 
-import static com.google.android.material.internal.ViewUtils.hideKeyboard;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import static com.google.android.material.internal.ViewUtils.hideKeyboard;
+
 import android.content.res.Configuration;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import com.eddyizm.tempus.R;
 import com.eddyizm.tempus.databinding.FragmentSettingsBinding;
 import com.eddyizm.tempus.ui.activity.MainActivity;
-import com.eddyizm.tempus.util.Preferences;
 
 public class SettingsFragment extends Fragment {
 
@@ -77,7 +76,6 @@ public class SettingsFragment extends Fragment {
         super.onStart();
         activity.setBottomNavigationBarVisibility(false);
         activity.setBottomSheetVisibility(false);
-        activity.setNavigationDrawerLock(true);
         activity.setSystemBarsVisibility(!isLandscape);
     }
 
@@ -85,9 +83,6 @@ public class SettingsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         activity.setBottomSheetVisibility(true);
-        if (Preferences.getEnableDrawerOnPortrait()) {
-            activity.setNavigationDrawerLock(false);
-        }
     }
 
     private void initAppBar() {

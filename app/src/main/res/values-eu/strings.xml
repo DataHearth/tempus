@@ -489,8 +489,6 @@
 
     <string name="settings_radio">Irratia erakutsi</string>
     <string name="settings_radio_summary">Gaituta badago, irrati atala erakusten da. Berrabiarazi aplikazioa erabat eragina izan dezan.</string>
-    <string name="settings_enable_drawer_on_landscape">Tiraderarena gaitu bertikalean</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Alboko tiradera-menua desblokeatzen du bertikalean.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Beheko nabigazio-barra ezkutatu bertikalean [Esperimentala]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Espazio bertikala handitzen du beheko nabigazio-barra kenduz. Aldaketek berrabiaraztean izango dute eragina.</string>
     <string name="settings_auto_download_lyrics">Letrak automatikoki deskargatu</string>
@@ -702,7 +700,6 @@
     <string name="search_all_songs">%1$s: abesti guztiak</string>
     <string name="search_all_songs_play">%1$s erreproduzitu</string>
 
-    <string name="nav_drawer_index">Indizea</string>
 
     <!-- Sleep timer -->
     <string name="sleep_timer_dialog_title">Lo-tenporizadorea</string>

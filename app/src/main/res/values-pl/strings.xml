@@ -583,8 +583,6 @@
     <string name="settings_custom_command_second_button">Druga niestandardowa komenda</string>
     <string name="settings_radio">Pokaż radio</string>
     <string name="settings_radio_summary">Jeżeli włączone, widoczna będzie sekcja radia. Zrestartuj aplikację aby, zmiany przyniosły pełny efekt.</string>
-    <string name="settings_enable_drawer_on_landscape">Włącz szufladę w trybie pionowym</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Odblokowywuje boczną szufladę trybu poziomego w trybie pionowym.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Ukryj dolny pasek nawigacji w trybie pionowym [Eksperymentalne]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Eksperymentalne. Zwiększa ilość miejsca w pionie przez usunięcie dolnego paska nawigacji. Zmiany przyniosą efekt po restarcie.</string>
     <string name="settings_auto_download_lyrics">Automatyczne pobieranie tesktów</string>
@@ -811,7 +809,6 @@
 	<string name="search_all_songs_loading">Getting wszystkich piosenek ...</string>
     <string name="search_all_songs">Wszystkie %1$s piosenek</string>
     <string name="search_all_songs_play">Odtwórz %1$s</string>
-	<string name="nav_drawer_index">Indeks</string>
 	    <string name="sleep_timer_dialog_title">Wyłącznik czasowy</string>
     <string name="sleep_timer_dialog_active_message">Wyłącznik włączony — pozostało %1$s</string>
     <string name="sleep_timer_dialog_cancel_timer">Anuluj wyłączanie</string>

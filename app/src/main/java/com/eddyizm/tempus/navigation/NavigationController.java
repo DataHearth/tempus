@@ -26,18 +26,6 @@ public class NavigationController {
         helper.setBottomNavigationBarVisibility(visibility);
     }
 
-    public void setDrawerLock(boolean visibility) {
-        helper.setNavigationDrawerLock(visibility);
-    }
-
-    public boolean isNavigationDrawerLocked() {
-        return helper.isNavigationDrawerLocked();
-    }
-
-    public void toggleDrawerLockOnOrientation(AppCompatActivity activity) {
-        helper.toggleNavigationDrawerLockOnOrientationChange(activity);
-    }
-
     public void setSystemBarsVisibility(AppCompatActivity activity, boolean visibility) {
         helper.setSystemBarsVisibility(activity, visibility);
     }

@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -19,10 +18,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.eddyizm.tempus.R;
-import com.eddyizm.tempus.util.Preferences;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.Contract;
 
@@ -30,10 +27,8 @@ public class NavigationHelper {
     /* UI components */
     private BottomNavigationView bottomNavigationView;
     private FrameLayout bottomNavigationViewFrame;
-    private DrawerLayout drawerLayout;
 
     /* Navigation components */
-    private NavigationView navigationView;
     private NavHostFragment navHostFragment;
     private NavController navController;
 
@@ -43,14 +38,10 @@ public class NavigationHelper {
     /* Private constructor */
     public NavigationHelper(@NonNull BottomNavigationView bottomNavigationView,
                             @NonNull FrameLayout bottomNavigationViewFrame,
-                            @NonNull DrawerLayout drawerLayout,
-                            @NonNull NavigationView navigationView,
                             @NonNull NavHostFragment navHostFragment,
                             @NonNull NavController navController) {
         this.bottomNavigationView = bottomNavigationView;
         this.bottomNavigationViewFrame = bottomNavigationViewFrame;
-        this.drawerLayout = drawerLayout;
-        this.navigationView = navigationView;
         this.navHostFragment = navHostFragment;
         this.navController = navController;
     }
@@ -60,7 +51,7 @@ public class NavigationHelper {
         NavDestination[] previous = {null};
         navController.addOnDestinationChangedListener(
                 (controller, destination, arguments) -> {
-                    // React to the user clicking one of these on bottom-navbar/drawer. Closing a
+                    // React to the user clicking one of these on the bottom bar. Closing a
                     // sheet opened over the player also lands back on one, and must leave it open.
                     boolean fromDialog = previous[0] != null && "dialog".equals(previous[0].getNavigatorName());
                     previous[0] = destination;
@@ -73,7 +64,6 @@ public class NavigationHelper {
                 });
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        NavigationUI.setupWithNavController(navigationView, navController);
     }
 
     @Contract(pure = true)
@@ -101,21 +91,6 @@ public class NavigationHelper {
         bottomNavigationViewFrame.setVisibility(visibility);
     }
 
-    public void setNavigationDrawerLock(boolean locked) {
-        int mode = locked
-                ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-                : DrawerLayout.LOCK_MODE_UNLOCKED;
-        drawerLayout.setDrawerLockMode(mode);
-    }
-
-    public boolean isNavigationDrawerLocked() {
-        return drawerLayout.getDrawerLockMode(navigationView) != DrawerLayout.LOCK_MODE_UNLOCKED;
-    }
-
-    public void toggleNavigationDrawerLockOnOrientationChange(AppCompatActivity activity) {
-        setNavigationDrawerLock(!Preferences.getEnableDrawerOnPortrait());
-    }
-
     /*
     All of these are the "backward compatible" changes that don't break the assumption
     that everything was defined on the activity and is gobally available
@@ -134,11 +109,6 @@ public class NavigationHelper {
     @NonNull
     public FrameLayout getBottomNavigationViewFrame() {
         return bottomNavigationViewFrame;
-    }
-
-    @NonNull
-    public DrawerLayout getDrawerLayout() {
-        return drawerLayout;
     }
 
     /*

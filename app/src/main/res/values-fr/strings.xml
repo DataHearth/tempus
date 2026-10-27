@@ -517,8 +517,6 @@
     <string name="settings_radio_summary">Si activé, rend visible la section Radio.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Cacher la barre de navigation en mode portrait [Expérimental]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Augmente l\'espace vertical en enlevant la barre de navigation du bas.</string>
-	<string name="settings_enable_drawer_on_landscape">Activer le tiroir en mode portrait</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Déverrouille le tiroir de navigation latéral en mode portrait.</string>
 	<string name="settings_auto_download_lyrics">Téléchargement automatique des paroles</string>
     <string name="settings_auto_download_lyrics_summary">Ce paramètre active la sauvegarde automatique des paroles pour affichage hors-ligne, si elles sont disponibles.</string>
     <string name="settings_replay_gain">Ajuster le Replay Gain</string>
@@ -759,7 +757,6 @@
     <string name="search_all_songs">tous les titres de %1$s</string>
     <string name="search_all_songs_play">Jouer %1$s</string>
 
-    <string name="nav_drawer_index">Index</string>
 
     <!-- Sleep timer -->
     <string name="sleep_timer_dialog_title">Minuteur de mise en pause</string>

@@ -533,8 +533,6 @@
     <string name="settings_custom_command_second_button">Andra anpassade kommandot</string>
     <string name="settings_radio">Visa radio</string>
     <string name="settings_radio_summary">Visa radiosektionen. Starta om appen för att ändringen ska få full effekt.</string>
-    <string name="settings_enable_drawer_on_landscape">Aktivera sidomenyn i stående läge</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Gör sidomenyn från liggande läge tillgänglig även i stående läge.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Dölj nedre navigeringsfältet i stående läge [Experimentellt]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Frigör höjd genom att dölja det nedre navigeringsfältet. Ändringen börjar gälla efter omstart.</string>
     <string name="settings_auto_download_lyrics">Hämta låttexter automatiskt</string>
@@ -742,7 +740,6 @@
     <string name="search_all_songs_loading">Hämtar alla låtar ...</string>
     <string name="search_all_songs">alla %1$s låtar</string>
     <string name="search_all_songs_play">Spela %1$s</string>
-    <string name="nav_drawer_index">Index</string>
     <string name="sleep_timer_dialog_title">Insomningstimer</string>
     <string name="sleep_timer_dialog_active_message">Timern är aktiv — %1$s återstår</string>
     <string name="sleep_timer_dialog_cancel_timer">Avbryt timern</string>

@@ -642,13 +642,10 @@
     <string name="settings_androidauto_first_tab">Vista de la primera pestaña</string>
     <string name="settings_androidauto_second_tab">Vista de la segunda pestaña</string>
     <string name="settings_androidauto_third_tab">Vista de la tercera pestaña</string>
-    <string name="settings_enable_drawer_on_landscape">Habilitar el menú lateral en modo vertical [Experimental]</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Desbloquea el menú lateral horizontal en modo vertical. Los cambios se aplicarán al reiniciar la app.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Ocultar la barra de navegación inferior en modo vertical [Experimental]</string>
     <string name="search_all_songs_loading">Obteniendo todas las canciones…</string>
     <string name="search_all_songs">todas las %1$s canciones</string>
     <string name="search_all_songs_play">Reproducir %1$s</string>
-    <string name="nav_drawer_index">Índice</string>
     <string name="aa_instant_mix">Mix instantáneo</string>
     <string name="aa_view_by_albums">Ver por álbumes</string>
     <string name="aa_tracks">Pistas</string>

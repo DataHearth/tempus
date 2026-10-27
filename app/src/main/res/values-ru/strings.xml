@@ -547,8 +547,6 @@
     <string name="settings_custom_command_second_button">Вторая своя команда</string>
     <string name="settings_radio">Показывать радио</string>
     <string name="settings_radio_summary">Отображать раздел радио (требуется перезапуск).</string>
-    <string name="settings_enable_drawer_on_landscape">Боковое меню в портрете</string>
-    <string name="settings_enable_drawer_on_landscape_summary">Разблокировать выдвижное меню в портретной ориентации.</string>
     <string name="settings_hide_bottom_navbar_on_portrait">Скрыть нижнюю панель [Бета]</string>
     <string name="settings_hide_bottom_navbar_on_portrait_summary">Увеличить полезную площадь экрана (требуется перезапуск).</string>
     <string name="settings_auto_download_lyrics">Автозагрузка текстов</string>
@@ -765,7 +763,6 @@
     <string name="search_all_songs_loading">Получение всех треков…</string>
     <string name="search_all_songs">все %1$s треков</string>
     <string name="search_all_songs_play">Играть %1$s</string>
-    <string name="nav_drawer_index">Индекс</string>
 
     <!-- Sleep timer -->
 
