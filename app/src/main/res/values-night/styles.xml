@@ -49,13 +49,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
 
         <!-- Extended surface overriding -->
         <item name="materialSwitchStyle">@style/Widget.App.MaterialSwitch.Amoled</item>
@@ -92,13 +92,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
     </style>
 
     <style name="Widget.App.BottomSheet.Amoled" parent="Widget.Material3.BottomSheet">
@@ -113,13 +113,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
     </style>
 
     <style name="Widget.App.BottomNavigationView.Amoled" parent="Widget.Material3.BottomNavigationView">
@@ -134,13 +134,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog.Amoled" parent="ThemeOverlay.Material3.MaterialAlertDialog">
@@ -155,13 +155,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
     </style>
 
     <style name="ThemeOverlay.App.Dialog.Amoled" parent="ThemeOverlay.Material3.Dialog">
@@ -176,13 +176,13 @@
         <!-- Regular surface overriding -->
         <item name="colorSurface">@color/md_theme_amoled_surface_override</item>
         <item name="colorSurfaceVariant">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainer">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surface_override</item>
-        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutline">@color/md_theme_amoled_surface_override</item>
-        <item name="colorOutlineVariant">@color/md_theme_amoled_surface_override</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_amoled_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_amoled_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_amoled_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_amoled_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_amoled_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_amoled_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_amoled_outlineVariant</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialSwitch.Amoled" parent="">

@@ -185,7 +185,6 @@
     <string name="library_title_music_folder">Carpetas de música</string>
     <string name="library_title_playlist">Listas de reproducción</string>
     <string name="library_title_playlist_see_all_button">Ver todo</string>
-    <string name="library_toast_long_press_to_refresh">Pulsación larga para recargar</string>
     <string name="login_empty">No has añadido ningún servidor</string>
     <string name="login_title">Servidores de Subsonic</string>
     <string name="login_title_expanded">Servidores de Subsonic</string>

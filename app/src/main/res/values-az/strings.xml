@@ -242,7 +242,6 @@
     <string name="library_title_music_folder">Musiqi qovluqları</string>
     <string name="library_title_playlist">Pleylistlər</string>
     <string name="library_title_playlist_see_all_button">Hamısına bax</string>
-    <string name="library_toast_long_press_to_refresh">Yeniləmək üçün basıb saxlayın</string>
     <string name="login_empty">Server əlavə edilməyib</string>
     <string name="login_title">Subsonic serverləri</string>
     <string name="login_title_expanded">Subsonic serverləri</string>

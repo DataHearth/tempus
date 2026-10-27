@@ -383,15 +383,13 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
             return;
         }
 
-        if (Preferences.getDownloadDirectoryUri() == null) {
-            boolean downloaded = DownloadUtil.getDownloadTracker(requireContext()).isDownloaded(song.getId());
-            downloadButton.setVisibility(downloaded ? View.GONE : View.VISIBLE);
-            removeButton.setVisibility(downloaded ? View.VISIBLE : View.GONE);
-        } else {
-            boolean hasLocal = ExternalAudioReader.getUri(song) != null;
-            downloadButton.setVisibility(hasLocal ? View.GONE : View.VISIBLE);
-            removeButton.setVisibility(hasLocal ? View.VISIBLE : View.GONE);
-        }
+        boolean downloaded = Preferences.getDownloadDirectoryUri() == null
+                ? DownloadUtil.getDownloadTracker(requireContext()).isDownloaded(song.getId())
+                : ExternalAudioReader.getUri(song) != null;
+        downloadButton.setEnabled(!downloaded);
+        downloadButton.setText(downloaded ? R.string.song_bottom_sheet_downloaded : R.string.song_bottom_sheet_download);
+        downloadButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, downloaded ? R.drawable.ic_check_circle : R.drawable.ic_download, 0, 0);
+        removeButton.setVisibility(downloaded ? View.VISIBLE : View.GONE);
 
         if (removeGroup != null && removeFromPlaylistButton != null) {
             boolean anyRemoval = removeButton.getVisibility() == View.VISIBLE

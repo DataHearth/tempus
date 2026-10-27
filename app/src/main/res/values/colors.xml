@@ -68,7 +68,7 @@
     <color name="md_theme_dark_inverseSurface">#F1F1F4</color>
     <color name="md_theme_dark_primaryInverse">#131316</color>
 
-    <!-- #000000 is all we need -->
+    <!-- Pages stay true black; containers and outlines sit just above it so cards, tiles and dividers stay visible. -->
     <color name="md_theme_amoled_surface_override">#000000</color>
 
     <color name="md_theme_amoled_primary">#F1F1F4</color>
@@ -94,6 +94,12 @@
     <color name="md_theme_amoled_surfaceVariant">#1A1A1A</color>
     <color name="md_theme_amoled_onSurfaceVariant">#A8A8B3</color>
     <color name="md_theme_amoled_outline">#3A3A42</color>
+    <color name="md_theme_amoled_outlineVariant">#26262B</color>
+    <color name="md_theme_amoled_surfaceContainerLowest">#080809</color>
+    <color name="md_theme_amoled_surfaceContainerLow">#0E0E10</color>
+    <color name="md_theme_amoled_surfaceContainer">#141416</color>
+    <color name="md_theme_amoled_surfaceContainerHigh">#1C1C1F</color>
+    <color name="md_theme_amoled_surfaceContainerHighest">#242428</color>
     <color name="md_theme_amoled_inverseSurface">#F1F1F4</color>
     <color name="md_theme_amoled_inverseOnSurface">#27272C</color>
     <color name="md_theme_amoled_primaryInverse">#131316</color>

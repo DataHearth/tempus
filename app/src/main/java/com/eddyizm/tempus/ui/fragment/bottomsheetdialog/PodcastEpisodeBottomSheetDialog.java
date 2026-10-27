@@ -131,6 +131,17 @@ public class PodcastEpisodeBottomSheetDialog extends BottomSheetDialogFragment i
             Toast.makeText(requireContext(), "Open the channel", Toast.LENGTH_SHORT).show();
             dismissBottomSheet();
         });
+
+        // An empty group would still draw its divider and padding above the delete row.
+        ViewGroup actionGroup = view.findViewById(R.id.podcast_episode_action_group);
+        actionGroup.setVisibility(hasVisibleChild(actionGroup) ? View.VISIBLE : View.GONE);
+    }
+
+    private static boolean hasVisibleChild(ViewGroup group) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            if (group.getChildAt(i).getVisibility() == View.VISIBLE) return true;
+        }
+        return false;
     }
 
     @Override

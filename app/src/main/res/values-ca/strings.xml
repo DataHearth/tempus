@@ -218,7 +218,6 @@
     <string name="library_title_music_folder">Carpetes de música</string>
     <string name="library_title_playlist">Llistes de reproducció</string>
     <string name="library_title_playlist_see_all_button">Visualitza-ho tot</string>
-    <string name="library_toast_long_press_to_refresh">Manteniu-ho premut per a actualitzar-ho</string>
     <string name="login_empty">No s\'ha afegit cap servidor</string>
     <string name="login_title">Servidors del Subsonic</string>
     <string name="login_title_expanded">Servidors del Subsonic</string>

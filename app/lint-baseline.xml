@@ -4042,17 +4042,6 @@
 
     <issue
         id="MissingTranslation"
-        message="&quot;library_toast_long_press_to_refresh&quot; is not translated in &quot;ko&quot; (Korean), &quot;pt&quot; (Portuguese), &quot;it&quot; (Italian), &quot;zh&quot; (Chinese), &quot;ro&quot; (Romanian), &quot;tr&quot; (Turkish)"
-        errorLine1="    &lt;string name=&quot;library_toast_long_press_to_refresh&quot;>Long press to refresh&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="247"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
         message="&quot;playlist_added_to_queue&quot; is not translated in &quot;de&quot; (German), &quot;ko&quot; (Korean), &quot;pt&quot; (Portuguese), &quot;it&quot; (Italian), &quot;zh&quot; (Chinese), &quot;ro&quot; (Romanian), &quot;tr&quot; (Turkish)"
         errorLine1="    &lt;string name=&quot;playlist_added_to_queue&quot;>Playlist added to queue&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

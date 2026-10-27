@@ -15,6 +15,8 @@
 - [Main Features](#main-features)
     - [Library View](#library-view)
     - [Folder or index playback](#folder-or-index-playback)
+    - [Album and artist pages](#album-and-artist-pages)
+    - [Song actions](#song-actions)
     - [Now Playing Screen](#now-playing-screen)
     - [Podcasts](#podcasts)
     - [Syncing the play queue](#syncing-the-play-queue)
@@ -28,6 +30,7 @@
 - [Favorites](#favorites)
     - [Favorites (aka heart aka star) to albums and artists](#favorites-aka-heart-aka-star-to-albums-and-artists)
 - [Playlist Management](#playlist-management)
+    - [The playlist page](#the-playlist-page)
     - [Editing a playlist](#editing-a-playlist)
     - [Sorting playlists](#sorting-playlists)
 - [Settings](#settings)
@@ -102,9 +105,11 @@ The first screen lists your servers. Tap **Open server editor** to add one:
 6. **Client certificate (mTLS)** is optional, for servers that ask for one.
 7. **Custom HTTP headers** is optional, see [Advanced Settings](#advanced-settings).
 
+The editor's actions stay in a bar at the bottom of the screen while you scroll: **Test** and **Create** (or **Update**) on the bottom row, and above them **Delete** on the left and **Go to login** on the right.
+
 **Server name**, **User name**, **Password** and **Public URL** are required, and so is **Local URL** once its switch is on. Tap **Create**, then **Go to login** to return to the server list, and tap the server there to log in. If the login fails, Tempus shows the error and you stay on the list.
 
-To edit a server, open the editor, pick the server in the menu at the top, change what you need and tap **Update**. **Test** checks a saved server's connection. **Delete**, below the advanced options, shows only for a saved server and removes it at once, with no confirmation. A change to the server you are logged in to takes effect after you log out and tap the server again.
+To edit a server, open the editor, pick the server in the menu at the top, change what you need and tap **Update**. **Test** checks a saved server's connection. **Delete** shows only for a saved server and removes it at once, with no confirmation. A change to the server you are logged in to takes effect after you log out and tap the server again.
 
 Long press the Tempus icon and pick **Introduction** to open the welcome, permissions, themes and server pages on their own. The heart icon at the top of the server list opens the same pages.
 
@@ -185,6 +190,16 @@ If your Subsonic-compatible server exposes the folder tree **or** provides an ar
 - Video files are excluded automatically, so only playable audio ends up in the queue.
 
 No extra config is needed—Tempus adjusts based on the connected backend.
+
+### Album and artist pages
+
+On an album page, **Album info** in the ⋮ menu at the top shows or hides the genre, release dates and notes under the header. It starts shown when **Show album detail** is on in Settings, and hidden otherwise.
+
+An artist page shows the artist's top three songs, with **See all** when there are more. Below them, the releases are split by type, with a chip for each type the server reports, such as **Albums**, **EPs** and **Singles**. Tap a chip to show that type. **See all** opens its full list when there are more than five. The biography sits on the page itself, cut to three lines. Tap **More** to read the rest and **Less** to fold it again. **Last.fm** opens the artist's Last.fm page when the server has one.
+
+### Song actions
+
+Long press a song, or tap its ⋮, to open its actions. Four tiles across the top are always there: **Play next**, **Add to queue**, **Add to playlist** and **Download**. Once the song is on the phone, the last tile reads **Downloaded** and does nothing. Below the tiles are **Instant mix**, **Rate**, **Go to album**, **Go to artist** and, with sharing on, **Share**. Removals come last, in red: **Remove from playlist** when you opened the song from a playlist, and **Remove from device** once it is downloaded.
 
 ### Now Playing Screen
 
@@ -364,9 +379,13 @@ Connections use mutual TLS, and each phone is approved by hand. There is no unen
 
 ## Playlist Management
 
+### The playlist page
+
+Under the playlist's name are **Play**, **Shuffle**, a download button that downloads every track not on the phone yet, and a ⋮ button. The ⋮ button holds **Add to queue**, **Edit playlist**, **Edit details**, **Add to faves** (or **Remove from faves**) and **Keep synced**. The search icon at the top filters the tracks by title.
+
 ### Editing a playlist
 
-Open a playlist and pick Edit playlist from its menu to rename it, drag tracks into a new order, or remove tracks. Saving writes the list exactly as it stands on screen, so a removal or a reorder takes effect on the server instead of being added on top of the tracks already there.
+Open a playlist and pick Edit playlist from its ⋮ menu to rename it, drag tracks into a new order, or remove tracks. Saving writes the list exactly as it stands on screen, so a removal or a reorder takes effect on the server instead of being added on top of the tracks already there.
 
 Two things to know:
 - A playlist has to keep at least one track. A save that would leave it empty is refused and the editor says so, use Delete if you want the playlist gone.

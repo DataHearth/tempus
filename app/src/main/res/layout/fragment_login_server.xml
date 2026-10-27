@@ -366,27 +366,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/deleteButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/la_server_button_delete"
-                android:textColor="?attr/colorError"
-                android:visibility="gone"
-                app:icon="@drawable/ic_delete"
-                app:iconTint="?attr/colorError" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/goToLoginButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/la_server_button_login"
-                android:textColor="?attr/colorOnSurface" />
-
         </LinearLayout>
     </ScrollView>
 
@@ -403,12 +382,46 @@
             app:dividerColor="?attr/colorOutlineVariant" />
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="4dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/la_server_button_delete"
+                android:textColor="?attr/colorError"
+                android:visibility="gone"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="?attr/colorError" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/goToLoginButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/la_server_button_login"
+                android:textColor="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/buttoner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingStart="16dp"
-            android:paddingTop="12dp"
+            android:paddingTop="4dp"
             android:paddingEnd="16dp"
             android:paddingBottom="16dp">
 

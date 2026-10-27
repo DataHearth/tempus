@@ -100,7 +100,8 @@
         <item name="android:textColor">@color/browse_filter_chip_text</item>
         <item name="chipStrokeColor">@color/browse_filter_chip_stroke</item>
         <item name="chipStrokeWidth">1dp</item>
-        <item name="checkedIconTint">?attr/colorOnSecondaryContainer</item>
+        <item name="checkedIconTint">?attr/colorSurface</item>
+        <item name="chipIconTint">@color/browse_filter_chip_text</item>
         <item name="android:textAppearance">@style/Browse.ChipText</item>
     </style>
 

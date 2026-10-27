@@ -253,7 +253,6 @@
     <string name="library_title_music_folder">Папки</string>
     <string name="library_title_playlist">Плейлисты</string>
     <string name="library_title_playlist_see_all_button">Все</string>
-    <string name="library_toast_long_press_to_refresh">Удерживайте для обновления</string>
     <string name="login_empty">Серверы не добавлены</string>
     <string name="login_title">Серверы Subsonic</string>
     <string name="login_title_expanded">Серверы Subsonic</string>

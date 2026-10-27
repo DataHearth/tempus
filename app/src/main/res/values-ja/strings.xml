@@ -238,7 +238,6 @@
     <string name="library_title_music_folder">ミュージックフォルダー</string>
     <string name="library_title_playlist">プレイリスト</string>
     <string name="library_title_playlist_see_all_button">すべて表示</string>
-    <string name="library_toast_long_press_to_refresh">長押しで更新</string>
     <string name="login_empty">サーバーが追加されていません</string>
     <string name="login_title">Subsonicサーバー</string>
     <string name="login_title_expanded">Subsonicサーバー</string>

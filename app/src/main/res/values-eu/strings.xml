@@ -217,7 +217,6 @@
     <string name="library_title_music_folder">Musika-karpetak</string>
     <string name="library_title_playlist">Zerrendak</string>
     <string name="library_title_playlist_see_all_button">Denak ikusi</string>
-    <string name="library_toast_long_press_to_refresh">Sakatu luze eguneratzeko</string>
     <string name="login_empty">Ez da zerbitzaririk gehitu</string>
     <string name="login_title">Subsonic zerbitzariak</string>
     <string name="login_title_expanded">Subsonic zerbitzariak</string>

@@ -5,7 +5,6 @@
     android:id="@+id/playlist_info_sector"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
     android:clipToPadding="false"
     android:orientation="vertical"
     android:paddingHorizontal="16dp"

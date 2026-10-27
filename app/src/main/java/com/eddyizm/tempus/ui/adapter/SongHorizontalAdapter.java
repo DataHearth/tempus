@@ -51,6 +51,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private final AlbumID3 album;
     private boolean showRowNumbers;
     private boolean showKind = false;
+    private boolean denseRows = false;
 
     private List<Child> songsFull;
     private final AsyncListDiffer<Child> differ = new AsyncListDiffer<>(this, new DiffUtil.ItemCallback<Child>() {
@@ -131,16 +132,29 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         this.showKind = showKind;
     }
 
+    /**
+     * Shrinks cover rows to the album list's row height. Call before the adapter is attached.
+     */
+    public void setDenseRows(boolean denseRows) {
+        this.denseRows = denseRows;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemHorizontalTrackBinding view = ItemHorizontalTrackBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        int denseHeight = parent.getResources().getDimensionPixelSize(R.dimen.track_row_content_height);
         if (!showCoverArt) {
             ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
             anchor.width = parent.getResources().getDimensionPixelSize(R.dimen.album_track_number_width);
-            anchor.height = parent.getResources().getDimensionPixelSize(R.dimen.album_track_row_content_height);
+            anchor.height = denseHeight;
             view.songCoverImageView.setLayoutParams(anchor);
             view.trackDurationTextView.setVisibility(View.VISIBLE);
+        } else if (denseRows) {
+            ViewGroup.LayoutParams anchor = view.songCoverImageView.getLayoutParams();
+            anchor.width = denseHeight;
+            anchor.height = denseHeight;
+            view.songCoverImageView.setLayoutParams(anchor);
         }
         return new ViewHolder(view);
     }

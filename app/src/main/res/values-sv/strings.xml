@@ -242,7 +242,6 @@
     <string name="library_title_music_folder">Musikmappar</string>
     <string name="library_title_playlist">Spellistor</string>
     <string name="library_title_playlist_see_all_button">Visa alla</string>
-    <string name="library_toast_long_press_to_refresh">Tryck länge för att uppdatera</string>
     <string name="login_empty">Ingen server tillagd</string>
     <string name="login_title">Subsonic-servrar</string>
     <string name="login_title_expanded">Subsonic-servrar</string>

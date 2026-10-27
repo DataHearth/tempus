@@ -260,7 +260,6 @@
     <string name="library_section_count">· %1$d</string>
     <string name="library_refresh_albums">Refresh albums</string>
     <string name="library_refresh_artists">Refresh artists</string>
-    <string name="library_toast_long_press_to_refresh">Long press to refresh</string>
     <string name="login_empty">No server added</string>
     <string name="login_title">Subsonic servers</string>
     <string name="login_title_expanded">Subsonic servers</string>
@@ -711,6 +710,7 @@
     <string name="song_bottom_sheet_add_to_playlist">Add to playlist</string>
     <string name="song_bottom_sheet_add_to_queue">Add to queue</string>
     <string name="song_bottom_sheet_download">Download</string>
+    <string name="song_bottom_sheet_downloaded">Downloaded</string>
     <string name="song_bottom_sheet_error_retrieving_album">Error retrieving album</string>
     <string name="song_bottom_sheet_error_retrieving_artist">Error retrieving artist</string>
     <string name="song_bottom_sheet_go_to_album">Go to album</string>

@@ -355,6 +355,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
         songHorizontalAdapter = new SongHorizontalAdapter(getViewLifecycleOwner(), this, true, true, null);
         songHorizontalAdapter.setShowRowNumbers(true);
+        songHorizontalAdapter.setDenseRows(true);
         bind.mostStreamedSongRecyclerView.setAdapter(songHorizontalAdapter);
         setMediaBrowserListenableFuture();
         reapplyPlayback();
